@@ -114,6 +114,41 @@ body.cover .card td.shown::after{display:none}
 .vbtn[aria-pressed="true"]{border-color:var(--g-head)}
 #rdetail{grid-template-columns:1fr;max-width:820px}
 
+/* Satzbau & Wörter */
+.card,.quiz,.sub{scroll-margin-top:90px}
+.subnav{display:flex;flex-wrap:wrap;gap:6px}
+.subnav a{padding:5px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--fg);text-decoration:none;font-size:14px}
+.subnav a:hover{border-color:var(--accent);color:var(--accent)}
+.sb{display:flex;flex-wrap:wrap;gap:10px 6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;align-items:flex-start}
+.sb .part{display:flex;flex-direction:column;align-items:center;gap:3px}
+.sb .w{font-size:20px;font-weight:700;padding:4px 10px;border-radius:8px;background:hsl(var(--h) var(--card-s) var(--card-l));color:hsl(var(--h) var(--ink-s) var(--ink-l))}
+.sb small{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.sbde{flex-basis:100%;color:var(--muted);font-style:italic;margin-top:4px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:18px;align-items:start}
+.card td.wes{white-space:nowrap;font-weight:700}
+.card td.wde{font-size:15px}
+.card td.exs{font-size:14.5px}
+.card td.exs b{color:var(--c-ink)}
+.card td.exs small{display:block;color:var(--muted);font-style:italic;font-size:13.5px}
+.card tr.pair td{border-top:2px solid color-mix(in srgb,var(--c-ink) 30%,transparent)}
+.big{font-size:22px;line-height:1.35}
+.big .hv{color:var(--accent);font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.gapb{display:inline-block;min-width:3.5em;border-bottom:2px solid var(--accent);color:var(--accent);text-align:center}
+.trans{color:var(--muted);font-style:italic;font-size:15px;flex-basis:100%}
+.qrow{display:flex;flex-direction:column;gap:6px}
+.optlbl{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts button{font:inherit;font-size:15px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.opts button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--bg);font-weight:700}
+.opts button.right{border-color:hsl(145 55% 38%);background:hsl(145 55% 38%);color:#fff;font-weight:700}
+.opts button.wrong{border-color:hsl(0 65% 52%);background:hsl(0 65% 52%);color:#fff}
+.opts button:disabled{cursor:default}
+.fb{font-size:15px;display:flex;flex-direction:column;gap:4px}
+.fb:empty{display:none}
+.fb .ok{color:hsl(145 55% 38%);font-weight:700}
+.fb .no{color:hsl(0 65% 52%);font-weight:700}
+.fb i{color:var(--muted)}
+.qbtns{display:flex;gap:8px;flex-wrap:wrap}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 .tl{color:inherit;text-decoration:underline dotted;text-underline-offset:3px}
 .tl:hover{text-decoration-style:solid}
@@ -141,20 +176,21 @@ body.cover .card td.shown::after{display:none}
 <div class="wrap" id="top">
   <div>
     <h1>Spanische Verben</h1>
-    <p class="lead">Zuerst der Bauplan der regelmässigen Verben, dann die zehn wichtigsten Ausnahmen. Zeilen sind die Personen, Spalten die Zeitformen.</p>
+    <p class="lead">Zuerst der Bauplan der regelmässigen Verben, dann die zehn wichtigsten Ausnahmen, dazu Satzbau und die wichtigsten kleinen Wörter. Zeilen sind die Personen, Spalten die Zeitformen.</p>
   </div>
 
   <div class="bar" role="toolbar" aria-label="Ansicht">
     <div class="seg" id="secs" aria-label="Bereich">
       <button data-s="reg" aria-pressed="true">Regelmässig (30)</button>
       <button data-s="irr" aria-pressed="false">Unregelmässig (10)</button>
+      <button data-s="satz" aria-pressed="false">Satzbau &amp; Wörter</button>
     </div>
     <div class="seg" id="tenses" aria-label="Zeitform"></div>
     <button class="btn" id="coverBtn" aria-pressed="false">Formen verdecken</button>
     <button class="btn" id="revealAll" hidden>Alle aufdecken</button>
   </div>
 
-  <div class="legend">
+  <div class="legend" id="legend">
     <span><b><a class="tl" href="#pres">Presente</a></b> Gegenwart</span>
     <span><b><a class="tl" href="#indef">Indefinido</a></b> abgeschlossene Handlung in der Vergangenheit</span>
     <span><b><a class="tl" href="#imperf">Imperfecto</a></b> Gewohnheit, Beschreibung, Hintergrund</span>
@@ -239,6 +275,48 @@ body.cover .card td.shown::after{display:none}
       <div><b>Nur 3 Verben im Imperfecto</b>Nur <i>ser</i> (era), <i>ir</i> (iba) und <i>ver</i> (veía) sind im Imperfecto unregelmässig. Alle anderen folgen dem Muster.</div>
       <div><b>Futuro-Stämme</b>Die Endungen sind immer -é, -ás, -á, -emos, -éis, -án. Unregelmässig ist nur der Stamm: tendr-, har-, podr-, dir-, querr-, vendr-, habr-.</div>
     </div>
+  </section>
+
+  <!-- ===================== SATZBAU & WÖRTER ===================== -->
+  <section class="sec" id="secSatz" aria-labelledby="sh" hidden>
+    <div>
+      <h2 class="sech" id="sh">Satzbau und wichtige Wörter</h2>
+      <p class="lead">Wie ein spanischer Satz aufgebaut ist und welche kleinen Wörter ihn zusammenhalten: Fragewörter, Bindewörter, Zeit- und Ortswörter, Lagewörter und Adjektive.</p>
+    </div>
+
+    <nav class="subnav" aria-label="Inhalt">
+      <a href="#satzbau">Satzbau</a><a href="#w-fr">Fragewörter</a><a href="#w-bi">Bindewörter</a><a href="#w-ze">Zeitwörter</a><a href="#w-or">Ortswörter</a><a href="#w-la">Lage und Richtung</a><a href="#w-ad">Adjektive</a><a href="#wordQuiz">Wörter üben</a><a href="#sentQuiz">Person und Zeit erkennen</a>
+    </nav>
+
+    <h3 class="sub" id="satzbau">So ist ein Satz aufgebaut</h3>
+    <div class="sb" aria-label="Beispielsatz in Bausteinen">
+      <span class="part" style="--h:45"><span class="w">Ayer</span><small>Zeit</small></span>
+      <span class="part" style="--h:205"><span class="w">mi hermana</span><small>Subjekt</small></span>
+      <span class="part" style="--h:0"><span class="w">no</span><small>Verneinung</small></span>
+      <span class="part" style="--h:280"><span class="w">compró</span><small>Verb</small></span>
+      <span class="part" style="--h:150"><span class="w">pan</span><small>Objekt</small></span>
+      <span class="part" style="--h:330"><span class="w">porque</span><small>Bindewort</small></span>
+      <span class="part" style="--h:175"><span class="w">la panadería estaba cerrada.</span><small>Nebensatz</small></span>
+      <span class="sbde">Gestern kaufte meine Schwester kein Brot, weil die Bäckerei geschlossen war.</span>
+    </div>
+
+    <div class="tips">
+      <div><b><span class="n">1</span>Subjekt, Verb, Objekt</b>Die Grundreihenfolge ist wie im Deutschen: <i>Mi hermana compra pan.</i> Anders als im Deutschen bleibt das Subjekt auch nach einer Zeitangabe vor dem Verb: <i>Mañana mi hermana compra pan.</i> (Morgen kauft meine Schwester Brot.)</div>
+      <div><b><span class="n">2</span>Das Pronomen fällt weg</b>Die Verbendung zeigt die Person schon an. Man sagt meist <i>Hablo español</i> statt <i>Yo hablo español</i>. yo, tú usw. braucht es nur zur Betonung. Genau das übst du unten bei «Person und Zeit erkennen».</div>
+      <div><b><span class="n">3</span>Verneinung mit no</b><i>no</i> steht direkt vor dem Verb: <i>No hablo francés.</i> Eine doppelte Verneinung ist normal: <i>No como nunca carne</i> = <i>Nunca como carne.</i></div>
+      <div><b><span class="n">4</span>Fragen</b>¿ am Anfang, ? am Ende. Bei Ja/Nein-Fragen bleibt die Wortstellung gleich, nur die Stimme geht hoch: <i>¿Hablas español?</i> Bei W-Fragen steht das Fragewort vorne und das Subjekt nach dem Verb: <i>¿Dónde vive tu hermano?</i></div>
+      <div><b><span class="n">5</span>Adjektive stehen hinten</b>Das Adjektiv steht nach dem Nomen und passt sich an: <i>una casa blanca, dos coches rojos</i>. Vor dem Nomen stehen nur einige: <i>buen, mal, gran, mucho, poco, otro</i>.</div>
+      <div><b><span class="n">6</span>Objektpronomen vor dem Verb</b><i>me, te, lo, la, nos, os, los, las</i> stehen vor dem konjugierten Verb: <i>Te llamo mañana.</i> (Ich rufe dich morgen an.) <i>Lo compré ayer.</i> (Ich kaufte es gestern.)</div>
+      <div><b><span class="n">7</span>Zeit und Ort sind flexibel</b>Zeit- und Ortsangaben stehen am Anfang oder am Ende: <i>Mañana voy a Berna</i> oder <i>Voy a Berna mañana</i>.</div>
+      <div><b><span class="n">8</span>Sätze verbinden</b>Mit Bindewörtern werden aus zwei Sätzen einer: <i>Me quedo en casa porque llueve.</i> Die Wortstellung im Nebensatz bleibt normal, das Verb rutscht nicht ans Ende wie im Deutschen.</div>
+    </div>
+
+    <h3 class="sub">Die wichtigsten Wörter</h3>
+    <p class="subp">Mit «Formen verdecken» werden die spanischen Wörter und Beispielsätze verdeckt. Tippe auf ein Feld, um es aufzudecken.</p>
+    <div class="vgrid" id="vgrid"></div>
+
+    <section class="quiz" id="wordQuiz" aria-label="Wörter üben"></section>
+    <section class="quiz" id="sentQuiz" aria-label="Person und Zeit erkennen"></section>
   </section>
 
   <!-- ===================== ZEITFORMEN (gemeinsam) ===================== -->
@@ -452,7 +530,9 @@ showReg("llegar");
 const secs=document.getElementById("secs"),secReg=document.getElementById("secReg"),secIrr=document.getElementById("secIrr");
 function showSec(s){
   secs.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===s));
-  secReg.hidden=s!=="reg";secIrr.hidden=s!=="irr";
+  secReg.hidden=s!=="reg";secIrr.hidden=s!=="irr";document.getElementById("secSatz").hidden=s!=="satz";
+  // Zeitform-Filter und Legende gelten nur für die Verbtabellen
+  document.getElementById("tenses").hidden=s==="satz";document.getElementById("legend").hidden=s==="satz";
 }
 secs.querySelectorAll("button").forEach(b=>b.onclick=()=>showSec(b.dataset.s));
 
@@ -516,6 +596,295 @@ buildQuiz(document.getElementById("regQuiz"),{title:"Training: 30 regelmässige 
     const hint=p.sp?`${p.stem} + ${p.sp} + ${p.end}, Schreibweise ${v.spell[1]}`:`${p.stem} + ${p.end}`;
     return {ans:p.full,hint,chips:chips(pronOf(i),v.inf,v.h,t[1])+`<span class="chip" style="font-size:14px;color:var(--muted)">${v.de}</span>`};
   }});
+
+/* ===================== SATZBAU & WÖRTER ===================== */
+// Eintrag: [Spanisch, Deutsch, Beispiel, Übersetzung, Gruppe]. Gleiche Gruppe = ähnliche Bedeutung (gilt als Synonym, nie als falsche Auswahl).
+const WCAT=[
+ {id:"fr",name:"Fragewörter",short:"Frage",h:280,
+  note:"Fragewörter haben immer einen Akzent: <b>qué</b> = was, aber <b>que</b> = dass. <b>¿Por qué?</b> = warum, <b>porque</b> = weil.",w:[
+  ["qué","was","¿Qué haces hoy?","Was machst du heute?","qc"],
+  ["quién / quiénes","wer","¿Quién es tu profesor?","Wer ist dein Lehrer?"],
+  ["cómo","wie","¿Cómo estás?","Wie geht es dir?"],
+  ["dónde","wo","¿Dónde vives?","Wo wohnst du?","do"],
+  ["adónde","wohin","¿Adónde vas?","Wohin gehst du?","do"],
+  ["de dónde","woher","¿De dónde eres?","Woher kommst du?","do"],
+  ["cuándo","wann","¿Cuándo llegas?","Wann kommst du an?"],
+  ["cuánto / cuánta","wie viel","¿Cuánto cuesta?","Wie viel kostet es?","cu"],
+  ["cuántos / cuántas","wie viele","¿Cuántos años tienes?","Wie alt bist du? (Wie viele Jahre hast du?)","cu"],
+  ["por qué","warum","¿Por qué estudias español?","Warum lernst du Spanisch?","pq"],
+  ["para qué","wozu","¿Para qué sirve esto?","Wozu dient das?","pq"],
+  ["cuál / cuáles","welcher, welche, welches","¿Cuál es tu número?","Welches ist deine Nummer?","qc"],
+  ["a qué hora","um wie viel Uhr","¿A qué hora empieza?","Um wie viel Uhr beginnt es?"]]},
+ {id:"bi",name:"Bindewörter",short:"Binde",h:330,
+  note:"<b>y</b> wird vor i- und hi- zu <b>e</b> (padre e hijo), <b>o</b> vor o- und ho- zu <b>u</b> (siete u ocho).",w:[
+  ["y","und","Tomo café y leche.","Ich trinke Kaffee und Milch."],
+  ["o","oder","¿Té o café?","Tee oder Kaffee?"],
+  ["pero","aber","Es caro, pero es bueno.","Es ist teuer, aber es ist gut.","ab"],
+  ["sino","sondern","No es rojo, sino azul.","Es ist nicht rot, sondern blau.","ab"],
+  ["aunque","obwohl","Salgo aunque llueve.","Ich gehe raus, obwohl es regnet.","ab"],
+  ["porque","weil","Estudio español porque me gusta.","Ich lerne Spanisch, weil es mir gefällt.","we"],
+  ["como","da (am Satzanfang)","Como llueve, no salgo.","Da es regnet, gehe ich nicht raus.","we"],
+  ["cuando","wenn, als (zeitlich)","Cuando llueve, me quedo en casa.","Wenn es regnet, bleibe ich zu Hause.","wn"],
+  ["si","wenn, falls, ob","Si tienes tiempo, te llamo.","Wenn du Zeit hast, rufe ich dich an.","wn"],
+  ["mientras","während","Escucho música mientras cocino.","Ich höre Musik, während ich koche.","wn"],
+  ["que","dass","Creo que tienes razón.","Ich glaube, dass du recht hast."],
+  ["también","auch","Yo también hablo inglés.","Ich spreche auch Englisch."],
+  ["tampoco","auch nicht","Yo tampoco como carne.","Ich esse auch kein Fleisch."],
+  ["por eso","deshalb","Estoy cansado, por eso me quedo en casa.","Ich bin müde, deshalb bleibe ich zu Hause.","al"],
+  ["entonces","dann, also","Entonces, ¿vamos?","Also, gehen wir?","al"],
+  ["además","ausserdem","Además, es barato.","Ausserdem ist es billig."]]},
+ {id:"ze",name:"Zeitwörter",short:"Zeit",h:45,
+  note:"Achtung: <b>mañana</b> = morgen, <b>la mañana</b> = der Morgen. <b>tarde</b> = spät, <b>la tarde</b> = der Nachmittag.",w:[
+  ["hoy","heute","Hoy trabajo en casa.","Heute arbeite ich zu Hause."],
+  ["ayer","gestern","Ayer fui al cine.","Gestern ging ich ins Kino."],
+  ["mañana","morgen","Mañana viajo a Berna.","Morgen reise ich nach Bern."],
+  ["anoche","gestern Abend, letzte Nacht","Anoche dormí mal.","Letzte Nacht schlief ich schlecht."],
+  ["ahora","jetzt","Ahora estoy ocupado.","Jetzt bin ich beschäftigt."],
+  ["antes","vorher, früher","Antes vivía en Basilea.","Früher wohnte ich in Basel."],
+  ["primero","zuerst","Primero estudio y luego salgo.","Zuerst lerne ich und dann gehe ich aus."],
+  ["luego","dann, nachher","Primero estudio y luego salgo.","Zuerst lerne ich und dann gehe ich aus.","da"],
+  ["después","danach, später","Después comemos.","Danach essen wir.","da"],
+  ["siempre","immer","Siempre llego tarde.","Ich komme immer zu spät."],
+  ["nunca","nie","Nunca como carne.","Ich esse nie Fleisch."],
+  ["a veces","manchmal","A veces cocino yo.","Manchmal koche ich."],
+  ["a menudo","oft","Viajo a menudo.","Ich reise oft."],
+  ["todavía","noch","Todavía estoy en la oficina.","Ich bin noch im Büro."],
+  ["ya","schon, bereits","Ya he comido.","Ich habe schon gegessen."],
+  ["pronto","bald","Te llamo pronto.","Ich rufe dich bald an."],
+  ["temprano","früh","Me levanto temprano.","Ich stehe früh auf."],
+  ["tarde","spät","Llegué tarde.","Ich kam spät an."],
+  ["la semana pasada","letzte Woche","La semana pasada estuve en Madrid.","Letzte Woche war ich in Madrid."],
+  ["el año que viene","nächstes Jahr","El año que viene viajaré a México.","Nächstes Jahr werde ich nach Mexiko reisen."]]},
+ {id:"or",name:"Ortswörter",short:"Ort",h:175,
+  note:"<b>en casa</b> = zu Hause (wo?), <b>a casa</b> = nach Hause (wohin?). Bei Bewegung steht <b>a</b>: Voy a Berna.",w:[
+  ["aquí","hier","Vivo aquí.","Ich wohne hier."],
+  ["allí","dort","Allí está la estación.","Dort ist der Bahnhof."],
+  ["cerca de","in der Nähe von","Vivo cerca de la estación.","Ich wohne in der Nähe des Bahnhofs."],
+  ["lejos de","weit weg von","Zúrich está lejos de Madrid.","Zürich ist weit weg von Madrid."],
+  ["arriba","oben","Mi habitación está arriba.","Mein Zimmer ist oben."],
+  ["abajo","unten","La cocina está abajo.","Die Küche ist unten."],
+  ["dentro","drinnen","Los niños juegan dentro.","Die Kinder spielen drinnen."],
+  ["fuera","draussen","Hoy comemos fuera.","Heute essen wir draussen."],
+  ["en casa","zu Hause","Estoy en casa.","Ich bin zu Hause."],
+  ["a casa","nach Hause","Vuelvo a casa.","Ich gehe nach Hause zurück."]]},
+ {id:"la",name:"Lage und Richtung",short:"Lage",h:110,
+  note:"<b>de + el = del</b> und <b>a + el = al</b>: al lado <b>del</b> hotel, voy <b>al</b> centro.",w:[
+  ["en","in, auf, an","El libro está en la mesa.","Das Buch ist auf dem Tisch.","po"],
+  ["encima de","auf, oben auf","El gato está encima de la nevera.","Die Katze ist auf dem Kühlschrank.","po"],
+  ["sobre","auf, über","Las llaves están sobre la mesa.","Die Schlüssel liegen auf dem Tisch.","po"],
+  ["debajo de","unter, unterhalb","El perro duerme debajo de la mesa.","Der Hund schläft unter dem Tisch."],
+  ["delante de","vor","El coche está delante de la casa.","Das Auto steht vor dem Haus."],
+  ["detrás de","hinter","El jardín está detrás de la casa.","Der Garten ist hinter dem Haus."],
+  ["al lado de","neben","El banco está al lado de la farmacia.","Die Bank ist neben der Apotheke."],
+  ["entre","zwischen","La tienda está entre el banco y el bar.","Der Laden ist zwischen der Bank und der Bar."],
+  ["enfrente de","gegenüber","El museo está enfrente de la iglesia.","Das Museum ist gegenüber der Kirche."],
+  ["a la izquierda","links","La estación está a la izquierda.","Der Bahnhof ist links."],
+  ["a la derecha","rechts","El baño está a la derecha.","Das Bad ist rechts."],
+  ["todo recto","geradeaus","Siga todo recto.","Gehen Sie geradeaus."],
+  ["dentro de","in, innerhalb von","Las llaves están dentro de la caja.","Die Schlüssel sind in der Schachtel.","po"],
+  ["fuera de","ausserhalb von","Vivo fuera de la ciudad.","Ich wohne ausserhalb der Stadt."],
+  ["alrededor de","um … herum","Hay árboles alrededor de la casa.","Um das Haus herum hat es Bäume."],
+  ["hacia","in Richtung","Vamos hacia el centro.","Wir gehen Richtung Zentrum."]]},
+ {id:"ad",name:"Adjektive",short:"Adjektive",h:15,pairs:true,
+  note:"Meist als Gegensatzpaare. Angleichung: -o → -a, -os, -as (pequeño, pequeña, pequeños, pequeñas). Auf -e oder Konsonant nur im Plural: grandes, fáciles. Für Zustände steht <b>estar</b>: Estoy cansado.",w:[
+  ["grande","gross","Es una casa grande.","Es ist ein grosses Haus.","gr"],
+  ["pequeño","klein","Tengo un perro pequeño.","Ich habe einen kleinen Hund.","kl"],
+  ["alto","hoch, gross (Person)","Mi padre es alto.","Mein Vater ist gross.","gr"],
+  ["bajo","niedrig, klein (Person)","El precio es bajo.","Der Preis ist niedrig.","kl"],
+  ["bueno","gut","Este vino es bueno.","Dieser Wein ist gut."],
+  ["malo","schlecht","Este café es malo.","Dieser Kaffee ist schlecht."],
+  ["nuevo","neu","Tengo un móvil nuevo.","Ich habe ein neues Handy."],
+  ["viejo","alt","Mi coche es viejo.","Mein Auto ist alt.","al"],
+  ["joven","jung","Mi hermano es joven.","Mein Bruder ist jung."],
+  ["mayor","älter, alt (Person)","Mi abuelo es mayor.","Mein Grossvater ist alt.","al"],
+  ["largo","lang","El viaje es largo.","Die Reise ist lang."],
+  ["corto","kurz","El curso es corto.","Der Kurs ist kurz."],
+  ["caro","teuer","El hotel es caro.","Das Hotel ist teuer."],
+  ["barato","billig","El menú es barato.","Das Menü ist billig."],
+  ["fácil","einfach, leicht","El examen es fácil.","Die Prüfung ist einfach."],
+  ["difícil","schwierig","El español no es difícil.","Spanisch ist nicht schwierig."],
+  ["rápido","schnell","El tren es rápido.","Der Zug ist schnell."],
+  ["lento","langsam","El autobús es lento.","Der Bus ist langsam."],
+  ["bonito","schön, hübsch","Es un pueblo bonito.","Es ist ein schönes Dorf."],
+  ["feo","hässlich","El edificio es feo.","Das Gebäude ist hässlich."],
+  ["caliente","heiss","El café está caliente.","Der Kaffee ist heiss."],
+  ["frío","kalt","El café está frío.","Der Kaffee ist kalt."],
+  ["abierto","offen, geöffnet","El museo está abierto.","Das Museum ist geöffnet."],
+  ["cerrado","geschlossen","El banco está cerrado.","Die Bank ist geschlossen."],
+  ["lleno","voll","El tren está lleno.","Der Zug ist voll."],
+  ["vacío","leer","El vaso está vacío.","Das Glas ist leer."],
+  ["contento","zufrieden, froh","Estoy contento.","Ich bin zufrieden."],
+  ["triste","traurig","Hoy estoy triste.","Heute bin ich traurig."],
+  ["cansado","müde","Estoy cansado.","Ich bin müde."],
+  ["libre","frei","¿Estás libre mañana?","Bist du morgen frei?"],
+  ["importante","wichtig","Es muy importante.","Es ist sehr wichtig."],
+  ["interesante","interessant","El libro es interesante.","Das Buch ist interessant."]]}
+];
+
+const escRe=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+const wordRe=w=>new RegExp("(^|[^\\p{L}])("+escRe(w)+")(?![\\p{L}])","iu");
+const strip=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"");
+const WALL=[];
+WCAT.forEach(c=>c.w.forEach(([es,de,ex,exde,grp])=>{
+  const w={es,de,ex,exde,grp:grp?c.id+grp:"",cid:c.id,cname:c.name,cshort:c.short,h:c.h,alts:es.split(" / ").map(norm)};
+  for(const a of es.split(" / ")){const re=wordRe(a);if(re.test(ex)){w.exH=ex.replace(re,"$1<b>$2</b>");w.gap=ex.replace(re,`$1<span class="gapb">___</span>`);w.gapWord=ex.match(re)[2];break;}}
+  if(!w.exH)w.exH=ex;
+  WALL.push(w);
+}));
+
+// Wortkarten
+const vgrid=document.getElementById("vgrid");
+WCAT.forEach(c=>{
+  const el=document.createElement("article");el.className="card";el.id="w-"+c.id;el.style.setProperty("--h",c.h);
+  let h=`<header><h2>${c.name}</h2><span class="forms">${c.w.length} Wörter</span></header><div class="tbl"><table><thead><tr><th style="padding-left:16px">Spanisch</th><th>Deutsch</th><th>Beispiel</th></tr></thead><tbody>`;
+  WALL.filter(w=>w.cid===c.id).forEach((w,i)=>{
+    h+=`<tr${c.pairs&&i&&i%2===0?' class="pair"':""}><td class="wes" style="padding-left:16px"><span class="f">${w.es}</span></td><td class="wde">${w.de}</td><td class="exs"><span class="f">${w.exH}<small>${w.exde}</small></span></td></tr>`;
+  });
+  h+=`</tbody></table></div><div class="note">${c.note}</div>`;
+  el.innerHTML=h;vgrid.appendChild(el);
+});
+
+// Wörter üben
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+(function(){
+  const el=document.getElementById("wordQuiz");
+  el.innerHTML=`<h3>Wörter üben</h3>
+  <div class="seg" id="wqc" aria-label="Wortgruppe"></div>
+  <div class="seg" id="wqm" aria-label="Übungsart"></div>
+  <div class="qline" id="wql"></div>
+  <form class="qform" id="wqf" autocomplete="off"><input aria-label="Antwort" placeholder="Spanisches Wort eintippen" autocapitalize="off" spellcheck="false"><button class="btn" type="submit">Prüfen</button></form>
+  <div class="acc" id="wqa" aria-label="Sonderzeichen">${[..."áéíóúñ¿"].map(c=>`<button type="button">${c}</button>`).join("")}</div>
+  <div class="opts" id="wqo"></div>
+  <div class="res" id="wqr" aria-live="polite"></div>
+  <div class="fb" id="wqx"></div>
+  <div class="qbtns"><button class="btn" type="button" id="wqn">Nächste</button></div>
+  <div class="score" id="wqs">0 von 0 richtig</div>`;
+  const $=id=>el.querySelector("#"+id);
+  const form=$("wqf"),inp=form.querySelector("input"),opts=$("wqo"),res=$("wqr"),fx=$("wqx"),acc=$("wqa");
+  let cat="all",mode="de",w=null,answered=false,ok=0,tot=0;
+  const mkSeg=(box,items,get,set)=>items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",k===get());
+    b.onclick=()=>{set(k);box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));next();};box.appendChild(b);});
+  mkSeg($("wqc"),[["all","Alle"],...WCAT.map(c=>[c.id,c.short])],()=>cat,k=>cat=k);
+  mkSeg($("wqm"),[["de","Deutsch → Spanisch"],["es","Spanisch → Deutsch"],["gap","Lückensatz"]],()=>mode,k=>mode=k);
+  const catChip=w=>`<span class="chip v" style="background:hsl(${w.h} var(--head-s) var(--head-l))">${w.cname}</span>`;
+  function score(){$("wqs").textContent=`${ok} von ${tot} richtig`;}
+  function showEx(){fx.innerHTML=`<span><b>${w.exH}</b> <i>${w.exde}</i></span>`;}
+  function next(){
+    let pool=WALL.filter(x=>cat==="all"||x.cid===cat);if(mode==="gap")pool=pool.filter(x=>x.gap);
+    let n;do{n=rnd(pool);}while(pool.length>1&&n===w);w=n;answered=false;
+    res.textContent="";res.className="res";fx.innerHTML="";inp.value="";
+    const typed=mode==="de";form.hidden=!typed;acc.hidden=!typed;opts.hidden=typed;
+    if(mode==="de"){$("wql").innerHTML=catChip(w)+`<span class="chip per">${w.de}</span>`;}
+    else if(mode==="es"){$("wql").innerHTML=catChip(w)+`<span class="chip per">${w.es}</span>`;}
+    else{$("wql").innerHTML=catChip(w)+`<span class="big" style="flex-basis:100%">${w.gap}</span><span class="trans">${w.exde}</span>`;}
+    if(!typed){
+      const key=x=>mode==="es"?x.de:(x===w?w.gapWord.toLowerCase():x.alts[0]);
+      const seen=new Set([key(w)]);
+      const dis=shuffle(WALL.filter(x=>x.cid===w.cid&&x!==w&&(!w.grp||x.grp!==w.grp))).filter(x=>{const k=key(x);if(seen.has(k))return false;seen.add(k);return true;}).slice(0,3);
+      opts.innerHTML="";
+      shuffle([w,...dis]).forEach(x=>{const b=document.createElement("button");b.type="button";b.textContent=key(x);b.dataset.ok=x===w?"1":"";
+        b.onclick=()=>{if(answered)return;answered=true;tot++;const right=x===w;if(right)ok++;
+          opts.querySelectorAll("button").forEach(o=>{if(o.dataset.ok)o.classList.add("right");});if(!right)b.classList.add("wrong");
+          res.textContent=right?"Richtig!":"Nicht ganz. Richtig ist: "+key(w);res.className="res "+(right?"ok":"no");
+          showEx();score();if(right)setTimeout(next,1400);};
+        opts.appendChild(b);});
+    }else inp.focus({preventScroll:true});
+  }
+  form.addEventListener("submit",e=>{e.preventDefault();const a=norm(inp.value);if(!a||answered)return;tot++;
+    const syn=w.grp&&WALL.find(x=>x!==w&&x.grp===w.grp&&x.alts.includes(a));
+    if(w.alts.includes(a)){ok++;answered=true;res.textContent="Richtig: "+w.es;res.className="res ok";showEx();setTimeout(next,1400);}
+    else if(syn){ok++;answered=true;res.innerHTML=`Auch richtig. Gesucht war: ${w.es}`;res.className="res ok";showEx();}
+    else if(w.alts.some(x=>strip(x)===strip(a))){res.textContent="Fast. Achte auf den Akzent: "+w.es;res.className="res no";showEx();}
+    else{res.textContent="Nicht ganz. Richtig ist: "+w.es;res.className="res no";showEx();}
+    score();});
+  acc.querySelectorAll("button").forEach(b=>b.onclick=()=>{inp.value+=b.textContent;inp.focus();});
+  $("wqn").onclick=next;
+  next();
+})();
+
+// Person und Zeit erkennen. Eintrag: [Satz, Verbform, Infinitiv, Person(en), Zeitform, Übersetzung, Hinweis]
+const SENT=[
+ ["Ayer comimos paella en Valencia.","comimos","comer","3","indef","Gestern assen wir Paella in Valencia.","Signalwort: ayer."],
+ ["Mañana trabajaré en casa.","trabajaré","trabajar","0","fut","Morgen werde ich zu Hause arbeiten.","Ganzer Infinitiv + é = Futuro."],
+ ["¿Dónde vives ahora?","vives","vivir","1","pres","Wo wohnst du jetzt?","Signalwort: ahora."],
+ ["De niño, mi padre vivía en el campo.","vivía","vivir","2","imperf","Als Kind lebte mein Vater auf dem Land.","Beschreibung der Vergangenheit (de niño). Das Subjekt mi padre zeigt die Person."],
+ ["Mis amigos llegaron tarde.","llegaron","llegar","5","indef","Meine Freunde kamen spät an.","Die Endung -aron gibt es nur im Indefinido."],
+ ["¿Hablasteis con el profesor?","hablasteis","hablar","4","indef","Habt ihr mit dem Lehrer gesprochen?","Endung -asteis = vosotros im Indefinido."],
+ ["Normalmente estudiamos por la tarde.","estudiamos","estudiar","3","pres","Normalerweise lernen wir am Nachmittag.","Die Form ist im Indefinido gleich. Das Signalwort normalmente zeigt das Presente."],
+ ["El año que viene viajaréis a México.","viajaréis","viajar","4","fut","Nächstes Jahr werdet ihr nach Mexiko reisen.","Signalwort: el año que viene."],
+ ["Siempre bebía café por la mañana.","bebía","beber","02","imperf","Ich trank (oder er/sie trank) immer am Morgen Kaffee.","Im Imperfecto sind yo und él/ella gleich. Ohne Subjekt ist beides richtig."],
+ ["Usted habla muy bien español.","habla","hablar","2","pres","Sie sprechen sehr gut Spanisch.","usted wird wie él/ella konjugiert."],
+ ["¿Compraste el pan?","compraste","comprar","1","indef","Hast du das Brot gekauft?","Endung -aste = tú im Indefinido."],
+ ["Los niños jugaban en el parque.","jugaban","jugar","5","imperf","Die Kinder spielten im Park.","Endung -aban = ellos im Imperfecto."],
+ ["Ella recibirá un regalo.","recibirá","recibir","2","fut","Sie wird ein Geschenk erhalten.","Ganzer Infinitiv + á = Futuro."],
+ ["Busqué mis llaves por todas partes.","busqué","buscar","0","indef","Ich suchte meine Schlüssel überall.","Schreibweise c → qu in der yo-Form."],
+ ["Ustedes venden fruta muy buena.","venden","vender","5","pres","Sie verkaufen sehr gute Früchte.","ustedes wird wie ellos konjugiert."],
+ ["Antes corríais cada mañana.","corríais","correr","4","imperf","Früher seid ihr jeden Morgen gelaufen.","Signalwort: antes (Gewohnheit)."],
+ ["Hoy tengo mucho trabajo.","tengo","tener","0","pres","Heute habe ich viel Arbeit.","Signalwort: hoy."],
+ ["Ayer fuimos al cine.","fuimos","ir","3","indef","Gestern gingen wir ins Kino.","fuimos ist die Form von ir und von ser."],
+ ["Mi hermana estaba cansada.","estaba","estar","2","imperf","Meine Schwester war müde.","Zustand in der Vergangenheit. Das Subjekt mi hermana zeigt die Person."],
+ ["Mañana haremos una fiesta.","haremos","hacer","3","fut","Morgen werden wir ein Fest machen.","Unregelmässiger Futuro-Stamm: har-."],
+ ["¿Pudiste dormir bien?","pudiste","poder","1","indef","Konntest du gut schlafen?","Unregelmässiger Indefinido-Stamm: pud-."],
+ ["Ellos dijeron la verdad.","dijeron","decir","5","indef","Sie sagten die Wahrheit.","dijeron schreibt man ohne i."],
+ ["¿Queréis un café?","queréis","querer","4","pres","Wollt ihr einen Kaffee?","Endung -éis = vosotros im Presente."],
+ ["Vendrán a las ocho.","vendrán","venir","5","fut","Sie werden um acht Uhr kommen.","Unregelmässiger Futuro-Stamm: vendr-."],
+ ["Tú siempre tenías razón.","tenías","tener","1","imperf","Du hattest immer recht.","siempre in der Vergangenheit: Imperfecto."],
+ ["Llegamos ayer a Madrid.","llegamos","llegar","3","indef","Wir kamen gestern in Madrid an.","Die Form ist im Presente gleich. Das Signalwort ayer zeigt das Indefinido."],
+ ["¿Qué haces esta noche?","haces","hacer","1","pres","Was machst du heute Abend?","Endung -es = tú im Presente."],
+ ["Te llamaré mañana.","llamaré","llamar","0","fut","Ich werde dich morgen anrufen.","Signalwort: mañana."],
+ ["Hace diez años vivíamos en Berna.","vivíamos","vivir","3","imperf","Vor zehn Jahren wohnten wir in Bern.","Endung -íamos = nosotros im Imperfecto."],
+ ["¿Organizaste tú la fiesta?","organizaste","organizar","1","indef","Hast du das Fest organisiert?","Endung -aste = tú im Indefinido."],
+ ["El tren sale a las nueve.","sale","salir","2","pres","Der Zug fährt um neun Uhr ab.","Fester Fahrplan: Presente."],
+ ["Nunca comprendí este ejercicio.","comprendí","comprender","0","indef","Ich habe diese Übung nie verstanden.","Endung -í mit Akzent = yo im Indefinido."],
+ ["Mis padres estarán en casa.","estarán","estar","5","fut","Meine Eltern werden zu Hause sein.","Ganzer Infinitiv + án = Futuro."],
+ ["¿Dónde estuvisteis ayer?","estuvisteis","estar","4","indef","Wo wart ihr gestern?","Signalwort: ayer."],
+ ["Mientras cocinabas, yo ponía la mesa.","cocinabas","cocinar","1","imperf","Während du kochtest, deckte ich den Tisch.","Signalwort: mientras (Handlung im Verlauf)."],
+ ["Anoche decidimos quedarnos en casa.","decidimos","decidir","3","indef","Gestern Abend entschieden wir, zu Hause zu bleiben.","Die Form ist im Presente gleich. Das Signalwort anoche zeigt das Indefinido."],
+ ["Ellas escuchan música todo el día.","escuchan","escuchar","5","pres","Sie hören den ganzen Tag Musik.","Endung -an = ellos/ellas im Presente."],
+ ["¿Pagará usted con tarjeta?","pagará","pagar","2","fut","Werden Sie mit Karte bezahlen?","usted wird wie él/ella konjugiert."],
+ ["Cada domingo subíamos a la montaña.","subíamos","subir","3","imperf","Jeden Sonntag stiegen wir auf den Berg.","Signalwort: cada domingo (Gewohnheit)."],
+ ["Hoy ayudo a mi madre.","ayudo","ayudar","0","pres","Heute helfe ich meiner Mutter.","Endung -o = yo im Presente."],
+ ["El verano pasado aprendí a nadar.","aprendí","aprender","0","indef","Letzten Sommer lernte ich schwimmen.","Signalwort: el verano pasado."],
+ ["¿Cuándo vendréis a visitarnos?","vendréis","venir","4","fut","Wann werdet ihr uns besuchen kommen?","Unregelmässiger Futuro-Stamm: vendr-."]
+].map(([s,v,inf,p,t,de,h])=>({s,v,inf,p:[...p].map(Number),t,de,h}));
+
+(function(){
+  const PLAB=["yo","tú","él / ella / usted","nosotros","vosotros","ellos / ellas / ustedes"];
+  const el=document.getElementById("sentQuiz");
+  el.innerHTML=`<h3>Person und Zeit erkennen</h3>
+  <p class="subp" style="margin:0">Lies den Satz und bestimme Person und Zeitform des markierten Verbs.</p>
+  <div class="big" id="sline"></div>
+  <div class="qrow"><span class="optlbl">Person</span><div class="opts" id="sp"></div></div>
+  <div class="qrow"><span class="optlbl">Zeitform</span><div class="opts" id="st"></div></div>
+  <div class="qbtns"><button class="btn" type="button" id="scheck" disabled>Prüfen</button><button class="btn" type="button" id="snext">Nächster Satz</button></div>
+  <div class="fb" id="sfb" aria-live="polite"></div>
+  <div class="score" id="sscore">0 von 0 Sätzen ganz richtig</div>`;
+  const $=id=>el.querySelector("#"+id);
+  let deck=[],q,selP=null,selT=null,done=false,ok=0,tot=0;
+  const mk=(box,items,onPick)=>{box.innerHTML="";items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{if(done)return;box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));onPick(k);$("scheck").disabled=selP===null||selT===null;};box.appendChild(b);});};
+  function next(){
+    if(!deck.length)deck=shuffle(SENT);q=deck.pop();selP=selT=null;done=false;
+    $("sline").innerHTML=q.s.replace(wordRe(q.v),`$1<span class="hv">$2</span>`);
+    mk($("sp"),PLAB.map((n,i)=>[String(i),n]),k=>selP=+k);
+    mk($("st"),TENSES.map(t=>[t[0],t[1]]),k=>selT=k);
+    $("scheck").disabled=true;$("sfb").innerHTML="";
+  }
+  $("scheck").onclick=()=>{
+    if(done||selP===null||selT===null)return;done=true;tot++;
+    const pOk=q.p.includes(selP),tOk=q.t===selT;if(pOk&&tOk)ok++;
+    $("sp").querySelectorAll("button").forEach(b=>{const k=+b.dataset.k;if(q.p.includes(k))b.classList.add("right");else if(k===selP)b.classList.add("wrong");b.setAttribute("aria-pressed","false");});
+    $("st").querySelectorAll("button").forEach(b=>{if(b.dataset.k===q.t)b.classList.add("right");else if(b.dataset.k===selT)b.classList.add("wrong");b.setAttribute("aria-pressed","false");});
+    const r=rparts(q.inf,q.t,q.p[0]);
+    const bd=r.full===q.v?`${r.stem} + ${r.sp?r.sp+" + ":""}${r.end}`:"unregelmässige Form";
+    const tn=TENSES.find(t=>t[0]===q.t)[1];
+    const head=pOk&&tOk?`<span class="ok">Richtig!</span>`:`<span class="no">${pOk?"Person richtig, Zeitform falsch.":tOk?"Zeitform richtig, Person falsch.":"Nicht ganz."}</span>`;
+    $("sfb").innerHTML=`${head}<span><b>${q.v}</b> ← ${q.inf}: ${bd}. Person: <b>${q.p.map(i=>PLAB[i]).join(" oder ")}</b>, Zeitform: <b><a class="tl" href="#${q.t}">${tn}</a></b>.</span><span>${q.h}</span><span><i>${q.de}</i></span>`;
+    $("sscore").textContent=`${ok} von ${tot} Sätzen ganz richtig`;$("scheck").disabled=true;
+  };
+  $("snext").onclick=next;
+  next();
+})();
 </script>
 
 </body></html>
