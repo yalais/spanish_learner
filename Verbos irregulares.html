@@ -1,0 +1,521 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Spanische Verben</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Zwei Bereiche: regelmässige und unregelmässige Verben. Karten pro Verb, Zeilen = Personen, Spalten = Zeitformen. */
+:root{
+  --bg:#f6f5f2; --surface:#ffffff; --fg:#1d1c22; --muted:#6b6873; --line:#e2dfe8;
+  --accent:#3b3486; --mark:#ece9ff;
+  --card-l:94%; --card-s:70%; --ink-l:32%; --ink-s:65%; --head-l:44%; --head-s:62%;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#16151b; --surface:#1f1e26; --fg:#ecebf2; --muted:#a19eae; --line:#34323f; --accent:#b3acff; --mark:#2e2a4d;
+  --card-l:17%; --card-s:30%; --ink-l:78%; --ink-s:75%; --head-l:62%; --head-s:60%; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#16151b; --surface:#1f1e26; --fg:#ecebf2; --muted:#a19eae; --line:#34323f; --accent:#b3acff; --mark:#2e2a4d;
+  --card-l:17%; --card-s:30%; --ink-l:78%; --ink-s:75%; --head-l:62%; --head-s:60%; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:1280px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,48px);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.lead{margin:6px 0 0;color:var(--muted);max-width:66ch}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button,.btn{font:inherit;font-size:14px;border:0;background:transparent;color:var(--fg);padding:7px 12px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg);font-weight:700}
+#secs{border-color:var(--accent)}
+#secs button{font-weight:700}
+.btn{border:1px solid var(--line);background:var(--surface)}
+.btn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:700}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted)}
+.legend b{color:var(--fg)}
+.irr-sample{font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.end-sample{font-weight:800;color:var(--accent)}
+
+.sec{display:flex;flex-direction:column;gap:22px}
+.sech{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.6vw,34px);line-height:1.1;margin:0}
+.sub{font-family:var(--display);font-weight:800;font-size:22px;margin:10px 0 -8px}
+.subp{margin:0;color:var(--muted);max-width:72ch}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,560px),1fr));gap:18px}
+body.one .grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
+.card{--c-bg:hsl(var(--h) var(--card-s) var(--card-l));--c-ink:hsl(var(--h) var(--ink-s) var(--ink-l));--c-head:hsl(var(--h) var(--head-s) var(--head-l));
+  background:var(--c-bg);border-radius:14px;overflow:hidden;min-width:0;display:flex;flex-direction:column}
+.card header{background:var(--c-head);color:#fff;padding:12px 16px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.card h2{font-family:var(--display);font-weight:800;font-size:30px;margin:0;line-height:1}
+.card header .de{font-size:15px;opacity:.92}
+.card header .forms{margin-left:auto;font-size:13px;opacity:.92}
+.tbl{overflow-x:auto}
+.card table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.card th,.card td{text-align:left;padding:7px 10px;border-top:1px solid color-mix(in srgb,var(--c-ink) 14%,transparent);vertical-align:middle}
+.card thead th{border-top:0;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--c-ink);font-weight:700;padding-top:10px}
+.card thead th small{display:block;text-transform:none;letter-spacing:0;font-weight:400;opacity:.8}
+th.p{width:1%;white-space:nowrap;padding-left:16px}
+th.p .es{display:block;font-family:var(--display);font-weight:800;font-size:17px;color:var(--fg);line-height:1.1}
+th.p .ger{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.card td{font-size:17px;color:var(--fg)}
+td .irr{color:var(--c-ink);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+td .reg{color:var(--fg)}
+td .end{color:var(--c-ink);font-weight:800}
+td .sp{color:var(--c-ink);font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+body.cover .card td .f{visibility:hidden}
+body.cover .card td{cursor:pointer;position:relative}
+body.cover .card td::after{content:"?";position:absolute;inset:5px 6px;border-radius:6px;background:color-mix(in srgb,var(--c-ink) 12%,transparent);display:grid;place-items:center;color:var(--c-ink);font-weight:700;font-size:14px}
+body.cover .card td.shown .f{visibility:visible}
+body.cover .card td.shown::after{display:none}
+.note{padding:10px 16px 14px;font-size:13.5px;color:var(--muted);border-top:1px solid color-mix(in srgb,var(--c-ink) 14%,transparent)}
+.note b{color:var(--c-ink)}
+[data-col].off{display:none}
+
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.quiz h3{margin:0;font-family:var(--display);font-size:20px}
+.quiz .seg{align-self:flex-start;background:var(--bg)}
+.qline{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:17px}
+.chip{display:inline-flex;gap:6px;align-items:baseline;padding:6px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.chip.v{color:#fff;border:0;font-weight:700}
+.chip.per{font-family:var(--display);font-weight:800;font-size:19px}
+.qform{display:flex;gap:8px;flex-wrap:wrap}
+.qform input{font:inherit;font-size:17px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);min-width:0;flex:1 1 180px}
+.res{min-height:1.4em;font-weight:700}
+.res.ok{color:hsl(145 55% 38%)} .res.no{color:hsl(0 65% 52%)}
+.res small{font-weight:400;color:var(--muted)}
+.score{color:var(--muted);font-size:14px}
+.acc{display:flex;gap:6px;flex-wrap:wrap}
+.acc button{font:inherit;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px;font-size:14px}
+.tips div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.tips b{display:block;font-family:var(--display);font-size:16px;margin-bottom:4px}
+.tips .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:13px;font-weight:700;margin-right:6px;font-family:var(--body)}
+
+.plan{border-collapse:collapse;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:15px}
+.plan th,.plan td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top;color:var(--fg)}
+.plan thead th{border-top:0;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.plan thead th b{display:block;text-transform:none;letter-spacing:0;font-family:var(--display);font-size:18px;color:var(--fg)}
+.plan tbody th{white-space:nowrap;font-weight:700}
+.plan tbody th small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.plan .e{font-weight:700;color:var(--accent)}
+.plan mark{background:var(--mark);color:var(--accent);border-radius:4px;padding:0 3px;font-weight:800}
+.planwrap{overflow-x:auto;border-radius:14px}
+
+.rlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px;align-items:start}
+.rgroup{--g-bg:hsl(var(--h) var(--card-s) var(--card-l));--g-ink:hsl(var(--h) var(--ink-s) var(--ink-l));--g-head:hsl(var(--h) var(--head-s) var(--head-l));background:var(--g-bg);border-radius:14px;padding:12px 12px 14px}
+.rgroup h4{margin:0 0 10px;font-family:var(--display);font-size:20px;color:var(--g-ink)}
+.rgroup h4 small{font-family:var(--body);font-size:13px;font-weight:400;color:var(--muted);margin-left:6px}
+.vbtns{display:flex;flex-wrap:wrap;gap:6px}
+.vbtn{font:inherit;border:2px solid transparent;background:var(--surface);color:var(--fg);border-radius:9px;padding:5px 10px;cursor:pointer;text-align:left;display:flex;flex-direction:column;line-height:1.2}
+.vbtn b{font-size:15.5px}
+.vbtn small{font-size:12px;color:var(--muted)}
+.vbtn .tag{font-size:11px;font-weight:700;color:var(--g-ink)}
+.vbtn[aria-pressed="true"]{border-color:var(--g-head)}
+#rdetail{grid-template-columns:1fr;max-width:820px}
+
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+.tl{color:inherit;text-decoration:underline dotted;text-underline-offset:3px}
+.tl:hover{text-decoration-style:solid}
+.explain{display:flex;flex-direction:column;gap:14px}
+.explain h2{font-family:var(--display);font-weight:800;font-size:28px;margin:12px 0 0}
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;scroll-margin-top:90px;display:flex;flex-direction:column;gap:8px;max-width:900px}
+.ex:target{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.ex h3{margin:0;font-family:var(--display);font-size:21px}
+.ex h3 small{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted);margin-left:8px}
+.ex p{margin:0;max-width:72ch}
+.ex .sig{font-size:14px;color:var(--muted)}
+.ex .sig b{color:var(--fg)}
+.bsp{border-left:3px solid var(--accent);padding:4px 0 4px 12px;font-size:15.5px}
+.bsp i{color:var(--muted)}
+.lbl{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;margin-bottom:2px}
+.vs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px}
+.vs div{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:14.5px}
+.vs b{display:block;margin-bottom:2px}
+.mini{border-collapse:collapse;font-size:15px}
+.mini td,.mini th{padding:4px 14px 4px 0;border:0;font-size:15px;color:var(--fg);text-align:left}
+.mini th{font-weight:700;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.top{font-size:14px;color:var(--accent)}
+</style>
+
+<div class="wrap" id="top">
+  <div>
+    <h1>Spanische Verben</h1>
+    <p class="lead">Zuerst der Bauplan der regelmässigen Verben, dann die zehn wichtigsten Ausnahmen. Zeilen sind die Personen, Spalten die Zeitformen.</p>
+  </div>
+
+  <div class="bar" role="toolbar" aria-label="Ansicht">
+    <div class="seg" id="secs" aria-label="Bereich">
+      <button data-s="reg" aria-pressed="true">Regelmässig (30)</button>
+      <button data-s="irr" aria-pressed="false">Unregelmässig (10)</button>
+    </div>
+    <div class="seg" id="tenses" aria-label="Zeitform"></div>
+    <button class="btn" id="coverBtn" aria-pressed="false">Formen verdecken</button>
+    <button class="btn" id="revealAll" hidden>Alle aufdecken</button>
+  </div>
+
+  <div class="legend">
+    <span><b><a class="tl" href="#pres">Presente</a></b> Gegenwart</span>
+    <span><b><a class="tl" href="#indef">Indefinido</a></b> abgeschlossene Handlung in der Vergangenheit</span>
+    <span><b><a class="tl" href="#imperf">Imperfecto</a></b> Gewohnheit, Beschreibung, Hintergrund</span>
+    <span><b><a class="tl" href="#fut">Futuro</a></b> Zukunft</span>
+    <span><b><a class="tl" href="#prog">estar + Gerundio</a></b> gerade tun</span>
+    <span><span class="end-sample">farbig</span> = Endung</span>
+    <span><span class="irr-sample">unterstrichen</span> = weicht vom Muster ab</span>
+  </div>
+
+  <!-- ===================== REGELMÄSSIGE VERBEN ===================== -->
+  <section class="sec" id="secReg" aria-labelledby="rh">
+    <div>
+      <h2 class="sech" id="rh">Regelmässige Verben</h2>
+      <p class="lead">Die meisten spanischen Verben folgen einem festen Bauplan: <b>Stamm + Endung</b>. Wer die Endungen der drei Gruppen -ar, -er und -ir kennt, kann tausende Verben konjugieren.</p>
+    </div>
+
+    <div class="tips">
+      <div><b><span class="n">1</span>Stamm finden</b>Infinitiv ohne die letzten zwei Buchstaben: habl<i>ar</i> → <b style="display:inline;font-family:inherit;font-size:inherit">habl-</b>, com<i>er</i> → com-, viv<i>ir</i> → viv-.</div>
+      <div><b><span class="n">2</span>Endung anhängen</b>Die Endung hängt von der Gruppe (-ar, -er, -ir), der Person und der Zeitform ab. Siehe Bauplan unten.</div>
+      <div><b><span class="n">3</span>Futuro: ganzer Infinitiv</b>Im Futuro kommt die Endung an den ganzen Infinitiv: hablar<i>é</i>, comer<i>é</i>, vivir<i>é</i>. Die Endungen sind für alle Gruppen gleich.</div>
+      <div><b><span class="n">4</span>Gerundio und Participio</b>-ar → habl<i>ando</i>, habl<i>ado</i>. -er und -ir → com<i>iendo</i>, com<i>ido</i>, viv<i>iendo</i>, viv<i>ido</i>.</div>
+    </div>
+
+    <h3 class="sub">Der Bauplan</h3>
+    <p class="subp">Reihenfolge der Endungen: yo · tú · él/ella · nosotros · vosotros · ellos. <mark style="background:var(--mark);color:var(--accent);font-weight:800;border-radius:4px;padding:0 3px">Markiert</mark> sind die einzigen Stellen, an denen sich -er und -ir unterscheiden.</p>
+    <div class="planwrap"><table class="plan">
+      <thead><tr><th>Zeitform</th><th>-ar<b>hablar</b></th><th>-er<b>comer</b></th><th>-ir<b>vivir</b></th></tr></thead>
+      <tbody>
+        <tr><th><a class="tl" href="#pres">Presente</a><small>Stamm + Endung</small></th><td class="e">o · as · a · amos · áis · an</td><td class="e">o · es · e · <mark>emos</mark> · <mark>éis</mark> · en</td><td class="e">o · es · e · <mark>imos</mark> · <mark>ís</mark> · en</td></tr>
+        <tr><th><a class="tl" href="#indef">Indefinido</a><small>Stamm + Endung</small></th><td class="e">é · aste · ó · amos · asteis · aron</td><td class="e">í · iste · ió · imos · isteis · ieron</td><td class="e">í · iste · ió · imos · isteis · ieron</td></tr>
+        <tr><th><a class="tl" href="#imperf">Imperfecto</a><small>Stamm + Endung</small></th><td class="e">aba · abas · aba · ábamos · abais · aban</td><td class="e">ía · ías · ía · íamos · íais · ían</td><td class="e">ía · ías · ía · íamos · íais · ían</td></tr>
+        <tr><th><a class="tl" href="#fut">Futuro</a><small>Infinitiv + Endung</small></th><td class="e">é · ás · á · emos · éis · án</td><td class="e">é · ás · á · emos · éis · án</td><td class="e">é · ás · á · emos · éis · án</td></tr>
+        <tr><th><a class="tl" href="#prog">Gerundio</a><small>Stamm + Endung</small></th><td class="e">ando</td><td class="e">iendo</td><td class="e">iendo</td></tr>
+        <tr><th>Participio<small>Stamm + Endung</small></th><td class="e">ado</td><td class="e">ido</td><td class="e">ido</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="tips">
+      <div><b>-er und -ir sind fast gleich</b>Nur nosotros und vosotros im Presente unterscheiden sich (comemos, vivimos). Indefinido und Imperfecto sind identisch.</div>
+      <div><b>Der Akzent zählt</b><i>hablo</i> = ich spreche, <i>habló</i> = er sprach. Ohne Akzent ist es eine ganz andere Form, also immer mitschreiben.</div>
+      <div><b>nosotros doppelt</b>Bei -ar und -ir ist nosotros im Presente und Indefinido gleich: <i>hablamos</i>, <i>vivimos</i>. Signalwörter wie hoy oder ayer zeigen die Zeit.</div>
+      <div><b>Imperfecto ist einfach</b>Nur zwei Reihen: -aba bei -ar, -ía bei -er und -ir. Und yo ist gleich wie él/ella: <i>(yo/él) hablaba</i>.</div>
+    </div>
+
+    <h3 class="sub">Drei Musterverben</h3>
+    <p class="subp">Der Stamm bleibt gleich, nur die farbige Endung ändert sich.</p>
+    <div class="grid" id="regModels"></div>
+
+    <div class="ex" id="spell">
+      <h3>Achtung Schreibweise<small>nur yo im Indefinido</small></h3>
+      <p>Bei Verben auf <b>-car</b>, <b>-gar</b> und <b>-zar</b> ändert sich in der yo-Form des Indefinido die Schreibweise. Die Verben bleiben regelmässig, es geht nur darum, dass die Aussprache gleich bleibt: <i>c</i> vor e klingt wie «s», <i>g</i> vor e wie «ch», und <i>z</i> schreibt man vor e als <i>c</i>.</p>
+      <div class="tbl"><table class="mini"><thead><tr><th>Endung</th><th>Änderung</th><th>Beispiel</th></tr></thead><tbody>
+        <tr><td>-car</td><td>c → <b>qu</b></td><td>buscar → bus<b>qu</b>é, practicar → practi<b>qu</b>é</td></tr>
+        <tr><td>-gar</td><td>g → <b>gu</b></td><td>llegar → lle<b>gu</b>é, pagar → pa<b>gu</b>é</td></tr>
+        <tr><td>-zar</td><td>z → <b>c</b></td><td>organizar → organi<b>c</b>é</td></tr>
+      </tbody></table></div>
+      <p>Alle anderen Formen bleiben normal: buscaste, buscó, buscamos …</p>
+    </div>
+
+    <h3 class="sub">Die 30 wichtigsten regelmässigen Verben</h3>
+    <p class="subp">Tippe auf ein Verb, um alle Formen zu sehen. Verben mit Schreibweise-Änderung sind markiert.</p>
+    <div class="rlist" id="rlist"></div>
+    <div class="grid" id="rdetail"></div>
+
+    <section class="quiz" id="regQuiz" aria-label="Training regelmässige Verben"></section>
+  </section>
+
+  <!-- ===================== UNREGELMÄSSIGE VERBEN ===================== -->
+  <section class="sec" id="secIrr" aria-labelledby="ih" hidden>
+    <div>
+      <h2 class="sech" id="ih">Die 10 wichtigsten unregelmässigen Verben</h2>
+      <p class="lead">Jedes Verb hat seine Farbe. Unterstrichene Formen weichen vom regelmässigen Muster ab, genau diese lohnt es sich zu lernen.</p>
+    </div>
+
+    <section class="quiz" id="irrQuiz" aria-label="Training unregelmässige Verben"></section>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="tips" id="tips">
+      <div><b>ser oder estar?</b>Beide heissen «sein». <i>ser</i> für Wesen, Herkunft, Beruf, Uhrzeit (soy suizo). <i>estar</i> für Zustand, Gefühl und Ort (estoy cansado, estoy en Zürich).</div>
+      <div><b>ser = ir im Indefinido</b>fui, fuiste, fue … gilt für beide Verben. Der Satz verrät die Bedeutung: <i>fui a Madrid</i> (ich ging), <i>fue difícil</i> (es war).</div>
+      <div><b>Nur 3 Verben im Imperfecto</b>Nur <i>ser</i> (era), <i>ir</i> (iba) und <i>ver</i> (veía) sind im Imperfecto unregelmässig. Alle anderen folgen dem Muster.</div>
+      <div><b>Futuro-Stämme</b>Die Endungen sind immer -é, -ás, -á, -emos, -éis, -án. Unregelmässig ist nur der Stamm: tendr-, har-, podr-, dir-, querr-, vendr-, habr-.</div>
+    </div>
+  </section>
+
+  <!-- ===================== ZEITFORMEN (gemeinsam) ===================== -->
+  <section class="explain" aria-labelledby="zh">
+    <h2 id="zh">Die Zeitformen kurz erklärt</h2>
+
+    <div class="ex" id="pres">
+      <h3>Presente<small>Gegenwart</small></h3>
+      <p>Was jetzt gilt, was du regelmässig tust und allgemeine Fakten. Im Alltag auch für fest geplante Zukunft.</p>
+      <p class="sig"><b>Signalwörter:</b> hoy, ahora, siempre, cada día, normalmente</p>
+      <p class="bsp"><span class="lbl">Regelmässig</span><b>Trabajo</b> en Zúrich y <b>vivo</b> en Winterthur. <i>Ich arbeite in Zürich und wohne in Winterthur.</i></p>
+      <p class="bsp"><span class="lbl">Unregelmässig</span><b>Tengo</b> dos hermanos. <i>Ich habe zwei Geschwister.</i><br>Mañana <b>voy</b> a Berna. <i>Morgen gehe ich nach Bern.</i></p>
+      <a class="top" href="#top">Nach oben</a>
+    </div>
+
+    <div class="ex" id="indef">
+      <h3>Pretérito indefinido<small>abgeschlossene Vergangenheit</small></h3>
+      <p>Eine Handlung, die zu einem bestimmten Zeitpunkt passiert ist und fertig ist. Sie hat Anfang und Ende. Die Geschichte bewegt sich damit vorwärts: dann passierte das, dann das.</p>
+      <p class="sig"><b>Signalwörter:</b> ayer, anoche, la semana pasada, en 2020, una vez, de repente, de pronto</p>
+      <p class="bsp"><span class="lbl">Regelmässig</span>Ayer <b>llegué</b> tarde y <b>comí</b> solo. <i>Gestern kam ich spät an und ass allein.</i></p>
+      <p class="bsp"><span class="lbl">Unregelmässig</span>Ayer <b>fui</b> al cine. <i>Gestern ging ich ins Kino.</i><br><b>Hice</b> los deberes y luego <b>salí</b>. <i>Ich machte die Aufgaben und ging dann raus.</i></p>
+      <a class="top" href="#top">Nach oben</a>
+    </div>
+
+    <div class="ex" id="imperf">
+      <h3>Pretérito imperfecto<small>beschreibende Vergangenheit</small></h3>
+      <p>Beschreibt, wie etwas war: Hintergrund, Zustände, Gefühle, Alter, Uhrzeit, Gewohnheiten und Handlungen, die gerade am Laufen waren. Es gibt keinen klaren Abschluss.</p>
+      <p class="sig"><b>Signalwörter:</b> siempre, a menudo, cada verano, normalmente, de niño, antes, mientras</p>
+      <p class="bsp"><span class="lbl">Regelmässig</span>De niño <b>vivía</b> en Berna y <b>hablaba</b> alemán en casa. <i>Als Kind wohnte ich in Bern und sprach zu Hause Deutsch.</i></p>
+      <p class="bsp"><span class="lbl">Unregelmässig</span>De niño <b>iba</b> cada verano a la playa. <i>Als Kind ging ich jeden Sommer an den Strand.</i><br><b>Era</b> tarde y <b>estaba</b> cansado. <i>Es war spät und ich war müde.</i></p>
+      <div class="vs">
+        <div><b>Imperfecto = die Kulisse</b>Der Film läuft im Hintergrund: Wie war es? Was war gerade los? Was tat man immer?</div>
+        <div><b>Indefinido = das Ereignis</b>Ein Schnappschuss: Was ist passiert? Einmal, abgeschlossen, mit Zeitpunkt.</div>
+      </div>
+      <p class="bsp"><b>Escuchaba</b> música cuando <b>llamaste</b>. <i>Ich hörte (Hintergrund) Musik, als du anriefst (Ereignis).</i></p>
+      <a class="top" href="#top">Nach oben</a>
+    </div>
+
+    <div class="ex" id="fut">
+      <h3>Futuro simple<small>Zukunft</small></h3>
+      <p>Für Pläne und Voraussagen, eher formell oder schriftlich. Im Gespräch sagt man oft <b>ir a</b> + Infinitiv (voy a viajar). Das Futuro drückt auch eine Vermutung aus.</p>
+      <p class="sig"><b>Signalwörter:</b> mañana, el año que viene, pronto, algún día</p>
+      <p class="bsp"><span class="lbl">Regelmässig</span>El año que viene <b>viajaré</b> a México. <i>Nächstes Jahr werde ich nach Mexiko reisen.</i></p>
+      <p class="bsp"><span class="lbl">Unregelmässig</span>El año que viene <b>tendré</b> más tiempo. <i>Nächstes Jahr werde ich mehr Zeit haben.</i><br>¿Qué hora es? <b>Serán</b> las tres. <i>Es wird wohl drei Uhr sein.</i></p>
+      <a class="top" href="#top">Nach oben</a>
+    </div>
+
+    <div class="ex" id="prog">
+      <h3>estar + Gerundio<small>gerade tun (Verlaufsform)</small></h3>
+      <p>Für Handlungen, die genau jetzt im Gang sind. Gebildet wird sie mit <b>estar</b> in der passenden Person und dem <b>Gerundio</b>. Weil estar selbst unregelmässig ist, lohnt es sich, seine Formen gut zu kennen. Der Gerundio bleibt für alle Personen gleich.</p>
+      <p class="bsp"><b>Estoy</b> aprend<b>iendo</b> español. <i>Ich lerne gerade Spanisch.</i><br>¿Qué <b>estás</b> hac<b>iendo</b>? <i>Was machst du gerade?</i><br><b>Estaba</b> dur<b>miendo</b> cuando llamaste. <i>Ich schlief gerade, als du anriefst.</i></p>
+      <p><b>Regelmässig:</b> -ar → <b>-ando</b> (hablando), -er/-ir → <b>-iendo</b> (comiendo, viviendo).</p>
+      <div class="tbl"><table class="mini"><thead><tr><th>Unregelmässig</th><th>Gerundio</th><th>Warum</th></tr></thead><tbody>
+        <tr><td>ir</td><td><b>yendo</b></td><td>Sonderform</td></tr>
+        <tr><td>decir</td><td><b>diciendo</b></td><td>e → i</td></tr>
+        <tr><td>venir</td><td><b>viniendo</b></td><td>e → i</td></tr>
+        <tr><td>poder</td><td><b>pudiendo</b></td><td>o → u</td></tr>
+        <tr><td>dormir</td><td><b>durmiendo</b></td><td>o → u</td></tr>
+        <tr><td>pedir</td><td><b>pidiendo</b></td><td>e → i</td></tr>
+        <tr><td>leer</td><td><b>leyendo</b></td><td>i → y zwischen Vokalen</td></tr>
+      </tbody></table></div>
+      <p class="sig"><b>Signalwörter:</b> ahora, ahora mismo, en este momento</p>
+      <a class="top" href="#top">Nach oben</a>
+    </div>
+  </section>
+</div>
+
+<script>
+const PERS=[["yo","ich"],["tú","du"],["él / ella / usted","er, sie, Sie"],["nosotros/-as","wir"],["vosotros/-as","ihr"],["ellos / ellas / ustedes","sie, Sie (Pl.)"]];
+let cur="all"; // aktive Zeitform im Filter
+const TENSES=[["pres","Presente","Gegenwart"],["indef","Indefinido","Vergangenheit"],["imperf","Imperfecto","Vergangenheit"],["fut","Futuro","Zukunft"]];
+
+// Regelmässige Endungen
+const END={ar:{pres:["o","as","a","amos","áis","an"],indef:["é","aste","ó","amos","asteis","aron"],imperf:["aba","abas","aba","ábamos","abais","aban"]},
+ er:{pres:["o","es","e","emos","éis","en"],indef:["í","iste","ió","imos","isteis","ieron"],imperf:["ía","ías","ía","íamos","íais","ían"]},
+ ir:{pres:["o","es","e","imos","ís","en"],indef:["í","iste","ió","imos","isteis","ieron"],imperf:["ía","ías","ía","íamos","íais","ían"]}};
+const FUT=["é","ás","á","emos","éis","án"];
+function regular(inf,t,i){const typ=inf.slice(-2),stem=inf.slice(0,-2);if(t==="fut")return inf+FUT[i];return stem+END[typ][t][i];}
+
+// Zerlegt eine regelmässige Form in Stamm, Schreibweise-Änderung und Endung
+const SPELL={car:["qu","c → qu"],gar:["gu","g → gu"],zar:["c","z → c"]};
+function rparts(inf,t,i){
+  const typ=inf.slice(-2);let stem=inf.slice(0,-2),sp="",end;
+  if(t==="fut"){stem=inf;end=FUT[i];}else end=END[typ][t][i];
+  const s=SPELL[inf.slice(-3)];
+  if(t==="indef"&&i===0&&s){stem=stem.slice(0,-1);sp=s[0];}
+  return {stem,sp,end,full:stem+sp+end};
+}
+
+const HUE={ar:205,er:25,ir:150};
+const RV=[
+ ["hablar","sprechen","Hablo un poco de español.","Ich spreche ein wenig Spanisch."],
+ ["trabajar","arbeiten","Trabajo en Zúrich.","Ich arbeite in Zürich."],
+ ["estudiar","studieren, lernen","Estudiamos español los lunes.","Wir lernen montags Spanisch."],
+ ["comprar","kaufen","Ayer compré pan.","Gestern kaufte ich Brot."],
+ ["tomar","nehmen, trinken","¿Tomamos un café?","Trinken wir einen Kaffee?"],
+ ["llamar","anrufen, nennen","Te llamo mañana.","Ich rufe dich morgen an."],
+ ["necesitar","brauchen","Necesito ayuda.","Ich brauche Hilfe."],
+ ["esperar","warten, hoffen","Te espero en la estación.","Ich warte am Bahnhof auf dich."],
+ ["escuchar","zuhören, hören","Escuchaba música cada noche.","Ich hörte jeden Abend Musik."],
+ ["mirar","anschauen","Miramos una película.","Wir schauen einen Film."],
+ ["ayudar","helfen","¿Me ayudas?","Hilfst du mir?"],
+ ["viajar","reisen","Viajaré a México.","Ich werde nach Mexiko reisen."],
+ ["preguntar","fragen","Pregunté el camino.","Ich fragte nach dem Weg."],
+ ["llevar","tragen, mitnehmen","Llevo una chaqueta.","Ich trage eine Jacke."],
+ ["llegar","ankommen","Llegué tarde.","Ich kam zu spät an."],
+ ["buscar","suchen","Busqué las llaves.","Ich suchte die Schlüssel."],
+ ["pagar","bezahlen","Pagué la cuenta.","Ich bezahlte die Rechnung."],
+ ["organizar","organisieren","Organicé la fiesta.","Ich organisierte das Fest."],
+ ["comer","essen","Comemos a las doce.","Wir essen um zwölf."],
+ ["beber","trinken","No bebo café.","Ich trinke keinen Kaffee."],
+ ["aprender","lernen","Estoy aprendiendo español.","Ich lerne gerade Spanisch."],
+ ["comprender","verstehen","No comprendo la pregunta.","Ich verstehe die Frage nicht."],
+ ["vender","verkaufen","Vendieron la casa.","Sie verkauften das Haus."],
+ ["correr","rennen, laufen","Corro cada mañana.","Ich laufe jeden Morgen."],
+ ["deber","sollen, schulden","Debes descansar.","Du solltest dich ausruhen."],
+ ["vivir","leben, wohnen","Vivo en Suiza.","Ich wohne in der Schweiz."],
+ ["recibir","erhalten","Recibí tu mensaje.","Ich erhielt deine Nachricht."],
+ ["decidir","entscheiden","Decidimos quedarnos.","Wir entschieden zu bleiben."],
+ ["subir","hinaufgehen, steigen","Subimos a la montaña.","Wir stiegen auf den Berg."],
+ ["compartir","teilen","Compartimos un piso.","Wir teilen eine Wohnung."]
+];
+const R=RV.map(([inf,de,ex,exde])=>{const typ=inf.slice(-2);return {inf,de,ex,exde,typ,h:HUE[typ],spell:SPELL[inf.slice(-3)]};});
+
+const V=[
+ {inf:"ser",de:"sein (Wesen)",h:350,part:"sido",ger:"siendo",
+  pres:"soy eres es somos sois son",indef:"fui fuiste fue fuimos fuisteis fueron",imperf:"era eras era éramos erais eran",fut:"seré serás será seremos seréis serán",
+  note:"Wesen, Herkunft, Beruf, Zeit: <b>Soy</b> de Suiza."},
+ {inf:"estar",de:"sein (Zustand, Ort)",h:22,part:"estado",ger:"estando",
+  pres:"estoy estás está estamos estáis están",indef:"estuve estuviste estuvo estuvimos estuvisteis estuvieron",imperf:"estaba estabas estaba estábamos estabais estaban",fut:"estaré estarás estará estaremos estaréis estarán",
+  note:"Zustand und Ort: <b>Estoy</b> en casa."},
+ {inf:"ir",de:"gehen, fahren",h:45,part:"ido",ger:"yendo",
+  pres:"voy vas va vamos vais van",indef:"fui fuiste fue fuimos fuisteis fueron",imperf:"iba ibas iba íbamos ibais iban",fut:"iré irás irá iremos iréis irán",
+  note:"Nahe Zukunft: <b>voy a</b> + Infinitiv (voy a comer)."},
+ {inf:"tener",de:"haben, besitzen",h:95,part:"tenido",ger:"teniendo",
+  pres:"tengo tienes tiene tenemos tenéis tienen",indef:"tuve tuviste tuvo tuvimos tuvisteis tuvieron",imperf:"tenía tenías tenía teníamos teníais tenían",fut:"tendré tendrás tendrá tendremos tendréis tendrán",
+  note:"<b>tener que</b> + Infinitiv = müssen."},
+ {inf:"hacer",de:"machen, tun",h:150,part:"hecho",ger:"haciendo",
+  pres:"hago haces hace hacemos hacéis hacen",indef:"hice hiciste hizo hicimos hicisteis hicieron",imperf:"hacía hacías hacía hacíamos hacíais hacían",fut:"haré harás hará haremos haréis harán",
+  note:"Wetter: <b>Hace</b> calor. Zeit: <b>hace</b> dos años (vor 2 Jahren)."},
+ {inf:"poder",de:"können",h:178,part:"podido",ger:"pudiendo",
+  pres:"puedo puedes puede podemos podéis pueden",indef:"pude pudiste pudo pudimos pudisteis pudieron",imperf:"podía podías podía podíamos podíais podían",fut:"podré podrás podrá podremos podréis podrán",
+  note:"Stammwechsel o → ue, aber nicht bei nosotros und vosotros."},
+ {inf:"decir",de:"sagen",h:205,part:"dicho",ger:"diciendo",
+  pres:"digo dices dice decimos decís dicen",indef:"dije dijiste dijo dijimos dijisteis dijeron",imperf:"decía decías decía decíamos decíais decían",fut:"diré dirás dirá diremos diréis dirán",
+  note:"Indefinido 3. Pers. Pl.: dij<b>eron</b> (ohne i)."},
+ {inf:"querer",de:"wollen, lieben",h:235,part:"querido",ger:"queriendo",
+  pres:"quiero quieres quiere queremos queréis quieren",indef:"quise quisiste quiso quisimos quisisteis quisieron",imperf:"quería querías quería queríamos queríais querían",fut:"querré querrás querrá querremos querréis querrán",
+  note:"<b>Te quiero</b> = ich liebe dich."},
+ {inf:"venir",de:"kommen",h:270,part:"venido",ger:"viniendo",
+  pres:"vengo vienes viene venimos venís vienen",indef:"vine viniste vino vinimos vinisteis vinieron",imperf:"venía venías venía veníamos veníais venían",fut:"vendré vendrás vendrá vendremos vendréis vendrán",
+  note:"Wie tener: yo ven<b>g</b>o, futuro ven<b>dr</b>é."},
+ {inf:"haber",de:"haben (Hilfsverb)",h:310,part:"habido",ger:"habiendo",
+  pres:"he has ha hemos habéis han",indef:"hube hubiste hubo hubimos hubisteis hubieron",imperf:"había habías había habíamos habíais habían",fut:"habré habrás habrá habremos habréis habrán",
+  note:"Perfekt: <b>he</b> comido. «Es gibt» = <b>hay</b>."}
+];
+V.forEach(v=>TENSES.forEach(([k])=>v[k]=v[k].split(" ")));
+
+// Karte bauen (für beide Bereiche)
+function card(v,forms,cell,note){
+  const c=document.createElement("article");c.className="card";c.style.setProperty("--h",v.h);
+  let h=`<header><h2>${v.inf}</h2><span class="de">${v.de}</span><span class="forms">${forms}</span></header><div class="tbl"><table><thead><tr><th class="p">Person</th>`;
+  TENSES.forEach(([k,n,d])=>h+=`<th data-col="${k}"><a class="tl" href="#${k}">${n}</a><small>${d}</small></th>`);
+  h+=`</tr></thead><tbody>`;
+  PERS.forEach(([es,de],i)=>{
+    h+=`<tr><th class="p" scope="row"><span class="es">${es}</span><span class="ger">${de}</span></th>`;
+    TENSES.forEach(([k])=>h+=`<td data-col="${k}">${cell(k,i)}</td>`);
+    h+=`</tr>`;
+  });
+  h+=`</tbody></table></div><div class="note">${note}</div>`;
+  c.innerHTML=h;return c;
+}
+function irrCard(v){
+  return card(v,`${v.ger} · ${v.part}`,(k,i)=>{const f=v[k][i],irr=f!==regular(v.inf,k,i);return `<span class="f ${irr?"irr":"reg"}">${f}</span>`;},
+    `${v.note} <a class="tl" href="#prog">Gerundio</a>: <b>${v.ger}</b>`);
+}
+function regCard(v){
+  const st=v.inf.slice(0,-2),ger=st+(v.typ==="ar"?"ando":"iendo"),part=st+(v.typ==="ar"?"ado":"ido");
+  let note=`<b>${v.ex}</b> <i>${v.exde}</i>`;
+  if(v.spell)note+=`<br><a class="tl" href="#spell">Schreibweise</a> (${v.spell[1]}): yo im Indefinido <b>${rparts(v.inf,"indef",0).full}</b>`;
+  return card(v,`${ger} · ${part}`,(k,i)=>{const p=rparts(v.inf,k,i);return `<span class="f">${p.stem}${p.sp?`<span class="sp">${p.sp}</span>`:""}<span class="end">${p.end}</span></span>`;},note);
+}
+
+// Unregelmässige Karten
+const grid=document.getElementById("grid");
+V.forEach(v=>grid.appendChild(irrCard(v)));
+
+// Musterverben
+const models=document.getElementById("regModels");
+["hablar","comer","vivir"].forEach(n=>models.appendChild(regCard(R.find(v=>v.inf===n))));
+
+// Liste der 30 Verben
+const rlist=document.getElementById("rlist"),rdetail=document.getElementById("rdetail");
+[["ar","-ar"],["er","-er"],["ir","-ir"]].forEach(([typ,name])=>{
+  const vs=R.filter(v=>v.typ===typ);
+  const g=document.createElement("div");g.className="rgroup";g.style.setProperty("--h",HUE[typ]);
+  g.innerHTML=`<h4>${name}<small>${vs.length} Verben</small></h4><div class="vbtns"></div>`;
+  const box=g.querySelector(".vbtns");
+  vs.forEach(v=>{const b=document.createElement("button");b.className="vbtn";b.dataset.inf=v.inf;b.setAttribute("aria-pressed","false");
+    b.innerHTML=`<b>${v.inf}</b><small>${v.de}</small>${v.spell?`<span class="tag">${v.spell[1]}</span>`:""}`;
+    b.onclick=()=>showReg(v.inf);box.appendChild(b);});
+  rlist.appendChild(g);
+});
+function showReg(inf){
+  rlist.querySelectorAll(".vbtn").forEach(b=>b.setAttribute("aria-pressed",b.dataset.inf===inf));
+  rdetail.innerHTML="";rdetail.appendChild(regCard(R.find(v=>v.inf===inf)));applyFilter();
+}
+showReg("llegar");
+
+// Bereich wechseln
+const secs=document.getElementById("secs"),secReg=document.getElementById("secReg"),secIrr=document.getElementById("secIrr");
+function showSec(s){
+  secs.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===s));
+  secReg.hidden=s!=="reg";secIrr.hidden=s!=="irr";
+}
+secs.querySelectorAll("button").forEach(b=>b.onclick=()=>showSec(b.dataset.s));
+
+// Zeitform-Filter
+const seg=document.getElementById("tenses");
+function applyFilter(){
+  document.querySelectorAll(".card [data-col]").forEach(el=>el.classList.toggle("off",cur!=="all"&&el.dataset.col!==cur));
+  document.body.classList.toggle("one",cur!=="all");
+}
+[["all","Alle"],...TENSES.map(t=>[t[0],t[1]])].forEach(([k,n])=>{
+  const b=document.createElement("button");b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",k==="all");
+  b.onclick=()=>{cur=k;seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));applyFilter();};
+  seg.appendChild(b);
+});
+
+// Verdecken
+const cb=document.getElementById("coverBtn"),ra=document.getElementById("revealAll");
+cb.onclick=()=>{const on=!document.body.classList.contains("cover");document.body.classList.toggle("cover",on);cb.setAttribute("aria-pressed",on);ra.hidden=!on;
+  document.querySelectorAll(".card td.shown").forEach(td=>td.classList.remove("shown"));};
+ra.onclick=()=>document.querySelectorAll(".card td").forEach(td=>td.classList.add("shown"));
+document.addEventListener("click",e=>{const td=e.target.closest(".card td");if(td&&document.body.classList.contains("cover"))td.classList.toggle("shown");});
+
+// Training (für beide Bereiche)
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const pronOf=i=>rnd(PERS[i][0].split(" / ")).replace("/-as","");
+const curTenses=()=>cur==="all"?TENSES:TENSES.filter(t=>t[0]===cur);
+const chips=(pron,inf,h,tn)=>`<span class="chip per">${pron}</span><span class="chip v" style="background:hsl(${h} var(--head-s) var(--head-l))">${inf}</span><span class="chip">${tn}</span>`;
+const norm=s=>s.trim().toLowerCase();
+function buildQuiz(el,{title,ph,pick,filters}){
+  el.innerHTML=`<h3>${title}</h3>${filters?`<div class="seg" aria-label="Gruppe"></div>`:""}<div class="qline"></div>
+  <form class="qform" autocomplete="off"><input placeholder="${ph}" aria-label="Antwort" autocapitalize="off" spellcheck="false"><button class="btn" type="submit">Prüfen</button><button class="btn" type="button" data-skip>Nächste</button></form>
+  <div class="acc" aria-label="Sonderzeichen">${[..."áéíóúñ"].map(c=>`<button type="button">${c}</button>`).join("")}</div>
+  <div class="res" aria-live="polite"></div><div class="score">0 von 0 richtig</div>`;
+  const qline=el.querySelector(".qline"),inp=el.querySelector("input"),res=el.querySelector(".res"),score=el.querySelector(".score");
+  let q,ok=0,tot=0;
+  function next(){q=pick();qline.innerHTML=q.chips;inp.value="";res.textContent="";res.className="res";}
+  el.querySelector("form").addEventListener("submit",e=>{e.preventDefault();if(!inp.value.trim())return;tot++;
+    if(norm(inp.value)===q.ans){ok++;res.innerHTML="Richtig: "+q.ans;res.className="res ok";setTimeout(next,1100);}
+    else{res.innerHTML="Nicht ganz. Richtig ist: "+q.ans+(q.hint?` <small>(${q.hint})</small>`:"");res.className="res no";}
+    score.textContent=`${ok} von ${tot} richtig`;});
+  el.querySelector("[data-skip]").onclick=next;
+  el.querySelectorAll(".acc button").forEach(b=>b.onclick=()=>{inp.value+=b.textContent;inp.focus();});
+  if(filters){const fs=el.querySelector(".seg");filters.forEach(([k,n],j)=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",j===0);
+    b.onclick=()=>{fs.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));filters.onPick(k);next();};fs.appendChild(b);});}
+  next();
+}
+
+buildQuiz(document.getElementById("irrQuiz"),{title:"Schnelltraining unregelmässig",ph:"Form eintippen, z.B. tuvimos",
+  pick(){const v=rnd(V),t=rnd(curTenses()),i=Math.floor(Math.random()*6);return {ans:v[t[0]][i],chips:chips(pronOf(i),v.inf,v.h,t[1])};}});
+
+let grp="all";
+const regFilters=[["all","Alle 30"],["ar","-ar"],["er","-er"],["ir","-ir"],["sp","Schreibweise"]];
+regFilters.onPick=k=>grp=k;
+buildQuiz(document.getElementById("regQuiz"),{title:"Training: 30 regelmässige Verben",ph:"Form eintippen, z.B. hablamos",filters:regFilters,
+  pick(){
+    const pool=grp==="all"?R:grp==="sp"?R.filter(v=>v.spell):R.filter(v=>v.typ===grp);
+    const v=rnd(pool);let t=rnd(curTenses()),i=Math.floor(Math.random()*6);
+    // Im Modus Schreibweise meistens die yo-Form im Indefinido abfragen
+    if(grp==="sp"&&(cur==="all"||cur==="indef")&&Math.random()<.7){t=TENSES[1];i=0;}
+    const p=rparts(v.inf,t[0],i);
+    const hint=p.sp?`${p.stem} + ${p.sp} + ${p.end}, Schreibweise ${v.spell[1]}`:`${p.stem} + ${p.end}`;
+    return {ans:p.full,hint,chips:chips(pronOf(i),v.inf,v.h,t[1])+`<span class="chip" style="font-size:14px;color:var(--muted)">${v.de}</span>`};
+  }});
+</script>
+
+</body></html>
