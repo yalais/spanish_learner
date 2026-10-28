@@ -85,6 +85,8 @@ body.cover .card td.shown::after{display:none}
 .res.ok{color:hsl(145 55% 38%)} .res.no{color:hsl(0 65% 52%)}
 .res small{font-weight:400;color:var(--muted)}
 .score{color:var(--muted);font-size:14px}
+.pick{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.pick .lbl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;min-width:62px}
 .acc{display:flex;gap:6px;flex-wrap:wrap}
 .acc button{font:inherit;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
 .tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px;font-size:14px}
@@ -580,8 +582,27 @@ function buildQuiz(el,{title,ph,pick,filters}){
   next();
 }
 
-buildQuiz(document.getElementById("irrQuiz"),{title:"Schnelltraining unregelmässig",ph:"Form eintippen, z.B. tuvimos",
-  pick(){const v=rnd(V),t=rnd(curTenses()),i=Math.floor(Math.random()*6);return {ans:v[t[0]][i],chips:chips(pronOf(i),v.inf,v.h,t[1])};}});
+// Auswahl der Verben und Zeitformen fürs Training, im Browser gespeichert
+const IRR_KEY="irrQuizSel";
+let irrSel={v:V.map(v=>v.inf),t:TENSES.map(t=>t[0])};
+try{const s=JSON.parse(localStorage.getItem(IRR_KEY));if(s&&s.v?.length&&s.t?.length)irrSel=s;}catch(e){}
+const irrV=()=>V.filter(v=>irrSel.v.includes(v.inf)),irrT=()=>TENSES.filter(t=>irrSel.t.includes(t[0]));
+const irrQuiz=document.getElementById("irrQuiz");
+buildQuiz(irrQuiz,{title:"Schnelltraining unregelmässig",ph:"Form eintippen, z.B. tuvimos",
+  pick(){const v=rnd(irrV()),t=rnd(irrT()),i=Math.floor(Math.random()*6);return {ans:v[t[0]][i],chips:chips(pronOf(i),v.inf,v.h,t[1])};}});
+{
+  const mkPick=(lbl,key,items)=>{const row=document.createElement("div");row.className="pick";
+    row.innerHTML=`<span class="lbl">${lbl}</span><div class="seg" aria-label="${lbl}"></div>`;
+    const box=row.querySelector(".seg");
+    items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.setAttribute("aria-pressed",irrSel[key].includes(k));
+      b.onclick=()=>{const on=irrSel[key].includes(k);if(on&&irrSel[key].length===1)return; // mindestens eins bleibt aktiv
+        irrSel[key]=on?irrSel[key].filter(x=>x!==k):[...irrSel[key],k];b.setAttribute("aria-pressed",!on);
+        try{localStorage.setItem(IRR_KEY,JSON.stringify(irrSel));}catch(e){}
+        irrQuiz.querySelector("[data-skip]").click();};
+      box.appendChild(b);});
+    return row;};
+  irrQuiz.querySelector("h3").after(mkPick("Verben","v",V.map(v=>[v.inf,v.inf])),mkPick("Zeiten","t",TENSES.map(t=>[t[0],t[1]])));
+}
 
 let grp="all";
 const regFilters=[["all","Alle 30"],["ar","-ar"],["er","-er"],["ir","-ir"],["sp","Schreibweise"]];
