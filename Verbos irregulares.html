@@ -560,7 +560,6 @@ document.addEventListener("click",e=>{const td=e.target.closest(".card td");if(t
 // Training (für beide Bereiche)
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const pronOf=i=>rnd(PERS[i][0].split(" / ")).replace("/-as","");
-const curTenses=()=>cur==="all"?TENSES:TENSES.filter(t=>t[0]===cur);
 const chips=(pron,inf,h,tn)=>`<span class="chip per">${pron}</span><span class="chip v" style="background:hsl(${h} var(--head-s) var(--head-l))">${inf}</span><span class="chip">${tn}</span>`;
 const norm=s=>s.trim().toLowerCase();
 function buildQuiz(el,{title,ph,pick,filters}){
@@ -582,41 +581,49 @@ function buildQuiz(el,{title,ph,pick,filters}){
   next();
 }
 
-// Auswahl der Verben und Zeitformen fürs Training, im Browser gespeichert
-const IRR_KEY="irrQuizSel";
-let irrSel={v:V.map(v=>v.inf),t:TENSES.map(t=>t[0])};
-try{const s=JSON.parse(localStorage.getItem(IRR_KEY));if(s&&s.v?.length&&s.t?.length)irrSel=s;}catch(e){}
-const irrV=()=>V.filter(v=>irrSel.v.includes(v.inf)),irrT=()=>TENSES.filter(t=>irrSel.t.includes(t[0]));
-const irrQuiz=document.getElementById("irrQuiz");
-buildQuiz(irrQuiz,{title:"Schnelltraining unregelmässig",ph:"Form eintippen, z.B. tuvimos",
-  pick(){const v=rnd(irrV()),t=rnd(irrT()),i=Math.floor(Math.random()*6);return {ans:v[t[0]][i],chips:chips(pronOf(i),v.inf,v.h,t[1])};}});
-{
-  const mkPick=(lbl,key,items)=>{const row=document.createElement("div");row.className="pick";
+// Auswahl fürs Training (z.B. Verben, Zeitformen), im Browser gespeichert
+function loadSel(storeKey,def){
+  try{const s=JSON.parse(localStorage.getItem(storeKey));if(s&&Object.keys(def).every(k=>s[k]?.length))return s;}catch(e){}
+  return def;
+}
+function addPicks(quiz,storeKey,sel,rows){
+  const mkPick=([lbl,key,items])=>{const row=document.createElement("div");row.className="pick";
     row.innerHTML=`<span class="lbl">${lbl}</span><div class="seg" aria-label="${lbl}"></div>`;
     const box=row.querySelector(".seg");
-    items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.setAttribute("aria-pressed",irrSel[key].includes(k));
-      b.onclick=()=>{const on=irrSel[key].includes(k);if(on&&irrSel[key].length===1)return; // mindestens eins bleibt aktiv
-        irrSel[key]=on?irrSel[key].filter(x=>x!==k):[...irrSel[key],k];b.setAttribute("aria-pressed",!on);
-        try{localStorage.setItem(IRR_KEY,JSON.stringify(irrSel));}catch(e){}
-        irrQuiz.querySelector("[data-skip]").click();};
+    items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.setAttribute("aria-pressed",sel[key].includes(k));
+      b.onclick=()=>{const on=sel[key].includes(k);if(on&&sel[key].length===1)return; // mindestens eins bleibt aktiv
+        sel[key]=on?sel[key].filter(x=>x!==k):[...sel[key],k];b.setAttribute("aria-pressed",!on);
+        try{localStorage.setItem(storeKey,JSON.stringify(sel));}catch(e){}
+        quiz.querySelector("[data-skip]").click();};
       box.appendChild(b);});
     return row;};
-  irrQuiz.querySelector("h3").after(mkPick("Verben","v",V.map(v=>[v.inf,v.inf])),mkPick("Zeiten","t",TENSES.map(t=>[t[0],t[1]])));
+  quiz.querySelector("h3").after(...rows.map(mkPick));
 }
+const tenseItems=TENSES.map(t=>[t[0],t[1]]);
 
+const irrSel=loadSel("irrQuizSel",{v:V.map(v=>v.inf),t:TENSES.map(t=>t[0])});
+const irrQuiz=document.getElementById("irrQuiz");
+buildQuiz(irrQuiz,{title:"Schnelltraining unregelmässig",ph:"Form eintippen, z.B. tuvimos",
+  pick(){const v=rnd(V.filter(v=>irrSel.v.includes(v.inf))),t=rnd(TENSES.filter(t=>irrSel.t.includes(t[0]))),i=Math.floor(Math.random()*6);
+    return {ans:v[t[0]][i],chips:chips(pronOf(i),v.inf,v.h,t[1])};}});
+addPicks(irrQuiz,"irrQuizSel",irrSel,[["Verben","v",V.map(v=>[v.inf,v.inf])],["Zeiten","t",tenseItems]]);
+
+const regSel=loadSel("regQuizSel",{t:TENSES.map(t=>t[0])});
 let grp="all";
 const regFilters=[["all","Alle 30"],["ar","-ar"],["er","-er"],["ir","-ir"],["sp","Schreibweise"]];
 regFilters.onPick=k=>grp=k;
-buildQuiz(document.getElementById("regQuiz"),{title:"Training: 30 regelmässige Verben",ph:"Form eintippen, z.B. hablamos",filters:regFilters,
+const regQuiz=document.getElementById("regQuiz");
+buildQuiz(regQuiz,{title:"Training: 30 regelmässige Verben",ph:"Form eintippen, z.B. hablamos",filters:regFilters,
   pick(){
     const pool=grp==="all"?R:grp==="sp"?R.filter(v=>v.spell):R.filter(v=>v.typ===grp);
-    const v=rnd(pool);let t=rnd(curTenses()),i=Math.floor(Math.random()*6);
+    const v=rnd(pool);let t=rnd(TENSES.filter(t=>regSel.t.includes(t[0]))),i=Math.floor(Math.random()*6);
     // Im Modus Schreibweise meistens die yo-Form im Indefinido abfragen
-    if(grp==="sp"&&(cur==="all"||cur==="indef")&&Math.random()<.7){t=TENSES[1];i=0;}
+    if(grp==="sp"&&regSel.t.includes("indef")&&Math.random()<.7){t=TENSES[1];i=0;}
     const p=rparts(v.inf,t[0],i);
     const hint=p.sp?`${p.stem} + ${p.sp} + ${p.end}, Schreibweise ${v.spell[1]}`:`${p.stem} + ${p.end}`;
     return {ans:p.full,hint,chips:chips(pronOf(i),v.inf,v.h,t[1])+`<span class="chip" style="font-size:14px;color:var(--muted)">${v.de}</span>`};
   }});
+addPicks(regQuiz,"regQuizSel",regSel,[["Zeiten","t",tenseItems]]);
 
 /* ===================== SATZBAU & WÖRTER ===================== */
 // Eintrag: [Spanisch, Deutsch, Beispiel, Übersetzung, Gruppe]. Gleiche Gruppe = ähnliche Bedeutung (gilt als Synonym, nie als falsche Auswahl).
