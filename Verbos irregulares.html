@@ -783,7 +783,6 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
 (function(){
   const el=document.getElementById("wordQuiz");
   el.innerHTML=`<h3>Wörter üben</h3>
-  <div class="seg" id="wqc" aria-label="Wortgruppe"></div>
   <div class="seg" id="wqm" aria-label="Übungsart"></div>
   <div class="qline" id="wql"></div>
   <form class="qform" id="wqf" autocomplete="off"><input aria-label="Antwort" placeholder="Spanisches Wort eintippen" autocapitalize="off" spellcheck="false"><button class="btn" type="submit">Prüfen</button></form>
@@ -791,20 +790,20 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
   <div class="opts" id="wqo"></div>
   <div class="res" id="wqr" aria-live="polite"></div>
   <div class="fb" id="wqx"></div>
-  <div class="qbtns"><button class="btn" type="button" id="wqn">Nächste</button></div>
+  <div class="qbtns"><button class="btn" type="button" id="wqn" data-skip>Nächste</button></div>
   <div class="score" id="wqs">0 von 0 richtig</div>`;
   const $=id=>el.querySelector("#"+id);
   const form=$("wqf"),inp=form.querySelector("input"),opts=$("wqo"),res=$("wqr"),fx=$("wqx"),acc=$("wqa");
-  let cat="all",mode="de",w=null,answered=false,ok=0,tot=0;
+  const wSel=loadSel("wordQuizSel",{c:WCAT.map(c=>c.id)});
+  let mode="de",w=null,answered=false,ok=0,tot=0;
   const mkSeg=(box,items,get,set)=>items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",k===get());
     b.onclick=()=>{set(k);box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));next();};box.appendChild(b);});
-  mkSeg($("wqc"),[["all","Alle"],...WCAT.map(c=>[c.id,c.short])],()=>cat,k=>cat=k);
   mkSeg($("wqm"),[["de","Deutsch → Spanisch"],["es","Spanisch → Deutsch"],["gap","Lückensatz"]],()=>mode,k=>mode=k);
   const catChip=w=>`<span class="chip v" style="background:hsl(${w.h} var(--head-s) var(--head-l))">${w.cname}</span>`;
   function score(){$("wqs").textContent=`${ok} von ${tot} richtig`;}
   function showEx(){fx.innerHTML=`<span><b>${w.exH}</b> <i>${w.exde}</i></span>`;}
   function next(){
-    let pool=WALL.filter(x=>cat==="all"||x.cid===cat);if(mode==="gap")pool=pool.filter(x=>x.gap);
+    let pool=WALL.filter(x=>wSel.c.includes(x.cid));if(mode==="gap")pool=pool.filter(x=>x.gap);
     let n;do{n=rnd(pool);}while(pool.length>1&&n===w);w=n;answered=false;
     res.textContent="";res.className="res";fx.innerHTML="";inp.value="";
     const typed=mode==="de";form.hidden=!typed;acc.hidden=!typed;opts.hidden=typed;
@@ -833,6 +832,7 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
     score();});
   acc.querySelectorAll("button").forEach(b=>b.onclick=()=>{inp.value+=b.textContent;inp.focus();});
   $("wqn").onclick=next;
+  addPicks(el,"wordQuizSel",wSel,[["Gruppen","c",WCAT.map(c=>[c.id,c.short])]]);
   next();
 })();
 
