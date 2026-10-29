@@ -82,7 +82,8 @@ body.cover .card td.shown::after{display:none}
 .qform{display:flex;gap:8px;flex-wrap:wrap}
 .qform input{font:inherit;font-size:17px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);min-width:0;flex:1 1 180px}
 .res{min-height:1.4em;font-weight:700}
-.res.ok{color:hsl(145 55% 38%)} .res.no{color:hsl(0 65% 52%)}
+.res.ok{color:hsl(145 55% 38%)} .res.no{color:hsl(0 65% 52%)} .res.warn{color:hsl(28 95% 48%)}
+.res.warn b{text-decoration:underline}
 .res small{font-weight:400;color:var(--muted)}
 .score{color:var(--muted);font-size:14px}
 .pick{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
@@ -561,7 +562,11 @@ document.addEventListener("click",e=>{const td=e.target.closest(".card td");if(t
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const pronOf=i=>rnd(PERS[i][0].split(" / ")).replace("/-as","");
 const chips=(pron,inf,h,tn)=>`<span class="chip per">${pron}</span><span class="chip v" style="background:hsl(${h} var(--head-s) var(--head-l))">${inf}</span><span class="chip">${tn}</span>`;
-const norm=s=>s.trim().toLowerCase();
+const norm=s=>s.trim().toLowerCase().normalize("NFC");
+const strip=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"");
+// Sonderzeichen in der richtigen Lösung hervorheben, die in der Eingabe fehlen
+const markAcc=(right,typed)=>[...right].map((c,i)=>c!==strip(c)&&[...typed][i]!==c?`<b>${c}</b>`:c).join("");
+const accMsg=(right,typed)=>"Richtig, aber Sonderzeichen fehlt: "+markAcc(right,typed);
 function buildQuiz(el,{title,ph,pick,filters}){
   el.innerHTML=`<h3>${title}</h3>${filters?`<div class="seg" aria-label="Gruppe"></div>`:""}<div class="qline"></div>
   <form class="qform" autocomplete="off"><input placeholder="${ph}" aria-label="Antwort" autocapitalize="off" spellcheck="false"><button class="btn" type="submit">Prüfen</button><button class="btn" type="button" data-skip>Nächste</button></form>
@@ -571,7 +576,9 @@ function buildQuiz(el,{title,ph,pick,filters}){
   let q,ok=0,tot=0;
   function next(){q=pick();qline.innerHTML=q.chips;inp.value="";res.textContent="";res.className="res";}
   el.querySelector("form").addEventListener("submit",e=>{e.preventDefault();if(!inp.value.trim())return;tot++;
-    if(norm(inp.value)===q.ans){ok++;res.innerHTML="Richtig: "+q.ans;res.className="res ok";setTimeout(next,1100);}
+    const a=norm(inp.value);
+    if(a===q.ans){ok++;res.innerHTML="Richtig: "+q.ans;res.className="res ok";setTimeout(next,1100);}
+    else if(strip(a)===strip(q.ans)){ok++;res.innerHTML=accMsg(q.ans,a);res.className="res warn";setTimeout(next,2200);}
     else{res.innerHTML="Nicht ganz. Richtig ist: "+q.ans+(q.hint?` <small>(${q.hint})</small>`:"");res.className="res no";}
     score.textContent=`${ok} von ${tot} richtig`;});
   el.querySelector("[data-skip]").onclick=next;
@@ -751,7 +758,6 @@ const WCAT=[
 
 const escRe=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
 const wordRe=w=>new RegExp("(^|[^\\p{L}])("+escRe(w)+")(?![\\p{L}])","iu");
-const strip=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"");
 const WALL=[];
 WCAT.forEach(c=>c.w.forEach(([es,de,ex,exde,grp])=>{
   const w={es,de,ex,exde,grp:grp?c.id+grp:"",cid:c.id,cname:c.name,cshort:c.short,h:c.h,alts:es.split(" / ").map(norm)};
@@ -822,7 +828,7 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
     const syn=w.grp&&WALL.find(x=>x!==w&&x.grp===w.grp&&x.alts.includes(a));
     if(w.alts.includes(a)){ok++;answered=true;res.textContent="Richtig: "+w.es;res.className="res ok";showEx();setTimeout(next,1400);}
     else if(syn){ok++;answered=true;res.innerHTML=`Auch richtig. Gesucht war: ${w.es}`;res.className="res ok";showEx();}
-    else if(w.alts.some(x=>strip(x)===strip(a))){res.textContent="Fast. Achte auf den Akzent: "+w.es;res.className="res no";showEx();}
+    else if(w.alts.some(x=>strip(x)===strip(a))){ok++;answered=true;res.innerHTML=accMsg(w.alts.find(x=>strip(x)===strip(a)),a);res.className="res warn";showEx();setTimeout(next,2200);}
     else{res.textContent="Nicht ganz. Richtig ist: "+w.es;res.className="res no";showEx();}
     score();});
   acc.querySelectorAll("button").forEach(b=>b.onclick=()=>{inp.value+=b.textContent;inp.focus();});
