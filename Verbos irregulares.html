@@ -156,7 +156,6 @@ body.cover .card td.shown::after{display:none}
 .tl{color:inherit;text-decoration:underline dotted;text-underline-offset:3px}
 .tl:hover{text-decoration-style:solid}
 .explain{display:flex;flex-direction:column;gap:14px}
-.explain h2{font-family:var(--display);font-weight:800;font-size:28px;margin:12px 0 0}
 .ex{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;scroll-margin-top:90px;display:flex;flex-direction:column;gap:8px;max-width:900px}
 .ex:target{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
 .ex h3{margin:0;font-family:var(--display);font-size:21px}
@@ -179,7 +178,7 @@ body.cover .card td.shown::after{display:none}
 <div class="wrap" id="top">
   <div>
     <h1>Spanische Verben</h1>
-    <p class="lead">Zuerst der Bauplan der regelmässigen Verben, dann die zehn wichtigsten Ausnahmen, dazu Satzbau und die wichtigsten kleinen Wörter. Zeilen sind die Personen, Spalten die Zeitformen.</p>
+    <p class="lead">Zuerst der Bauplan der regelmässigen Verben, dann die zehn wichtigsten Ausnahmen, dazu Satzbau, die wichtigsten kleinen Wörter, Pronomen und Präpositionen sowie die Zeitformen kurz erklärt. Zeilen sind die Personen, Spalten die Zeitformen.</p>
   </div>
 
   <div class="bar" role="toolbar" aria-label="Ansicht">
@@ -187,6 +186,8 @@ body.cover .card td.shown::after{display:none}
       <button data-s="reg" aria-pressed="true">Regelmässig (30)</button>
       <button data-s="irr" aria-pressed="false">Unregelmässig (10)</button>
       <button data-s="satz" aria-pressed="false">Satzbau &amp; Wörter</button>
+      <button data-s="pron" aria-pressed="false">Pronomen &amp; Präpositionen</button>
+      <button data-s="zeit" aria-pressed="false">Zeitformen</button>
     </div>
     <div class="seg" id="tenses" aria-label="Zeitform"></div>
     <button class="btn" id="coverBtn" aria-pressed="false">Formen verdecken</button>
@@ -209,6 +210,8 @@ body.cover .card td.shown::after{display:none}
       <h2 class="sech" id="rh">Regelmässige Verben</h2>
       <p class="lead">Die meisten spanischen Verben folgen einem festen Bauplan: <b>Stamm + Endung</b>. Wer die Endungen der drei Gruppen -ar, -er und -ir kennt, kann tausende Verben konjugieren.</p>
     </div>
+
+    <section class="quiz" id="regQuiz" aria-label="Training regelmässige Verben"></section>
 
     <div class="tips">
       <div><b><span class="n">1</span>Stamm finden</b>Infinitiv ohne die letzten zwei Buchstaben: habl<i>ar</i> → <b style="display:inline;font-family:inherit;font-size:inherit">habl-</b>, com<i>er</i> → com-, viv<i>ir</i> → viv-.</div>
@@ -258,7 +261,6 @@ body.cover .card td.shown::after{display:none}
     <div class="rlist" id="rlist"></div>
     <div class="grid" id="rdetail"></div>
 
-    <section class="quiz" id="regQuiz" aria-label="Training regelmässige Verben"></section>
   </section>
 
   <!-- ===================== UNREGELMÄSSIGE VERBEN ===================== -->
@@ -287,8 +289,10 @@ body.cover .card td.shown::after{display:none}
       <p class="lead">Wie ein spanischer Satz aufgebaut ist und welche kleinen Wörter ihn zusammenhalten: Fragewörter, Bindewörter, Zeit- und Ortswörter, Lagewörter und Adjektive.</p>
     </div>
 
+    <section class="quiz" id="wordQuiz" aria-label="Wörter üben"></section>
+
     <nav class="subnav" aria-label="Inhalt">
-      <a href="#satzbau">Satzbau</a><a href="#w-fr">Fragewörter</a><a href="#w-bi">Bindewörter</a><a href="#w-ze">Zeitwörter</a><a href="#w-or">Ortswörter</a><a href="#w-la">Lage und Richtung</a><a href="#w-ad">Adjektive</a><a href="#wordQuiz">Wörter üben</a><a href="#sentQuiz">Person und Zeit erkennen</a>
+      <a href="#wordQuiz">Wörter üben</a><a href="#satzbau">Satzbau</a><a href="#w-fr">Fragewörter</a><a href="#w-bi">Bindewörter</a><a href="#w-ze">Zeitwörter</a><a href="#w-or">Ortswörter</a><a href="#w-la">Lage und Richtung</a><a href="#w-ad">Adjektive</a>
     </nav>
 
     <h3 class="sub" id="satzbau">So ist ein Satz aufgebaut</h3>
@@ -309,7 +313,7 @@ body.cover .card td.shown::after{display:none}
       <div><b><span class="n">3</span>Verneinung mit no</b><i>no</i> steht direkt vor dem Verb: <i>No hablo francés.</i> Eine doppelte Verneinung ist normal: <i>No como nunca carne</i> = <i>Nunca como carne.</i></div>
       <div><b><span class="n">4</span>Fragen</b>¿ am Anfang, ? am Ende. Bei Ja/Nein-Fragen bleibt die Wortstellung gleich, nur die Stimme geht hoch: <i>¿Hablas español?</i> Bei W-Fragen steht das Fragewort vorne und das Subjekt nach dem Verb: <i>¿Dónde vive tu hermano?</i></div>
       <div><b><span class="n">5</span>Adjektive stehen hinten</b>Das Adjektiv steht nach dem Nomen und passt sich an: <i>una casa blanca, dos coches rojos</i>. Vor dem Nomen stehen nur einige: <i>buen, mal, gran, mucho, poco, otro</i>.</div>
-      <div><b><span class="n">6</span>Objektpronomen vor dem Verb</b><i>me, te, lo, la, nos, os, los, las</i> stehen vor dem konjugierten Verb: <i>Te llamo mañana.</i> (Ich rufe dich morgen an.) <i>Lo compré ayer.</i> (Ich kaufte es gestern.)</div>
+      <div><b><span class="n">6</span>Objektpronomen vor dem Verb</b><i>me, te, lo, la, nos, os, los, las</i> stehen vor dem konjugierten Verb: <i>Te llamo mañana.</i> (Ich rufe dich morgen an.) <i>Lo compré ayer.</i> (Ich kaufte es gestern.) Alle Pronomen im Überblick: <a href="#secPron">Pronomen &amp; Präpositionen</a>.</div>
       <div><b><span class="n">7</span>Zeit und Ort sind flexibel</b>Zeit- und Ortsangaben stehen am Anfang oder am Ende: <i>Mañana voy a Berna</i> oder <i>Voy a Berna mañana</i>.</div>
       <div><b><span class="n">8</span>Sätze verbinden</b>Mit Bindewörtern werden aus zwei Sätzen einer: <i>Me quedo en casa porque llueve.</i> Die Wortstellung im Nebensatz bleibt normal, das Verb rutscht nicht ans Ende wie im Deutschen.</div>
     </div>
@@ -318,13 +322,83 @@ body.cover .card td.shown::after{display:none}
     <p class="subp">Mit «Formen verdecken» werden die spanischen Wörter und Beispielsätze verdeckt. Tippe auf ein Feld, um es aufzudecken.</p>
     <div class="vgrid" id="vgrid"></div>
 
-    <section class="quiz" id="wordQuiz" aria-label="Wörter üben"></section>
-    <section class="quiz" id="sentQuiz" aria-label="Person und Zeit erkennen"></section>
+  </section>
+
+  <!-- ===================== PRONOMEN & PRÄPOSITIONEN ===================== -->
+  <section class="sec" id="secPron" aria-labelledby="ph" hidden>
+    <div>
+      <h2 class="sech" id="ph">Pronomen und Präpositionen</h2>
+      <p class="lead">Wann sagst du <i>yo</i>, <i>me</i> oder <i>mí</i>, und wann <i>a</i>, <i>de</i>, <i>en</i>, <i>por</i> oder <i>para</i>? Erst die Übersicht, dann die Regeln und zum Schluss das Training.</p>
+    </div>
+
+    <section class="quiz" id="pronQuiz" aria-label="Pronomen und Präpositionen üben"></section>
+
+    <nav class="subnav" aria-label="Inhalt">
+      <a href="#pronQuiz">Üben</a><a href="#p-uebersicht">Pronomen im Überblick</a><a href="#p-wann">Wann welches Pronomen?</a><a href="#p-prep">Präpositionen</a><a href="#p-prepwann">Wann welche Präposition?</a>
+    </nav>
+
+    <h3 class="sub" id="p-uebersicht">Die Pronomen im Überblick</h3>
+    <p class="subp">Jede Spalte beantwortet eine andere Frage. Wenn du weisst, welche Frage der Satz stellt, weisst du auch die Spalte.</p>
+    <div class="planwrap"><table class="plan">
+      <thead><tr><th>Person</th><th>Subjekt<b>wer?</b></th><th>Direktes Objekt<b>wen? was?</b></th><th>Indirektes Objekt<b>wem?</b></th><th>Reflexiv<b>sich</b></th><th>Nach Präposition<b>para …</b></th><th>mit<b>con …</b></th></tr></thead>
+      <tbody>
+        <tr><th>yo<small>ich</small></th><td class="e">yo</td><td class="e">me</td><td class="e">me</td><td class="e">me</td><td class="e">mí</td><td class="e">conmigo</td></tr>
+        <tr><th>tú<small>du</small></th><td class="e">tú</td><td class="e">te</td><td class="e">te</td><td class="e">te</td><td class="e">ti</td><td class="e">contigo</td></tr>
+        <tr><th>él / ella / usted<small>er, sie, Sie</small></th><td class="e">él · ella · usted</td><td class="e">lo · la</td><td class="e">le <small>(vor lo/la: se)</small></td><td class="e">se</td><td class="e">él · ella · usted</td><td class="e">con él · con ella</td></tr>
+        <tr><th>nosotros/-as<small>wir</small></th><td class="e">nosotros</td><td class="e">nos</td><td class="e">nos</td><td class="e">nos</td><td class="e">nosotros</td><td class="e">con nosotros</td></tr>
+        <tr><th>vosotros/-as<small>ihr</small></th><td class="e">vosotros</td><td class="e">os</td><td class="e">os</td><td class="e">os</td><td class="e">vosotros</td><td class="e">con vosotros</td></tr>
+        <tr><th>ellos / ellas / ustedes<small>sie, Sie (Pl.)</small></th><td class="e">ellos · ellas · ustedes</td><td class="e">los · las</td><td class="e">les <small>(vor lo/la: se)</small></td><td class="e">se</td><td class="e">ellos · ellas · ustedes</td><td class="e">con ellos · con ellas</td></tr>
+      </tbody>
+    </table></div>
+    <p class="subp">Nur bei <b>yo</b> und <b>tú</b> ändert sich die Form nach einer Präposition (mí, ti, conmigo, contigo). Alle anderen bleiben gleich wie das Subjekt. In der Schweiz und in Lateinamerika sagt man statt <i>vosotros</i> fast immer <i>ustedes</i>.</p>
+
+    <h3 class="sub" id="p-wann">Wann welches Pronomen?</h3>
+    <div class="tips">
+      <div><b><span class="n">1</span>Subjekt: meist weglassen</b>Die Endung zeigt die Person. <i>yo, tú, él …</i> sagst du nur zur Betonung oder zum Gegensatz: <i>Yo hablo español, ella habla alemán.</i> Bei <i>él / ella / usted</i> hilft das Pronomen, wenn unklar ist, wer gemeint ist.</div>
+      <div><b><span class="n">2</span>Direktes Objekt: lo / la</b>Frage <i>wen oder was?</i> Du ersetzt das Objekt und richtest dich nach dem Geschlecht: <i>Veo a Ana</i> → <i>La veo.</i> <i>Compro el libro</i> → <i>Lo compro.</i> <i>Compro las entradas</i> → <i>Las compro.</i></div>
+      <div><b><span class="n">3</span>Indirektes Objekt: le / les</b>Frage <i>wem?</i> Es gibt kein Geschlecht: <i>Doy el libro a Ana</i> → <i>Le doy el libro.</i> <i>Escribo a mis padres</i> → <i>Les escribo.</i> Typisch bei dar, decir, escribir, regalar, preguntar.</div>
+      <div><b><span class="n">4</span>Beide zusammen: se lo</b>Das indirekte steht immer vor dem direkten: <i>Me lo das.</i> (Du gibst es mir.) Vor <i>lo, la, los, las</i> wird <i>le / les</i> zu <b>se</b>: <i>Le doy el libro</i> → <i>Se lo doy.</i> (Ich gebe es ihr.)</div>
+      <div><b><span class="n">5</span>Reflexiv: me, te, se …</b>Die Handlung geht auf die Person zurück: <i>me lavo</i> (ich wasche mich), <i>se llama</i> (er heisst), <i>nos levantamos</i> (wir stehen auf). Bei vielen Alltagsverben gehört das Pronomen fest dazu.</div>
+      <div><b><span class="n">6</span>Nach Präposition: mí, ti …</b>Hinter <i>a, de, para, por, sin</i> kommen die Formen mí und ti: <i>Es para mí.</i> Mit <i>con</i> wird daraus <b>conmigo, contigo</b>. Ausnahme: <i>entre tú y yo</i> und <i>según tú</i>.</div>
+      <div><b><span class="n">7</span>Stellung</b>Vor dem konjugierten Verb: <i>Lo veo.</i> Beim Infinitiv oder Gerundio vorne oder hinten angehängt: <i>Lo quiero ver</i> = <i>Quiero verlo.</i> <i>Lo estoy leyendo</i> = <i>Estoy leyéndolo.</i> In der Verneinung steht no ganz vorne: <i>No lo veo.</i></div>
+      <div><b><span class="n">8</span>gustar: das Pronomen ist indirekt</b><i>Me gusta el café</i> heisst wörtlich «Der Kaffee gefällt mir». Das Verb richtet sich nach der Sache: <i>Me gustan los perros.</i> Zur Betonung: <i>A mí me gusta, a ti no.</i></div>
+    </div>
+
+    <h3 class="sub" id="p-prep">Die wichtigsten Präpositionen</h3>
+    <div class="planwrap"><table class="plan">
+      <thead><tr><th>Wort</th><th>Grundidee</th><th>Wann?</th><th>Beispiel</th></tr></thead>
+      <tbody>
+        <tr><th>a</th><td>Richtung, Ziel</td><td>Bewegung nach … (ir a, llegar a, volver a). Uhrzeit. Persönliches <i>a</i> vor bestimmten Personen. Indirektes Objekt. Nach <i>empezar</i>, <i>aprender</i>, <i>ir</i> + Infinitiv.</td><td><b>Voy a</b> Berna. <i>Ich gehe nach Bern.</i><br>Llego <b>a</b> las ocho. <i>Ich komme um acht an.</i><br>Veo <b>a</b> Ana. <i>Ich sehe Ana.</i></td></tr>
+        <tr><th>de</th><td>Herkunft, Besitz, Inhalt</td><td>Woher? Wem gehört es? Woraus? Worüber? Dazu <i>salir de</i>, <i>acabar de</i> + Infinitiv.</td><td>Soy <b>de</b> Suiza. <i>Ich komme aus der Schweiz.</i><br>El coche <b>de</b> mi padre. <i>Das Auto meines Vaters.</i><br>Un vaso <b>de</b> agua. <i>Ein Glas Wasser.</i></td></tr>
+        <tr><th>en</th><td>Ort ohne Bewegung</td><td>Wo? Dazu Verkehrsmittel, Monate und Jahre, Sprachen.</td><td>Vivo <b>en</b> Zúrich. <i>Ich wohne in Zürich.</i><br>Voy <b>en</b> tren. <i>Ich fahre mit dem Zug.</i><br><b>En</b> mayo. <i>Im Mai.</i></td></tr>
+        <tr><th>con</th><td>mit</td><td>Begleitung oder Mittel. Mit mir und dir: conmigo, contigo.</td><td>Café <b>con</b> leche. <i>Kaffee mit Milch.</i><br>Voy <b>con</b> mi hermana. <i>Ich gehe mit meiner Schwester.</i></td></tr>
+        <tr><th>por</th><td>Grund, Weg, Dauer</td><td>Warum? Wodurch? Wie lange? Tageszeit, Kanal, Tausch.</td><td>Gracias <b>por</b> tu ayuda. <i>Danke für deine Hilfe.</i><br>Camino <b>por</b> el parque. <i>Ich gehe durch den Park.</i><br><b>Por</b> la mañana. <i>Am Morgen.</i></td></tr>
+        <tr><th>para</th><td>Ziel, Zweck, Empfänger</td><td>Wozu? Für wen? Bis wann?</td><td>Estudio <b>para</b> viajar. <i>Ich lerne, um zu reisen.</i><br>Es <b>para</b> ti. <i>Es ist für dich.</i><br><b>Para</b> mañana. <i>Bis morgen.</i></td></tr>
+        <tr><th>desde / hasta</th><td>von … an / bis</td><td>Anfang und Ende in Zeit und Raum.</td><td>Trabajo <b>desde</b> las ocho <b>hasta</b> las cinco. <i>Ich arbeite von acht bis fünf.</i></td></tr>
+        <tr><th>sin</th><td>ohne</td><td>Mit Nomen oder Infinitiv.</td><td>Café <b>sin</b> azúcar. <i>Kaffee ohne Zucker.</i></td></tr>
+        <tr><th>sobre</th><td>über, auf</td><td>Thema oder Lage oben auf.</td><td>Un libro <b>sobre</b> España. <i>Ein Buch über Spanien.</i></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="sub" id="p-prepwann">Wann welche Präposition?</h3>
+    <div class="tips">
+      <div><b><span class="n">1</span>a oder en?</b><b>a</b> = wohin (Bewegung), <b>en</b> = wo (Ruhe). <i>Voy a casa</i> (ich gehe nach Hause), <i>Estoy en casa</i> (ich bin zu Hause).</div>
+      <div><b><span class="n">2</span>Das persönliche a</b>Vor einem bestimmten Menschen oder Haustier steht <i>a</i>: <i>Veo a Ana</i>, <i>Llamo a mi madre.</i> Vor Sachen nicht: <i>Veo la casa.</i></div>
+      <div><b><span class="n">3</span>de: Herkunft und Besitz</b><i>Soy de Suiza</i> (Herkunft), <i>la casa de Pedro</i> (Besitz), <i>una mesa de madera</i> (Material). Mit dem Artikel el wird es zu <b>del</b>, und a + el zu <b>al</b>: <i>Voy al banco.</i></div>
+      <div><b><span class="n">4</span>por oder para?</b><b>por</b> schaut zurück: Grund, Weg, Dauer (<i>por eso</i>, <i>por el parque</i>). <b>para</b> schaut nach vorn: Ziel, Zweck, Empfänger (<i>para viajar</i>, <i>para ti</i>).</div>
+      <div><b><span class="n">5</span>Feste Verbindungen</b>Viele Verben bringen ihre Präposition mit. Lerne sie gleich mit: <i>pensar en</i> (denken an), <i>soñar con</i> (träumen von), <i>empezar a</i> (anfangen zu), <i>acabar de</i> (gerade getan haben), <i>depender de</i> (abhängen von), <i>hablar de</i> (reden über). Sie stimmen oft nicht mit dem Deutschen überein.</div>
+    </div>
+
   </section>
 
   <!-- ===================== ZEITFORMEN (gemeinsam) ===================== -->
-  <section class="explain" aria-labelledby="zh">
-    <h2 id="zh">Die Zeitformen kurz erklärt</h2>
+  <section class="sec explain" id="secZeit" aria-labelledby="zh" hidden>
+    <div>
+      <h2 class="sech" id="zh">Die Zeitformen kurz erklärt</h2>
+      <p class="lead">Wann du welche Zeitform brauchst, mit Signalwörtern und Beispielen. Die Zeitformen in den Tabellen und Übungen verlinken hierher.</p>
+    </div>
+
+    <section class="quiz" id="sentQuizZ" aria-label="Person und Zeit erkennen"></section>
 
     <div class="ex" id="pres">
       <h3>Presente<small>Gegenwart</small></h3>
@@ -531,12 +605,22 @@ showReg("llegar");
 
 // Bereich wechseln
 const secs=document.getElementById("secs"),secReg=document.getElementById("secReg"),secIrr=document.getElementById("secIrr");
+const SECS={reg:"secReg",irr:"secIrr",satz:"secSatz",pron:"secPron",zeit:"secZeit"};
 function showSec(s){
   secs.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===s));
-  secReg.hidden=s!=="reg";secIrr.hidden=s!=="irr";document.getElementById("secSatz").hidden=s!=="satz";
-  // Zeitform-Filter und Legende gelten nur für die Verbtabellen
-  document.getElementById("tenses").hidden=s==="satz";document.getElementById("legend").hidden=s==="satz";
+  Object.entries(SECS).forEach(([k,id])=>document.getElementById(id).hidden=k!==s);
+  // Zeitform-Filter und Legende gelten nur für die Verbtabellen, Verdecken nicht für Pronomen und Zeitformen
+  const verb=s==="reg"||s==="irr",noCover=s==="pron"||s==="zeit";
+  document.getElementById("tenses").hidden=!verb;document.getElementById("legend").hidden=!verb;
+  document.getElementById("coverBtn").hidden=noCover;
+  document.getElementById("revealAll").hidden=noCover||!document.body.classList.contains("cover");
 }
+// Links auf Ziele in einem anderen Bereich (z.B. #fut) schalten zuerst den Bereich um
+function revealFor(id){
+  const t=id&&document.getElementById(id),sec=t&&t.closest(".wrap>section[id]");
+  if(sec&&sec.hidden){const k=Object.keys(SECS).find(k=>SECS[k]===sec.id);if(k)showSec(k);}
+}
+document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(a)revealFor(decodeURIComponent(a.getAttribute("href").slice(1)));});
 secs.querySelectorAll("button").forEach(b=>b.onclick=()=>showSec(b.dataset.s));
 
 // Zeitform-Filter
@@ -691,8 +775,9 @@ const WCAT=[
   ["la semana pasada","letzte Woche","La semana pasada estuve en Madrid.","Letzte Woche war ich in Madrid."],
   ["el año que viene","nächstes Jahr","El año que viene viajaré a México.","Nächstes Jahr werde ich nach Mexiko reisen."]]},
  {id:"or",name:"Ortswörter",short:"Ort",h:175,
-  note:"<b>en casa</b> = zu Hause (wo?), <b>a casa</b> = nach Hause (wohin?). Bei Bewegung steht <b>a</b>: Voy a Berna.",w:[
+  note:"<b>aquí</b> = hier (bei mir), <b>ahí</b> = da (bei dir oder in Reichweite), <b>allí</b> = dort (weit weg). <b>en casa</b> = zu Hause (wo?), <b>a casa</b> = nach Hause (wohin?). Bei Bewegung steht <b>a</b>: Voy a Berna.",w:[
   ["aquí","hier","Vivo aquí.","Ich wohne hier."],
+  ["ahí","da (bei dir)","Ahí está tu llave.","Da ist dein Schlüssel."],
   ["allí","dort","Allí está la estación.","Dort ist der Bahnhof."],
   ["cerca de","in der Nähe von","Vivo cerca de la estación.","Ich wohne in der Nähe des Bahnhofs."],
   ["lejos de","weit weg von","Zúrich está lejos de Madrid.","Zürich ist weit weg von Madrid."],
@@ -882,23 +967,23 @@ const SENT=[
  ["¿Cuándo vendréis a visitarnos?","vendréis","venir","4","fut","Wann werdet ihr uns besuchen kommen?","Unregelmässiger Futuro-Stamm: vendr-."]
 ].map(([s,v,inf,p,t,de,h])=>({s,v,inf,p:[...p].map(Number),t,de,h}));
 
-(function(){
+function buildSentQuiz(el){
   const PLAB=["yo","tú","él / ella / usted","nosotros","vosotros","ellos / ellas / ustedes"];
-  const el=document.getElementById("sentQuiz");
   el.innerHTML=`<h3>Person und Zeit erkennen</h3>
   <p class="subp" style="margin:0">Lies den Satz und bestimme Person und Zeitform des markierten Verbs.</p>
-  <div class="big" id="sline"></div>
-  <div class="qrow"><span class="optlbl">Person</span><div class="opts" id="sp"></div></div>
-  <div class="qrow"><span class="optlbl">Zeitform</span><div class="opts" id="st"></div></div>
-  <div class="qbtns"><button class="btn" type="button" id="scheck" disabled>Prüfen</button><button class="btn" type="button" id="snext">Nächster Satz</button></div>
-  <div class="fb" id="sfb" aria-live="polite"></div>
-  <div class="score" id="sscore">0 von 0 Sätzen ganz richtig</div>`;
-  const $=id=>el.querySelector("#"+id);
+  <div class="big" data-r="sline"></div>
+  <div class="qrow"><span class="optlbl">Person</span><div class="opts" data-r="sp"></div></div>
+  <div class="qrow"><span class="optlbl">Zeitform</span><div class="opts" data-r="st"></div></div>
+  <div class="qbtns"><button class="btn" type="button" data-r="scheck" disabled>Prüfen</button><button class="btn" type="button" data-r="snext" data-skip>Nächster Satz</button></div>
+  <div class="fb" data-r="sfb" aria-live="polite"></div>
+  <div class="score" data-r="sscore">0 von 0 Sätzen ganz richtig</div>`;
+  const $=id=>el.querySelector(`[data-r="${id}"]`);
+  const sel=loadSel("sentQuizSel",{t:TENSES.map(t=>t[0])});
   let deck=[],q,selP=null,selT=null,done=false,ok=0,tot=0;
   const mk=(box,items,onPick)=>{box.innerHTML="";items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed","false");
     b.onclick=()=>{if(done)return;box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));onPick(k);$("scheck").disabled=selP===null||selT===null;};box.appendChild(b);});};
   function next(){
-    if(!deck.length)deck=shuffle(SENT);q=deck.pop();selP=selT=null;done=false;
+    if(!deck.length)deck=shuffle(SENT.filter(x=>sel.t.includes(x.t)));q=deck.pop();selP=selT=null;done=false;
     $("sline").innerHTML=q.s.replace(wordRe(q.v),`$1<span class="hv">$2</span>`);
     mk($("sp"),PLAB.map((n,i)=>[String(i),n]),k=>selP=+k);
     mk($("st"),TENSES.map(t=>[t[0],t[1]]),k=>selT=k);
@@ -916,9 +1001,92 @@ const SENT=[
     $("sfb").innerHTML=`${head}<span><b>${q.v}</b> ← ${q.inf}: ${bd}. Person: <b>${q.p.map(i=>PLAB[i]).join(" oder ")}</b>, Zeitform: <b><a class="tl" href="#${q.t}">${tn}</a></b>.</span><span>${q.h}</span><span><i>${q.de}</i></span>`;
     $("sscore").textContent=`${ok} von ${tot} Sätzen ganz richtig`;$("scheck").disabled=true;
   };
-  $("snext").onclick=next;
+  $("snext").onclick=()=>{deck=deck.filter(x=>sel.t.includes(x.t));next();};
+  addPicks(el,"sentQuizSel",sel,[["Zeiten","t",tenseItems]]);
+  next();
+}
+buildSentQuiz(document.getElementById("sentQuizZ"));
+
+/* ===================== PRONOMEN & PRÄPOSITIONEN: TRAINING ===================== */
+// Eintrag: [Gruppe, Satz mit ___, Lösung, [3 falsche Optionen], Übersetzung, Hinweis]
+const PQ=[
+ ["pron","¿Ves a María? ___ veo todos los días.","La",["Lo","Le","Se"],"Siehst du María? Ich sehe sie jeden Tag.","Wen? Direktes Objekt, weiblich: la."],
+ ["pron","Este libro es muy bueno. ___ compro.","Lo",["La","Le","Los"],"Dieses Buch ist sehr gut. Ich kaufe es.","Was? Direktes Objekt, männlich: lo."],
+ ["pron","Tengo dos entradas. ___ compré ayer.","Las",["Los","La","Les"],"Ich habe zwei Eintrittskarten. Ich kaufte sie gestern.","entradas ist weiblich und Plural: las."],
+ ["pron","A Pedro ___ doy el regalo mañana.","le",["lo","se","les"],"Pedro gebe ich das Geschenk morgen.","Wem? Indirektes Objekt, Singular: le."],
+ ["pron","A mis padres ___ escribo cada semana.","les",["los","le","las"],"Meinen Eltern schreibe ich jede Woche.","Wem? Indirektes Objekt, Plural: les."],
+ ["pron","Mañana ___ llamo, ¿vale?","te",["tú","ti","me"],"Morgen rufe ich dich an, okay?","Wen? Direktes Objekt, du: te."],
+ ["pron","A mí ___ gusta el chocolate.","me",["yo","mí","lo"],"Ich mag Schokolade.","gustar: das Pronomen ist indirekt (mir gefällt)."],
+ ["pron","A nosotros ___ gustan los perros.","nos",["nosotros","os","les"],"Wir mögen Hunde.","gustar: nos. Das Verb richtet sich nach der Sache (gustan)."],
+ ["pron","Le doy el libro a Ana. = ___ lo doy.","Se",["Le","La","Les"],"Ich gebe es ihr.","le oder les wird vor lo, la, los, las zu se."],
+ ["pron","Ellos ___ levantan temprano.","se",["les","los","lo"],"Sie stehen früh auf.","Reflexiv, 3. Person: se."],
+ ["pron","Yo ___ llamo Pedro.","me",["lo","te","se"],"Ich heisse Pedro.","Reflexiv, 1. Person: me."],
+ ["pron","Vosotros ___ laváis las manos.","os",["nos","se","los"],"Ihr wascht euch die Hände.","Reflexiv, 2. Person Plural: os."],
+ ["pron","Quiero ___ ver mañana. (dich)","te",["tú","ti","le"],"Ich möchte dich morgen sehen.","Vor dem Verb oder angehängt: te quiero ver = quiero verte."],
+ ["pron","Ella ___ dijo la verdad. (mir)","me",["lo","le","se"],"Sie sagte mir die Wahrheit.","Wem? Indirektes Objekt, ich: me."],
+ ["pron","Este regalo es para ___.","mí",["me","yo","conmigo"],"Dieses Geschenk ist für mich.","Nach einer Präposition: mí."],
+ ["pron","Este regalo es para ___.","ti",["te","tú","contigo"],"Dieses Geschenk ist für dich.","Nach einer Präposition: ti."],
+ ["pron","¿Vienes ___ al cine? (mit mir)","conmigo",["con mí","con yo","me"],"Kommst du mit mir ins Kino?","con + mí wird zu conmigo."],
+ ["pron","Quiero ir al cine ___. (mit dir)","contigo",["con ti","con tú","te"],"Ich will mit dir ins Kino gehen.","con + ti wird zu contigo."],
+ ["pron","¿Quién habla español? ___ hablo.","Yo",["Me","Mí","Lo"],"Wer spricht Spanisch? Ich spreche es.","Das Subjekt wird zur Betonung genannt: yo."],
+ ["pron","Entre ___ y yo no hay secretos.","tú",["ti","te","contigo"],"Zwischen dir und mir gibt es keine Geheimnisse.","Ausnahme: nach entre steht das Subjekt tú."],
+ ["pron","No ___ veo desde ayer. (ihn, den Mann)","lo",["me","la","se"],"Ich sehe ihn seit gestern nicht.","no steht vor dem Pronomen: no lo veo."],
+ ["prep","Voy ___ Berna mañana.","a",["de","en","por"],"Ich gehe morgen nach Bern.","Bewegung auf ein Ziel zu: a."],
+ ["prep","Vivo ___ Zúrich.","en",["a","de","desde"],"Ich wohne in Zürich.","Ort ohne Bewegung: en."],
+ ["prep","Soy ___ Suiza.","de",["en","a","por"],"Ich komme aus der Schweiz.","Herkunft: de."],
+ ["prep","Veo ___ Ana en la calle.","a",["de","en","con"],"Ich sehe Ana auf der Strasse.","Persönliches a vor bestimmten Personen."],
+ ["prep","Llego ___ las ocho.","a",["en","de","por"],"Ich komme um acht an.","Uhrzeit: a las ocho."],
+ ["prep","Es el coche ___ mi padre. (Besitz)","de",["para","a","en"],"Das ist das Auto meines Vaters.","Besitz: de."],
+ ["prep","Este regalo es ___ ti.","para",["por","a","de"],"Das Geschenk ist für dich.","Empfänger: para."],
+ ["prep","Gracias ___ tu ayuda.","por",["para","de","a"],"Danke für deine Hilfe.","Grund: por."],
+ ["prep","Estudio español ___ viajar a México.","para",["por","a","en"],"Ich lerne Spanisch, um nach Mexiko zu reisen.","Zweck («um zu»): para."],
+ ["prep","Voy a Madrid ___ tren.","en",["por","con","a"],"Ich fahre mit dem Zug nach Madrid.","Verkehrsmittel: en."],
+ ["prep","Quiero un café ___ leche.","con",["de","en","para"],"Ich möchte einen Kaffee mit Milch.","mit: con."],
+ ["prep","Salgo ___ casa a las siete.","de",["en","a","por"],"Ich gehe um sieben aus dem Haus.","salir de: aus etwas heraus."],
+ ["prep","Hablo ___ mi amigo por teléfono.","con",["en","para","sobre"],"Ich spreche mit meinem Freund am Telefon.","mit jemandem sprechen: hablar con."],
+ ["prep","Estoy ___ casa.","en",["a","de","por"],"Ich bin zu Hause.","Wo? en casa."],
+ ["prep","Vuelvo ___ casa.","a",["en","de","por"],"Ich gehe nach Hause zurück.","Wohin? a casa."],
+ ["prep","Pienso ___ ti.","en",["a","de","por"],"Ich denke an dich.","Feste Verbindung: pensar en."],
+ ["prep","Anoche soñé ___ ti.","con",["de","en","a"],"Letzte Nacht träumte ich von dir.","Feste Verbindung: soñar con."],
+ ["prep","Empiezo ___ trabajar a las ocho.","a",["de","en","para"],"Ich fange um acht an zu arbeiten.","Feste Verbindung: empezar a + Infinitiv."],
+ ["prep","Acabo ___ llegar.","de",["a","en","por"],"Ich bin gerade angekommen.","Feste Verbindung: acabar de + Infinitiv."],
+ ["prep","Camino ___ el parque.","por",["para","a","en"],"Ich gehe durch den Park.","Weg: por."]
+];
+(function(){
+  const el=document.getElementById("pronQuiz");
+  el.innerHTML=`<h3>Pronomen und Präpositionen üben</h3>
+  <div class="qline"><span class="chip v pq-chip"></span><span class="big pq-line" style="flex-basis:100%"></span><span class="trans pq-de"></span></div>
+  <div class="opts pq-opts"></div>
+  <div class="res pq-res" aria-live="polite"></div>
+  <div class="fb pq-fb"></div>
+  <div class="qbtns"><button class="btn" type="button" data-skip>Nächste</button></div>
+  <div class="score pq-score">0 von 0 richtig</div>`;
+  const $=c=>el.querySelector("."+c);
+  const sel=loadSel("pronQuizSel",{c:["pron","prep"]});
+  let q=null,answered=false,ok=0,tot=0;
+  function next(){
+    const pool=PQ.filter(x=>sel.c.includes(x[0]));
+    let n;do{n=rnd(pool);}while(pool.length>1&&n===q);q=n;answered=false;
+    const pron=q[0]==="pron";
+    $("pq-chip").textContent=pron?"Pronomen":"Präposition";$("pq-chip").style.background=`hsl(${pron?280:175} var(--head-s) var(--head-l))`;
+    $("pq-line").innerHTML=q[1].replace("___",`<span class="gapb">___</span>`);$("pq-de").textContent=q[4];
+    $("pq-res").textContent="";$("pq-res").className="res pq-res";$("pq-fb").innerHTML="";
+    const box=$("pq-opts");box.innerHTML="";
+    shuffle([q[2],...q[3]]).forEach(o=>{const b=document.createElement("button");b.type="button";b.textContent=o;
+      b.onclick=()=>{if(answered)return;answered=true;tot++;const right=o===q[2];if(right)ok++;
+        box.querySelectorAll("button").forEach(x=>{if(x.textContent===q[2])x.classList.add("right");});if(!right)b.classList.add("wrong");
+        $("pq-res").textContent=right?"Richtig!":"Nicht ganz. Richtig ist: "+q[2];$("pq-res").className="res pq-res "+(right?"ok":"no");
+        $("pq-fb").innerHTML=`<span>${q[5]}</span>`;$("pq-score").textContent=`${ok} von ${tot} richtig`;
+        if(right)setTimeout(()=>{if(q===n&&answered)next();},1600);};
+      box.appendChild(b);});
+  }
+  el.querySelector("[data-skip]").onclick=next;
+  addPicks(el,"pronQuizSel",sel,[["Gruppen","c",[["pron","Pronomen"],["prep","Präpositionen"]]]]);
   next();
 })();
+
+// Direktlink (z.B. #fut) öffnet den passenden Bereich
+revealFor(decodeURIComponent(location.hash.slice(1)));
 </script>
 
 </body></html>
