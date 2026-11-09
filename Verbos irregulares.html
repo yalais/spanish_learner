@@ -86,6 +86,14 @@ body.cover .card td.shown::after{display:none}
 .res.warn b{text-decoration:underline}
 .res small{font-weight:400;color:var(--muted)}
 .score{color:var(--muted);font-size:14px}
+/* Lernstand (Lernkartei) */
+.prog{display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.prog .row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.prog .pbar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.prog .pbar span{display:block;height:100%;background:hsl(145 55% 38%);transition:width .3s}
+.prog .msg{color:hsl(145 55% 38%);font-weight:700}
+.prog button{font:inherit;font-size:13px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.prog button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:700}
 .pick{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
 .pick .lbl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;min-width:62px}
 .acc{display:flex;gap:6px;flex-wrap:wrap}
@@ -192,6 +200,9 @@ body.cover .card td.shown::after{display:none}
     <div class="seg" id="tenses" aria-label="Zeitform"></div>
     <button class="btn" id="coverBtn" aria-pressed="false">Formen verdecken</button>
     <button class="btn" id="revealAll" hidden>Alle aufdecken</button>
+    <button class="btn" id="lsExp" title="Lernstand als Datei speichern, z.B. in OneDrive">Lernstand sichern</button>
+    <button class="btn" id="lsImp" title="Gesicherten Lernstand aus einer Datei laden">Lernstand laden</button>
+    <input type="file" id="lsFile" accept=".json,application/json" hidden>
   </div>
 
   <div class="legend" id="legend">
@@ -651,7 +662,7 @@ const strip=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"");
 // Sonderzeichen in der richtigen Lösung hervorheben, die in der Eingabe fehlen
 const markAcc=(right,typed)=>[...right].map((c,i)=>c!==strip(c)&&[...typed][i]!==c?`<b>${c}</b>`:c).join("");
 const accMsg=(right,typed)=>"Richtig, aber Sonderzeichen fehlt: "+markAcc(right,typed);
-function buildQuiz(el,{title,ph,pick,filters}){
+function buildQuiz(el,{title,ph,pick,filters,deck}){
   el.innerHTML=`<h3>${title}</h3>${filters?`<div class="seg" aria-label="Gruppe"></div>`:""}<div class="qline"></div>
   <form class="qform" autocomplete="off"><input placeholder="${ph}" aria-label="Antwort" autocapitalize="off" spellcheck="false"><button class="btn" type="submit">Prüfen</button><button class="btn" type="button" data-skip>Nächste</button></form>
   <div class="acc" aria-label="Sonderzeichen">${[..."áéíóúñ"].map(c=>`<button type="button">${c}</button>`).join("")}</div>
@@ -661,16 +672,104 @@ function buildQuiz(el,{title,ph,pick,filters}){
   function next(){q=pick();qline.innerHTML=q.chips;inp.value="";res.textContent="";res.className="res";}
   el.querySelector("form").addEventListener("submit",e=>{e.preventDefault();if(!inp.value.trim())return;tot++;
     const a=norm(inp.value);
-    if(a===q.ans){ok++;res.innerHTML="Richtig: "+q.ans;res.className="res ok";setTimeout(next,1100);}
-    else if(strip(a)===strip(q.ans)){ok++;res.innerHTML=accMsg(q.ans,a);res.className="res warn";setTimeout(next,2200);}
-    else{res.innerHTML="Nicht ganz. Richtig ist: "+q.ans+(q.hint?` <small>(${q.hint})</small>`:"");res.className="res no";}
+    if(a===q.ans){ok++;deck?.result(true);res.innerHTML="Richtig: "+q.ans;res.className="res ok";setTimeout(next,1100);}
+    else if(strip(a)===strip(q.ans)){ok++;deck?.result(true);res.innerHTML=accMsg(q.ans,a);res.className="res warn";setTimeout(next,2200);}
+    else{deck?.result(false);res.innerHTML="Nicht ganz. Richtig ist: "+q.ans+(q.hint?` <small>(${q.hint})</small>`:"");res.className="res no";}
     score.textContent=`${ok} von ${tot} richtig`;});
   el.querySelector("[data-skip]").onclick=next;
   el.querySelectorAll(".acc button").forEach(b=>b.onclick=()=>{inp.value+=b.textContent;inp.focus();});
   if(filters){const fs=el.querySelector(".seg");filters.forEach(([k,n],j)=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",j===0);
-    b.onclick=()=>{fs.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));filters.onPick(k);next();};fs.appendChild(b);});}
+    b.onclick=()=>{fs.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));filters.onPick(k);el.resetDeck?.();next();};fs.appendChild(b);});}
+  deck?.mount(el);
   next();
 }
+
+
+/* ===================== LERNSTAND (Lernkartei) ===================== */
+// Jede Frage liegt in einem Fach: 0 = falsch, 1 = unsicher … 4 = sitzt. Noch nie gefragt = kein Eintrag.
+// Speicher-Schicht: heute im Browser. Für GitHub Pages + Datenbank später nur load/save ersetzen.
+const Store={
+  key:"lernstand",
+  load(){try{return JSON.parse(localStorage.getItem(this.key))||{};}catch(e){return {};}},
+  save(data){try{localStorage.setItem(this.key,JSON.stringify(data));}catch(e){}}
+};
+const LS=Store.load(); // {übung: {frage-id: fach}}
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+// Stapel für eine Übung. getPool() liefert die Fragen der aktuellen Auswahl, idOf() eine feste ID pro Frage.
+// Ablauf einer Runde: alle Fragen einmal (falsche und neue zuerst), Fehler kommen nach 3 bis 5 Fragen wieder
+// und müssen zweimal hintereinander richtig sein. Fragen, die sitzen (Fach 3 und 4), kommen nur noch ab und zu.
+function makeDeck(qid,getPool,idOf){
+  let queue=[],cur=null,reported=false,need={},done=0,total=0,onlyWeak=false,msg="",box=null;
+  const S=()=>LS[qid]||(LS[qid]={});
+  const fach=it=>S()[idOf(it)];
+  const insert=(it,pos)=>queue.splice(Math.min(pos,queue.length),0,it);
+  function build(){
+    const pool=getPool();
+    let pick=pool;
+    if(onlyWeak){pick=pool.filter(it=>fach(it)!==undefined&&fach(it)<=1);
+      if(!pick.length){onlyWeak=false;msg="Keine offenen Fehler. Es geht mit allen Fragen weiter.";pick=pool;}}
+    if(!onlyWeak){const keep=pick.filter(it=>{const b=fach(it);return b===undefined||b<3||Math.random()<(b===3?.5:.25);});if(keep.length)pick=keep;}
+    // Reihenfolge: falsch (0), neu, unsicher (1), dann 2, 3, 4. Innerhalb einer Gruppe gemischt.
+    const prio=it=>{const b=fach(it);return b===undefined?1:b===0?0:b+1;};
+    queue=shuffle(pick).sort((a,b)=>prio(a)-prio(b));
+    need={};done=0;total=queue.length;cur=null;
+  }
+  function next(){
+    if(cur&&!reported)queue.push(cur); // übersprungen: kommt am Ende der Runde nochmals
+    if(!queue.length){if(total)msg="Runde geschafft! Die neue Runde beginnt mit deinen Fehlern.";build();}
+    cur=queue.shift()||null;reported=false;render();return cur;
+  }
+  // Nur der erste Versuch pro Frage zählt
+  function result(ok){
+    if(reported||!cur)return;reported=true;msg="";
+    const id=idOf(cur),s=S(),b=s[id];
+    if(ok){
+      s[id]=b===undefined?2:Math.min(4,b+1);
+      if(need[id]){need[id]--;if(need[id])insert(cur,5+Math.floor(Math.random()*3));else done++;}
+      else done++;
+    }else{s[id]=0;need[id]=2;insert(cur,3+Math.floor(Math.random()*3));}
+    Store.save(LS);render();
+  }
+  function reset(){build();}
+  function render(){
+    if(!box)return;
+    const pool=getPool(),n=pool.length;let sitzt=0,schwach=0,neu=0;
+    pool.forEach(it=>{const b=fach(it);if(b===undefined)neu++;else if(b>=3)sitzt++;else if(b<=1)schwach++;});
+    const wdh=Object.values(need).filter(x=>x>0).length;
+    box.querySelector(".pbar span").style.width=(n?sitzt/n*100:0)+"%";
+    box.querySelector(".r1").textContent=`Runde: ${done} von ${total} geschafft`+(wdh?` · ${wdh} zum Wiederholen`:"");
+    box.querySelector(".r2").textContent=`Sitzt ${sitzt} · Unsicher ${schwach} · Neu ${neu} · Total ${n}`;
+    box.querySelector(".msg").textContent=msg;
+    box.querySelector("[data-weak]").setAttribute("aria-pressed",onlyWeak);
+  }
+  function mount(el){
+    box=document.createElement("div");box.className="prog";
+    box.innerHTML=`<div class="msg" aria-live="polite"></div><div class="pbar" title="Anteil, der sitzt"><span></span></div>
+    <div class="row"><span class="r1"></span></div><div class="row"><span class="r2"></span></div>
+    <div class="row"><button type="button" data-weak aria-pressed="false">Nur Fehler üben</button><button type="button" data-reset>Lernstand zurücksetzen</button></div>`;
+    const again=()=>el.querySelector("[data-skip]").click();
+    box.querySelector("[data-weak]").onclick=()=>{onlyWeak=!onlyWeak;msg="";build();again();};
+    box.querySelector("[data-reset]").onclick=()=>{if(!confirm("Lernstand dieser Übung wirklich zurücksetzen?"))return;
+      delete LS[qid];Store.save(LS);msg="";build();again();};
+    el.appendChild(box);el.resetDeck=()=>{msg="";build();};
+  }
+  return {next,result,reset,mount,render};
+}
+
+// Lernstand sichern und laden (JSON-Datei)
+document.getElementById("lsExp").onclick=()=>{
+  const blob=new Blob([JSON.stringify({version:1,datum:new Date().toISOString(),lernstand:LS},null,1)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`lernstand-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+const lsFile=document.getElementById("lsFile");
+document.getElementById("lsImp").onclick=()=>lsFile.click();
+lsFile.onchange=()=>{const f=lsFile.files[0];if(!f)return;
+  f.text().then(t=>{const d=JSON.parse(t);if(!d||typeof d.lernstand!=="object")throw 0;
+    if(!confirm("Den aktuellen Lernstand durch die Datei ersetzen?"))return;
+    Store.save(d.lernstand);location.reload();}).catch(()=>alert("Die Datei ist kein gültiger Lernstand."))
+  .finally(()=>lsFile.value="");};
 
 // Auswahl fürs Training (z.B. Verben, Zeitformen), im Browser gespeichert
 function loadSel(storeKey,def){
@@ -685,7 +784,7 @@ function addPicks(quiz,storeKey,sel,rows){
       b.onclick=()=>{const on=sel[key].includes(k);if(on&&sel[key].length===1)return; // mindestens eins bleibt aktiv
         sel[key]=on?sel[key].filter(x=>x!==k):[...sel[key],k];b.setAttribute("aria-pressed",!on);
         try{localStorage.setItem(storeKey,JSON.stringify(sel));}catch(e){}
-        quiz.querySelector("[data-skip]").click();};
+        quiz.resetDeck?.();quiz.querySelector("[data-skip]").click();};
       box.appendChild(b);});
     return row;};
   quiz.querySelector("h3").after(...rows.map(mkPick));
@@ -694,8 +793,11 @@ const tenseItems=TENSES.map(t=>[t[0],t[1]]);
 
 const irrSel=loadSel("irrQuizSel",{v:V.map(v=>v.inf),t:TENSES.map(t=>t[0])});
 const irrQuiz=document.getElementById("irrQuiz");
-buildQuiz(irrQuiz,{title:"Schnelltraining unregelmässig",ph:"Form eintippen, z.B. tuvimos",
-  pick(){const v=rnd(V.filter(v=>irrSel.v.includes(v.inf))),t=rnd(TENSES.filter(t=>irrSel.t.includes(t[0]))),i=Math.floor(Math.random()*6);
+const P6=[0,1,2,3,4,5];
+const formId=x=>`${x.v.inf}|${x.t[0]}|${x.i}`;
+const irrDeck=makeDeck("irr",()=>V.filter(v=>irrSel.v.includes(v.inf)).flatMap(v=>TENSES.filter(t=>irrSel.t.includes(t[0])).flatMap(t=>P6.map(i=>({v,t,i})))),formId);
+buildQuiz(irrQuiz,{title:"Schnelltraining unregelmässig",ph:"Form eintippen, z.B. tuvimos",deck:irrDeck,
+  pick(){const {v,t,i}=irrDeck.next();
     return {ans:v[t[0]][i],chips:chips(pronOf(i),v.inf,v.h,t[1])};}});
 addPicks(irrQuiz,"irrQuizSel",irrSel,[["Verben","v",V.map(v=>[v.inf,v.inf])],["Zeiten","t",tenseItems]]);
 
@@ -704,12 +806,15 @@ let grp="all";
 const regFilters=[["all","Alle 30"],["ar","-ar"],["er","-er"],["ir","-ir"],["sp","Schreibweise"]];
 regFilters.onPick=k=>grp=k;
 const regQuiz=document.getElementById("regQuiz");
-buildQuiz(regQuiz,{title:"Training: 30 regelmässige Verben",ph:"Form eintippen, z.B. hablamos",filters:regFilters,
+const regDeck=makeDeck("reg",()=>{
+  const pool=grp==="all"?R:grp==="sp"?R.filter(v=>v.spell):R.filter(v=>v.typ===grp);
+  // Im Modus Schreibweise nur die yo-Form im Indefinido abfragen (dort ändert sich die Schreibweise)
+  if(grp==="sp"&&regSel.t.includes("indef"))return pool.map(v=>({v,t:TENSES[1],i:0}));
+  return pool.flatMap(v=>TENSES.filter(t=>regSel.t.includes(t[0])).flatMap(t=>P6.map(i=>({v,t,i}))));
+},formId);
+buildQuiz(regQuiz,{title:"Training: 30 regelmässige Verben",ph:"Form eintippen, z.B. hablamos",filters:regFilters,deck:regDeck,
   pick(){
-    const pool=grp==="all"?R:grp==="sp"?R.filter(v=>v.spell):R.filter(v=>v.typ===grp);
-    const v=rnd(pool);let t=rnd(TENSES.filter(t=>regSel.t.includes(t[0]))),i=Math.floor(Math.random()*6);
-    // Im Modus Schreibweise meistens die yo-Form im Indefinido abfragen
-    if(grp==="sp"&&regSel.t.includes("indef")&&Math.random()<.7){t=TENSES[1];i=0;}
+    const {v,t,i}=regDeck.next();
     const p=rparts(v.inf,t[0],i);
     const hint=p.sp?`${p.stem} + ${p.sp} + ${p.end}, Schreibweise ${v.spell[1]}`:`${p.stem} + ${p.end}`;
     return {ans:p.full,hint,chips:chips(pronOf(i),v.inf,v.h,t[1])+`<span class="chip" style="font-size:14px;color:var(--muted)">${v.de}</span>`};
@@ -864,7 +969,6 @@ WCAT.forEach(c=>{
 });
 
 // Wörter üben
-const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 (function(){
   const el=document.getElementById("wordQuiz");
   el.innerHTML=`<h3>Wörter üben</h3>
@@ -881,15 +985,15 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
   const form=$("wqf"),inp=form.querySelector("input"),opts=$("wqo"),res=$("wqr"),fx=$("wqx"),acc=$("wqa");
   const wSel=loadSel("wordQuizSel",{c:WCAT.map(c=>c.id)});
   let mode="de",w=null,answered=false,ok=0,tot=0;
+  const wDeck=makeDeck("word",()=>{const pool=WALL.filter(x=>wSel.c.includes(x.cid));return mode==="gap"?pool.filter(x=>x.gap):pool;},x=>`${mode}|${x.cid}|${x.es}`);
   const mkSeg=(box,items,get,set)=>items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",k===get());
     b.onclick=()=>{set(k);box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));next();};box.appendChild(b);});
-  mkSeg($("wqm"),[["de","Deutsch → Spanisch"],["es","Spanisch → Deutsch"],["gap","Lückensatz"]],()=>mode,k=>mode=k);
+  mkSeg($("wqm"),[["de","Deutsch → Spanisch"],["es","Spanisch → Deutsch"],["gap","Lückensatz"]],()=>mode,k=>{mode=k;wDeck.reset();});
   const catChip=w=>`<span class="chip v" style="background:hsl(${w.h} var(--head-s) var(--head-l))">${w.cname}</span>`;
   function score(){$("wqs").textContent=`${ok} von ${tot} richtig`;}
   function showEx(){fx.innerHTML=`<span><b>${w.exH}</b> <i>${w.exde}</i></span>`;}
   function next(){
-    let pool=WALL.filter(x=>wSel.c.includes(x.cid));if(mode==="gap")pool=pool.filter(x=>x.gap);
-    let n;do{n=rnd(pool);}while(pool.length>1&&n===w);w=n;answered=false;
+    w=wDeck.next();answered=false;
     res.textContent="";res.className="res";fx.innerHTML="";inp.value="";
     const typed=mode==="de";form.hidden=!typed;acc.hidden=!typed;opts.hidden=typed;
     if(mode==="de"){$("wql").innerHTML=catChip(w)+`<span class="chip per">${w.de}</span>`;}
@@ -901,7 +1005,7 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
       const dis=shuffle(WALL.filter(x=>x.cid===w.cid&&x!==w&&(!w.grp||x.grp!==w.grp))).filter(x=>{const k=key(x);if(seen.has(k))return false;seen.add(k);return true;}).slice(0,3);
       opts.innerHTML="";
       shuffle([w,...dis]).forEach(x=>{const b=document.createElement("button");b.type="button";b.textContent=key(x);b.dataset.ok=x===w?"1":"";
-        b.onclick=()=>{if(answered)return;answered=true;tot++;const right=x===w;if(right)ok++;
+        b.onclick=()=>{if(answered)return;answered=true;tot++;const right=x===w;if(right)ok++;wDeck.result(right);
           opts.querySelectorAll("button").forEach(o=>{if(o.dataset.ok)o.classList.add("right");});if(!right)b.classList.add("wrong");
           res.textContent=right?"Richtig!":"Nicht ganz. Richtig ist: "+key(w);res.className="res "+(right?"ok":"no");
           showEx();score();if(right)setTimeout(next,1400);};
@@ -910,14 +1014,15 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
   }
   form.addEventListener("submit",e=>{e.preventDefault();const a=norm(inp.value);if(!a||answered)return;tot++;
     const syn=w.grp&&WALL.find(x=>x!==w&&x.grp===w.grp&&x.alts.includes(a));
-    if(w.alts.includes(a)){ok++;answered=true;res.textContent="Richtig: "+w.es;res.className="res ok";showEx();setTimeout(next,1400);}
-    else if(syn){ok++;answered=true;res.innerHTML=`Auch richtig. Gesucht war: ${w.es}`;res.className="res ok";showEx();}
-    else if(w.alts.some(x=>strip(x)===strip(a))){ok++;answered=true;res.innerHTML=accMsg(w.alts.find(x=>strip(x)===strip(a)),a);res.className="res warn";showEx();setTimeout(next,2200);}
-    else{res.textContent="Nicht ganz. Richtig ist: "+w.es;res.className="res no";showEx();}
+    if(w.alts.includes(a)){ok++;answered=true;wDeck.result(true);res.textContent="Richtig: "+w.es;res.className="res ok";showEx();setTimeout(next,1400);}
+    else if(syn){ok++;answered=true;wDeck.result(true);res.innerHTML=`Auch richtig. Gesucht war: ${w.es}`;res.className="res ok";showEx();}
+    else if(w.alts.some(x=>strip(x)===strip(a))){ok++;answered=true;wDeck.result(true);res.innerHTML=accMsg(w.alts.find(x=>strip(x)===strip(a)),a);res.className="res warn";showEx();setTimeout(next,2200);}
+    else{wDeck.result(false);res.textContent="Nicht ganz. Richtig ist: "+w.es;res.className="res no";showEx();}
     score();});
   acc.querySelectorAll("button").forEach(b=>b.onclick=()=>{inp.value+=b.textContent;inp.focus();});
   $("wqn").onclick=next;
   addPicks(el,"wordQuizSel",wSel,[["Gruppen","c",WCAT.map(c=>[c.id,c.short])]]);
+  wDeck.mount(el);
   next();
 })();
 
@@ -979,11 +1084,12 @@ function buildSentQuiz(el){
   <div class="score" data-r="sscore">0 von 0 Sätzen ganz richtig</div>`;
   const $=id=>el.querySelector(`[data-r="${id}"]`);
   const sel=loadSel("sentQuizSel",{t:TENSES.map(t=>t[0])});
-  let deck=[],q,selP=null,selT=null,done=false,ok=0,tot=0;
+  let q,selP=null,selT=null,done=false,ok=0,tot=0;
+  const sDeck=makeDeck("sent",()=>SENT.filter(x=>sel.t.includes(x.t)),x=>x.s);
   const mk=(box,items,onPick)=>{box.innerHTML="";items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed","false");
     b.onclick=()=>{if(done)return;box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));onPick(k);$("scheck").disabled=selP===null||selT===null;};box.appendChild(b);});};
   function next(){
-    if(!deck.length)deck=shuffle(SENT.filter(x=>sel.t.includes(x.t)));q=deck.pop();selP=selT=null;done=false;
+    q=sDeck.next();selP=selT=null;done=false;
     $("sline").innerHTML=q.s.replace(wordRe(q.v),`$1<span class="hv">$2</span>`);
     mk($("sp"),PLAB.map((n,i)=>[String(i),n]),k=>selP=+k);
     mk($("st"),TENSES.map(t=>[t[0],t[1]]),k=>selT=k);
@@ -991,7 +1097,7 @@ function buildSentQuiz(el){
   }
   $("scheck").onclick=()=>{
     if(done||selP===null||selT===null)return;done=true;tot++;
-    const pOk=q.p.includes(selP),tOk=q.t===selT;if(pOk&&tOk)ok++;
+    const pOk=q.p.includes(selP),tOk=q.t===selT;if(pOk&&tOk)ok++;sDeck.result(pOk&&tOk);
     $("sp").querySelectorAll("button").forEach(b=>{const k=+b.dataset.k;if(q.p.includes(k))b.classList.add("right");else if(k===selP)b.classList.add("wrong");b.setAttribute("aria-pressed","false");});
     $("st").querySelectorAll("button").forEach(b=>{if(b.dataset.k===q.t)b.classList.add("right");else if(b.dataset.k===selT)b.classList.add("wrong");b.setAttribute("aria-pressed","false");});
     const r=rparts(q.inf,q.t,q.p[0]);
@@ -1001,8 +1107,9 @@ function buildSentQuiz(el){
     $("sfb").innerHTML=`${head}<span><b>${q.v}</b> ← ${q.inf}: ${bd}. Person: <b>${q.p.map(i=>PLAB[i]).join(" oder ")}</b>, Zeitform: <b><a class="tl" href="#${q.t}">${tn}</a></b>.</span><span>${q.h}</span><span><i>${q.de}</i></span>`;
     $("sscore").textContent=`${ok} von ${tot} Sätzen ganz richtig`;$("scheck").disabled=true;
   };
-  $("snext").onclick=()=>{deck=deck.filter(x=>sel.t.includes(x.t));next();};
+  $("snext").onclick=next;
   addPicks(el,"sentQuizSel",sel,[["Zeiten","t",tenseItems]]);
+  sDeck.mount(el);
   next();
 }
 buildSentQuiz(document.getElementById("sentQuizZ"));
@@ -1064,16 +1171,16 @@ const PQ=[
   const $=c=>el.querySelector("."+c);
   const sel=loadSel("pronQuizSel",{c:["pron","prep"]});
   let q=null,answered=false,ok=0,tot=0;
+  const pDeck=makeDeck("pron",()=>PQ.filter(x=>sel.c.includes(x[0])),x=>`${x[1]}|${x[2]}`);
   function next(){
-    const pool=PQ.filter(x=>sel.c.includes(x[0]));
-    let n;do{n=rnd(pool);}while(pool.length>1&&n===q);q=n;answered=false;
+    const n=pDeck.next();q=n;answered=false;
     const pron=q[0]==="pron";
     $("pq-chip").textContent=pron?"Pronomen":"Präposition";$("pq-chip").style.background=`hsl(${pron?280:175} var(--head-s) var(--head-l))`;
     $("pq-line").innerHTML=q[1].replace("___",`<span class="gapb">___</span>`);$("pq-de").textContent=q[4];
     $("pq-res").textContent="";$("pq-res").className="res pq-res";$("pq-fb").innerHTML="";
     const box=$("pq-opts");box.innerHTML="";
     shuffle([q[2],...q[3]]).forEach(o=>{const b=document.createElement("button");b.type="button";b.textContent=o;
-      b.onclick=()=>{if(answered)return;answered=true;tot++;const right=o===q[2];if(right)ok++;
+      b.onclick=()=>{if(answered)return;answered=true;tot++;const right=o===q[2];if(right)ok++;pDeck.result(right);
         box.querySelectorAll("button").forEach(x=>{if(x.textContent===q[2])x.classList.add("right");});if(!right)b.classList.add("wrong");
         $("pq-res").textContent=right?"Richtig!":"Nicht ganz. Richtig ist: "+q[2];$("pq-res").className="res pq-res "+(right?"ok":"no");
         $("pq-fb").innerHTML=`<span>${q[5]}</span>`;$("pq-score").textContent=`${ok} von ${tot} richtig`;
@@ -1082,6 +1189,7 @@ const PQ=[
   }
   el.querySelector("[data-skip]").onclick=next;
   addPicks(el,"pronQuizSel",sel,[["Gruppen","c",[["pron","Pronomen"],["prep","Präpositionen"]]]]);
+  pDeck.mount(el);
   next();
 })();
 
