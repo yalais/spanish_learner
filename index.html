@@ -216,7 +216,7 @@ body.cover .card td.shown::after{display:none}
   <div class="bar" id="bar" role="toolbar" aria-label="Ansicht">
     <button class="btn" id="barToggle" aria-expanded="true" aria-controls="bar" title="Menü ein- oder ausklappen"><span class="chev" aria-hidden="true">▾</span><span id="barLabel">Menü</span></button>
     <div class="seg" id="secs" aria-label="Bereich">
-      <button data-s="reg" aria-pressed="true">Regelmässig (30)</button>
+      <button data-s="reg" aria-pressed="true">Regelmässig (50)</button>
       <button data-s="irr" aria-pressed="false">Unregelmässig (10)</button>
       <button data-s="satz" aria-pressed="false">Satzbau &amp; Wörter</button>
       <button data-s="pron" aria-pressed="false">Pronomen &amp; Präpositionen</button>
@@ -264,6 +264,7 @@ body.cover .card td.shown::after{display:none}
     </div>
 
     <section class="quiz" id="regQuiz" aria-label="Training regelmässige Verben"></section>
+    <section class="quiz" id="infQuiz" aria-label="Grundform üben"></section>
 
     <div class="tips">
       <div><b><span class="n">1</span>Stamm finden</b>Infinitiv ohne die letzten zwei Buchstaben: habl<i>ar</i> → <b style="display:inline;font-family:inherit;font-size:inherit">habl-</b>, com<i>er</i> → com-, viv<i>ir</i> → viv-.</div>
@@ -308,7 +309,7 @@ body.cover .card td.shown::after{display:none}
       <p>Alle anderen Formen bleiben normal: buscaste, buscó, buscamos …</p>
     </div>
 
-    <h3 class="sub">Die 30 wichtigsten regelmässigen Verben</h3>
+    <h3 class="sub">Die 50 wichtigsten regelmässigen Verben</h3>
     <p class="subp">Tippe auf ein Verb, um alle Formen zu sehen. Verben mit Schreibweise-Änderung sind markiert.</p>
     <div class="rlist" id="rlist"></div>
     <div class="grid" id="rdetail"></div>
@@ -555,6 +556,19 @@ const RV=[
  ["buscar","suchen","Busqué las llaves.","Ich suchte die Schlüssel."],
  ["pagar","bezahlen","Pagué la cuenta.","Ich bezahlte die Rechnung."],
  ["organizar","organisieren","Organicé la fiesta.","Ich organisierte das Fest."],
+ ["entrar","hineingehen, eintreten","Entramos en el museo.","Wir gehen ins Museum hinein."],
+ ["usar","benutzen","¿Usas mucho el móvil?","Benutzt du das Handy oft?"],
+ ["dejar","lassen, verlassen","Dejé el paraguas en el tren.","Ich liess den Regenschirm im Zug liegen."],
+ ["pasar","verbringen, vorbeigehen, passieren","¿Qué pasó?","Was ist passiert?"],
+ ["terminar","beenden, aufhören","Termino a las cinco.","Ich höre um fünf auf."],
+ ["cambiar","ändern, wechseln","Cambié de trabajo.","Ich wechselte die Stelle."],
+ ["ganar","verdienen, gewinnen","Ganamos el partido.","Wir gewannen das Spiel."],
+ ["olvidar","vergessen","No olvides la llave.","Vergiss den Schlüssel nicht."],
+ ["enseñar","unterrichten, zeigen","Mi madre enseña inglés.","Meine Mutter unterrichtet Englisch."],
+ ["visitar","besuchen","Visitaremos a los abuelos.","Wir werden die Grosseltern besuchen."],
+ ["cocinar","kochen","Cocino pasta esta noche.","Ich koche heute Abend Pasta."],
+ ["practicar","üben","Practiqué el vocabulario.","Ich übte die Wörter."],
+ ["explicar","erklären","Expliqué el problema.","Ich erklärte das Problem."],
  ["comer","essen","Comemos a las doce.","Wir essen um zwölf."],
  ["beber","trinken","No bebo café.","Ich trinke keinen Kaffee."],
  ["aprender","lernen","Estoy aprendiendo español.","Ich lerne gerade Spanisch."],
@@ -562,11 +576,18 @@ const RV=[
  ["vender","verkaufen","Vendieron la casa.","Sie verkauften das Haus."],
  ["correr","rennen, laufen","Corro cada mañana.","Ich laufe jeden Morgen."],
  ["deber","sollen, schulden","Debes descansar.","Du solltest dich ausruhen."],
+ ["responder","antworten","No respondió a mi pregunta.","Er antwortete nicht auf meine Frage."],
+ ["prometer","versprechen","Te lo prometo.","Ich verspreche es dir."],
+ ["meter","hineinlegen, stecken","Metí la ropa en la maleta.","Ich legte die Kleider in den Koffer."],
  ["vivir","leben, wohnen","Vivo en Suiza.","Ich wohne in der Schweiz."],
  ["recibir","erhalten","Recibí tu mensaje.","Ich erhielt deine Nachricht."],
  ["decidir","entscheiden","Decidimos quedarnos.","Wir entschieden zu bleiben."],
  ["subir","hinaufgehen, steigen","Subimos a la montaña.","Wir stiegen auf den Berg."],
- ["compartir","teilen","Compartimos un piso.","Wir teilen eine Wohnung."]
+ ["compartir","teilen","Compartimos un piso.","Wir teilen eine Wohnung."],
+ ["permitir","erlauben","No permiten fumar aquí.","Hier darf man nicht rauchen."],
+ ["asistir","teilnehmen, besuchen","Asistimos a la reunión.","Wir nahmen an der Sitzung teil."],
+ ["discutir","diskutieren, streiten","Discutimos el plan.","Wir besprachen den Plan."],
+ ["añadir","hinzufügen","Añade un poco de sal.","Füge ein wenig Salz hinzu."]
 ];
 const R=RV.map(([inf,de,ex,exde])=>{const typ=inf.slice(-2);return {inf,de,ex,exde,typ,h:HUE[typ],spell:SPELL[inf.slice(-3)]};});
 
@@ -637,7 +658,7 @@ V.forEach(v=>grid.appendChild(irrCard(v)));
 const models=document.getElementById("regModels");
 ["hablar","comer","vivir"].forEach(n=>models.appendChild(regCard(R.find(v=>v.inf===n))));
 
-// Liste der 30 Verben
+// Liste der 50 Verben
 const rlist=document.getElementById("rlist"),rdetail=document.getElementById("rdetail");
 [["ar","-ar"],["er","-er"],["ir","-ir"]].forEach(([typ,name])=>{
   const vs=R.filter(v=>v.typ===typ);
@@ -934,7 +955,7 @@ addPicks(irrQuiz,"irrQuizSel",irrSel,[["Verben","v",V.map(v=>[v.inf,v.inf])],["Z
 
 const regSel=loadSel("regQuizSel",{t:TENSES.map(t=>t[0])});
 let grp="all";
-const regFilters=[["all","Alle 30"],["ar","-ar"],["er","-er"],["ir","-ir"],["sp","Schreibweise"]];
+const regFilters=[["all","Alle 50"],["ar","-ar"],["er","-er"],["ir","-ir"],["sp","Schreibweise"]];
 regFilters.onPick=k=>grp=k;
 const regQuiz=document.getElementById("regQuiz");
 const regDeck=makeDeck("reg",()=>{
@@ -943,7 +964,7 @@ const regDeck=makeDeck("reg",()=>{
   if(grp==="sp"&&regSel.t.includes("indef"))return pool.map(v=>({v,t:TENSES[1],i:0}));
   return pool.flatMap(v=>TENSES.filter(t=>regSel.t.includes(t[0])).flatMap(t=>P6.map(i=>({v,t,i}))));
 },formId);
-buildQuiz(regQuiz,{title:"Training: 30 regelmässige Verben",ph:"Form eintippen, z.B. hablamos",filters:regFilters,deck:regDeck,
+buildQuiz(regQuiz,{title:"Training: 50 regelmässige Verben",ph:"Form eintippen, z.B. hablamos",filters:regFilters,deck:regDeck,
   pick(){
     const {v,t,i}=regDeck.next();
     const p=rparts(v.inf,t[0],i);
@@ -951,6 +972,65 @@ buildQuiz(regQuiz,{title:"Training: 30 regelmässige Verben",ph:"Form eintippen,
     return {ans:p.full,hint,chips:chips(pronOf(i),v.inf,v.h,t[1])+`<span class="chip" style="font-size:14px;color:var(--muted)">${v.de}</span>`};
   }});
 addPicks(regQuiz,"regQuizSel",regSel,[["Zeiten","t",tenseItems]]);
+
+/* Grundform üben: Infinitiv ↔ Bedeutung der 50 regelmässigen Verben */
+(()=>{
+  const el=document.getElementById("infQuiz");
+  el.innerHTML=`<h3>Grundform üben: 50 regelmässige Verben</h3>
+  <div class="seg" data-mode aria-label="Übungsart"></div>
+  <div class="qline"></div>
+  <form class="qform" autocomplete="off"><input aria-label="Antwort" placeholder="Infinitiv eintippen, z.B. hablar" autocapitalize="off" spellcheck="false"><button class="btn" type="submit">Prüfen</button></form>
+  <div class="acc" aria-label="Sonderzeichen">${[..."áéíóúñ"].map(c=>`<button type="button">${c}</button>`).join("")}</div>
+  <div class="opts"></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="fb"></div>
+  <div class="qbtns"><button class="btn" type="button" data-skip>Nächste</button></div>
+  <div class="score">0 von 0 richtig</div>`;
+  const q=c=>el.querySelector(c);
+  const form=q(".qform"),inp=q(".qform input"),acc=q(".acc"),opts=q(".opts"),res=q(".res"),fb=q(".fb"),qline=q(".qline"),sc=q(".score");
+  const sel=loadSel("infQuizSel",{g:["ar","er","ir"]});
+  const WAIT=5600,WAIT_ACC=8800;
+  const means=v=>v.de.split(", ");
+  const same=(a,b)=>means(a).some(m=>means(b).includes(m)); // gleiche Bedeutung, z.B. tomar/beber = trinken
+  let mode="de",v=null,answered=false,ok=0,tot=0,timer=0;
+  const later=ms=>{clearTimeout(timer);timer=setTimeout(next,ms);};
+  const deck=makeDeck("inf",()=>R.filter(x=>sel.g.includes(x.typ)),x=>`${mode}|${x.inf}`);
+  q("[data-mode]").append(...[["de","Deutsch → Spanisch"],["es","Spanisch → Deutsch"]].map(([k,n])=>{
+    const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",k===mode);
+    b.onclick=()=>{mode=k;q("[data-mode]").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));deck.reset();next();};return b;}));
+  const score=()=>sc.textContent=`${ok} von ${tot} richtig`;
+  const showEx=()=>fb.innerHTML=`<span><b>${v.inf}</b> · ${v.de}<br><i>${v.ex}</i> ${v.exde}</span>`;
+  function next(){
+    clearTimeout(timer);timer=0;
+    v=deck.next();answered=false;
+    res.textContent="";res.className="res";fb.innerHTML="";inp.value="";
+    const typed=mode==="de";form.hidden=!typed;acc.hidden=!typed;opts.hidden=typed;
+    qline.innerHTML=`<span class="chip v" style="background:hsl(${typed?280:v.h} var(--head-s) var(--head-l))">Grundform</span><span class="chip per">${typed?v.de:v.inf}</span>`;
+    if(typed){inp.focus({preventScroll:true});return;}
+    opts.innerHTML="";
+    const dis=shuffle(R.filter(x=>x!==v&&!same(x,v))).slice(0,3);
+    shuffle([v,...dis]).forEach(x=>{const b=document.createElement("button");b.type="button";b.textContent=x.de;b.dataset.ok=x===v?"1":"";
+      b.onclick=()=>{if(answered)return;answered=true;tot++;const right=x===v;if(right)ok++;deck.result(right);
+        opts.querySelectorAll("button").forEach(o=>{if(o.dataset.ok)o.classList.add("right");});if(!right)b.classList.add("wrong");
+        res.textContent=right?"Richtig!":"Nicht ganz. Richtig ist: "+v.de;res.className="res "+(right?"ok":"no");
+        showEx();score();if(right)later(WAIT);};
+      opts.appendChild(b);});
+  }
+  form.addEventListener("submit",e=>{e.preventDefault();if(answered){next();return;}const a=norm(inp.value);if(!a)return;tot++;
+    const syn=R.find(x=>x!==v&&x.inf===a&&same(x,v));
+    if(a===v.inf){ok++;answered=true;deck.result(true);res.textContent="Richtig: "+v.inf;res.className="res ok";showEx();later(WAIT);}
+    else if(syn){ok++;answered=true;deck.result(true);res.textContent=`Auch richtig. Gesucht war: ${v.inf}`;res.className="res ok";showEx();}
+    else if(strip(a)===strip(v.inf)){ok++;answered=true;deck.result(true);res.innerHTML=accMsg(v.inf,a);res.className="res warn";showEx();later(WAIT_ACC);}
+    else{deck.result(false);res.textContent="Nicht ganz. Richtig ist: "+v.inf;res.className="res no";showEx();}
+    score();});
+  acc.querySelectorAll("button").forEach(b=>b.onclick=()=>{inp.value+=b.textContent;inp.focus();});
+  q("[data-skip]").onclick=next;
+  document.addEventListener("keydown",e=>{if(e.key!=="Enter"||!answered||e.target===inp||!el.offsetParent)return;
+    const t=e.target;if(t!==document.body&&!el.contains(t))return;e.preventDefault();next();});
+  addPicks(el,"infQuizSel",sel,[["Gruppen","g",[["ar","-ar"],["er","-er"],["ir","-ir"]]]]);
+  deck.mount(el);
+  next();
+})();
 
 /* ===================== SATZBAU & WÖRTER ===================== */
 // Eintrag: [Spanisch, Deutsch, Beispiel, Übersetzung, Gruppe]. Gleiche Gruppe = ähnliche Bedeutung (gilt als Synonym, nie als falsche Auswahl).
