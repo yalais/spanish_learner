@@ -1113,7 +1113,9 @@ WCAT.forEach(c=>{
   const $=id=>el.querySelector("#"+id);
   const form=$("wqf"),inp=form.querySelector("input"),opts=$("wqo"),res=$("wqr"),fx=$("wqx"),acc=$("wqa");
   const wSel=loadSel("wordQuizSel",{c:WCAT.map(c=>c.id)});
-  let mode="de",w=null,answered=false,ok=0,tot=0;
+  let mode="de",w=null,answered=false,ok=0,tot=0,timer=0;
+  const WAIT=2800,WAIT_ACC=4400; // Wartezeit nach richtiger Antwort (ms), Zeit zum Lesen des Beispielsatzes
+  const later=ms=>{clearTimeout(timer);timer=setTimeout(next,ms);};
   const wDeck=makeDeck("word",()=>{const pool=WALL.filter(x=>wSel.c.includes(x.cid));return mode==="gap"?pool.filter(x=>x.gap):pool;},x=>`${mode}|${x.cid}|${x.es}`);
   const mkSeg=(box,items,get,set)=>items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",k===get());
     b.onclick=()=>{set(k);box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));next();};box.appendChild(b);});
@@ -1122,6 +1124,7 @@ WCAT.forEach(c=>{
   function score(){$("wqs").textContent=`${ok} von ${tot} richtig`;}
   function showEx(){fx.innerHTML=`<span><b>${w.exH}</b> <i>${w.exde}</i></span>`;}
   function next(){
+    clearTimeout(timer);timer=0;
     w=wDeck.next();answered=false;
     res.textContent="";res.className="res";fx.innerHTML="";inp.value="";
     const typed=mode==="de";form.hidden=!typed;acc.hidden=!typed;opts.hidden=typed;
@@ -1137,19 +1140,22 @@ WCAT.forEach(c=>{
         b.onclick=()=>{if(answered)return;answered=true;tot++;const right=x===w;if(right)ok++;wDeck.result(right);
           opts.querySelectorAll("button").forEach(o=>{if(o.dataset.ok)o.classList.add("right");});if(!right)b.classList.add("wrong");
           res.textContent=right?"Richtig!":"Nicht ganz. Richtig ist: "+key(w);res.className="res "+(right?"ok":"no");
-          showEx();score();if(right)setTimeout(next,1400);};
+          showEx();score();if(right)later(WAIT);};
         opts.appendChild(b);});
     }else inp.focus({preventScroll:true});
   }
-  form.addEventListener("submit",e=>{e.preventDefault();const a=norm(inp.value);if(!a||answered)return;tot++;
+  form.addEventListener("submit",e=>{e.preventDefault();if(answered){next();return;}const a=norm(inp.value);if(!a)return;tot++;
     const syn=w.grp&&WALL.find(x=>x!==w&&x.grp===w.grp&&x.alts.includes(a));
-    if(w.alts.includes(a)){ok++;answered=true;wDeck.result(true);res.textContent="Richtig: "+w.es;res.className="res ok";showEx();setTimeout(next,1400);}
+    if(w.alts.includes(a)){ok++;answered=true;wDeck.result(true);res.textContent="Richtig: "+w.es;res.className="res ok";showEx();later(WAIT);}
     else if(syn){ok++;answered=true;wDeck.result(true);res.innerHTML=`Auch richtig. Gesucht war: ${w.es}`;res.className="res ok";showEx();}
-    else if(w.alts.some(x=>strip(x)===strip(a))){ok++;answered=true;wDeck.result(true);res.innerHTML=accMsg(w.alts.find(x=>strip(x)===strip(a)),a);res.className="res warn";showEx();setTimeout(next,2200);}
+    else if(w.alts.some(x=>strip(x)===strip(a))){ok++;answered=true;wDeck.result(true);res.innerHTML=accMsg(w.alts.find(x=>strip(x)===strip(a)),a);res.className="res warn";showEx();later(WAIT_ACC);}
     else{wDeck.result(false);res.textContent="Nicht ganz. Richtig ist: "+w.es;res.className="res no";showEx();}
     score();});
   acc.querySelectorAll("button").forEach(b=>b.onclick=()=>{inp.value+=b.textContent;inp.focus();});
   $("wqn").onclick=next;
+  // Enter nach beantworteter Frage: sofort weiter (auch bei Auswahl-Buttons)
+  document.addEventListener("keydown",e=>{if(e.key!=="Enter"||!answered||e.target===inp||!el.offsetParent)return;
+    const t=e.target;if(t!==document.body&&!el.contains(t))return;e.preventDefault();next();});
   addPicks(el,"wordQuizSel",wSel,[["Gruppen","c",WCAT.map(c=>[c.id,c.short])]]);
   wDeck.mount(el);
   next();
