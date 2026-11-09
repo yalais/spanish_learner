@@ -1,4 +1,11 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3b3486">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Verbos">
+</head><body>
 <title>Spanische Verben</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -181,6 +188,16 @@ body.cover .card td.shown::after{display:none}
 .mini td,.mini th{padding:4px 14px 4px 0;border:0;font-size:15px;color:var(--fg);text-align:left}
 .mini th{font-weight:700;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
 .top{font-size:14px;color:var(--accent)}
+#syncDlg{max-width:min(520px,calc(100vw - 32px));border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg);padding:20px}
+#syncDlg::backdrop{background:rgb(0 0 0/.35)}
+#syncDlg h3{margin:0 0 8px;font-family:var(--display)}
+#syncDlg p{margin:0 0 12px;color:var(--muted);font-size:14px}
+#syncDlg label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);margin-bottom:12px}
+#syncDlg input{font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+#syncDlg .row{display:flex;flex-wrap:wrap;gap:8px}
+#syncDlg .syncState{color:var(--fg);font-weight:700}
+#syncBtn[data-s="ok"]{border-color:hsl(145 55% 38%);color:hsl(145 55% 38%)}
+#syncBtn[data-s="err"]{border-color:hsl(0 65% 50%);color:hsl(0 65% 50%)}
 </style>
 
 <div class="wrap" id="top">
@@ -203,7 +220,23 @@ body.cover .card td.shown::after{display:none}
     <button class="btn" id="lsExp" title="Lernstand als Datei speichern, z.B. in OneDrive">Lernstand sichern</button>
     <button class="btn" id="lsImp" title="Gesicherten Lernstand aus einer Datei laden">Lernstand laden</button>
     <input type="file" id="lsFile" accept=".json,application/json" hidden>
+    <button class="btn" id="syncBtn" title="Lernstand zwischen Geräten abgleichen">Sync: aus</button>
   </div>
+
+  <dialog id="syncDlg">
+    <form method="dialog">
+      <h3>Lernstand synchronisieren</h3>
+      <p>Der Lernstand wird in einem geheimen GitHub Gist gespeichert und mit allen Geräten abgeglichen, auf denen du das gleiche Token und die gleiche Gist-ID einträgst.</p>
+      <label>GitHub Token (nur Berechtigung „Gists“)<input id="syncToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>
+      <label>Gist-ID (leer lassen, um einen neuen Gist anzulegen)<input id="syncGist" autocomplete="off" spellcheck="false" placeholder="z.B. 3f2a…"></label>
+      <p class="syncState" id="syncState" aria-live="polite"></p>
+      <div class="row">
+        <button class="btn" value="save" id="syncSave">Speichern &amp; synchronisieren</button>
+        <button class="btn" value="off" id="syncOff" formnovalidate>Sync ausschalten</button>
+        <button class="btn" value="cancel" formnovalidate>Schliessen</button>
+      </div>
+    </form>
+  </dialog>
 
   <div class="legend" id="legend">
     <span><b><a class="tl" href="#pres">Presente</a></b> Gegenwart</span>
@@ -687,13 +720,91 @@ function buildQuiz(el,{title,ph,pick,filters,deck}){
 
 /* ===================== LERNSTAND (Lernkartei) ===================== */
 // Jede Frage liegt in einem Fach: 0 = falsch, 1 = unsicher … 4 = sitzt. Noch nie gefragt = kein Eintrag.
-// Speicher-Schicht: heute im Browser. Für GitHub Pages + Datenbank später nur load/save ersetzen.
+// LS ist die Sicht für die Übungen: {übung: {frage-id: fach}}.
+// Gespeichert wird zusätzlich, wann jeder Eintrag zuletzt geändert wurde. So können zwei Geräte ihren
+// Stand zusammenführen: pro Frage gewinnt der neuere Eintrag, Zurücksetzen löscht ältere Einträge.
+//   {v:2, d:{übung:{frage-id:[fach, zeit]}}, r:{übung: zeit des letzten Zurücksetzens}}
+// Immer zuerst im Browser (localStorage), bei eingeschaltetem Sync zusätzlich in einem GitHub Gist.
+const LS={};
 const Store={
   key:"lernstand",
-  load(){try{return JSON.parse(localStorage.getItem(this.key))||{};}catch(e){return {};}},
-  save(data){try{localStorage.setItem(this.key,JSON.stringify(data));}catch(e){}}
+  data:{v:2,d:{},r:{}},
+  parse(x,now){ // alter Stand (nur Fächer, ohne Zeit) wird übernommen
+    if(x&&x.v===2&&x.d)return {v:2,d:x.d,r:x.r||{}};
+    const d={};if(x&&typeof x==="object")for(const q in x){d[q]={};for(const id in x[q])d[q][id]=[x[q][id],now];}
+    return {v:2,d,r:{}};
+  },
+  load(){let x=null;try{x=JSON.parse(localStorage.getItem(this.key));}catch(e){}
+    this.data=this.parse(x,Date.now());if(x&&x.v!==2)this.persist();this.apply();},
+  persist(){try{localStorage.setItem(this.key,JSON.stringify(this.data));}catch(e){}},
+  apply(){for(const q in LS)delete LS[q];
+    for(const q in this.data.d){LS[q]={};for(const id in this.data.d[q])LS[q][id]=this.data.d[q][id][0];}},
+  set(q,id,fach){(this.data.d[q]||(this.data.d[q]={}))[id]=[fach,Date.now()];this.persist();Sync.soon();},
+  reset(q){delete this.data.d[q];this.data.r[q]=Date.now();this.persist();Sync.soon();},
+  replace(ls){ // Datei laden: ersetzt den Stand, auch auf den anderen Geräten
+    const now=Date.now(),r={};
+    for(const q of new Set([...Object.keys(this.data.d),...Object.keys(this.data.r),...Object.keys(ls)]))r[q]=now;
+    this.data=this.parse(ls,now+1);this.data.r=r;this.persist();}
 };
-const LS=Store.load(); // {übung: {frage-id: fach}}
+function mergeStand(a,b){
+  const r={...a.r};for(const q in b.r)r[q]=Math.max(r[q]||0,b.r[q]);
+  const d={};
+  for(const src of [a.d,b.d])for(const q in src)for(const id in src[q]){
+    const e=src[q][id];if(!Array.isArray(e)||e[1]<=(r[q]||0))continue;
+    const cur=d[q]?.[id];if(!cur||e[1]>cur[1])(d[q]||(d[q]={}))[id]=e;}
+  return {v:2,d,r};
+}
+const canon=o=>JSON.stringify(o,(k,v)=>v&&typeof v==="object"&&!Array.isArray(v)?Object.fromEntries(Object.entries(v).sort()):v);
+
+// Sync über einen geheimen GitHub Gist. Token und Gist-ID liegen nur im Browser dieses Geräts.
+const Sync={
+  file:"lernstand.json",decks:[],timer:0,running:null,again:false,msg:"Sync ist ausgeschaltet.",ok:false,
+  cfg(){try{return JSON.parse(localStorage.getItem("sync"))||null;}catch(e){return null;}},
+  setCfg(c){try{c?localStorage.setItem("sync",JSON.stringify(c)):localStorage.removeItem("sync");}catch(e){}},
+  status(s,text,msg){const b=document.getElementById("syncBtn");b.dataset.s=s;b.textContent="Sync: "+text;
+    if(msg)this.msg=msg;b.title=this.msg;const st=document.getElementById("syncState");if(st)st.textContent=this.msg;},
+  async api(path,opt={}){
+    const r=await fetch("https://api.github.com"+path,{...opt,cache:"no-store",
+      headers:{Authorization:"Bearer "+this.cfg().token,Accept:"application/vnd.github+json","Content-Type":"application/json"}});
+    if(!r.ok)throw new Error(r.status===401?"Das Token ist ungültig oder abgelaufen.":r.status===404?"Gist nicht gefunden (Gist-ID oder Token-Berechtigung prüfen).":r.status===403?"Dem Token fehlt die Berechtigung „Gists: Read and write“.":"GitHub meldet Fehler "+r.status+".");
+    return r.json();
+  },
+  async create(){
+    const g=await this.api("/gists",{method:"POST",body:JSON.stringify({description:"Lernstand Spanische Verben",public:false,
+      files:{[this.file]:{content:JSON.stringify(Store.data)}}})});
+    return g.id;
+  },
+  soon(){if(!this.cfg())return;clearTimeout(this.timer);this.timer=setTimeout(()=>this.run(),4000);},
+  run(){ // nie zwei Abgleiche gleichzeitig; Änderungen währenddessen lösen einen weiteren aus
+    const c=this.cfg();
+    if(!c||!c.gist){this.status("off","aus","Sync ist ausgeschaltet.");return Promise.resolve();}
+    if(this.running){this.again=true;return this.running;}
+    clearTimeout(this.timer);this.timer=0;
+    this.running=this._run().finally(()=>{this.running=null;if(this.again){this.again=false;this.run();}});
+    return this.running;
+  },
+  async _run(){
+    this.ok=false;
+    if(!navigator.onLine){this.status("off","offline","Offline. Der Lernstand wird abgeglichen, sobald wieder Netz da ist.");return;}
+    this.status("busy","läuft …");
+    try{
+      const g=await this.api("/gists/"+this.cfg().gist),f=g.files?.[this.file];
+      let remote={v:2,d:{},r:{}};
+      if(f){const txt=f.truncated?await fetch(f.raw_url,{cache:"no-store"}).then(r=>r.text()):f.content;
+        try{remote=Store.parse(JSON.parse(txt),0);}catch(e){}}
+      const merged=mergeStand(Store.data,remote);
+      if(canon(merged)!==canon(Store.data)){Store.data=merged;Store.persist();Store.apply();this.decks.forEach(d=>d.render());}
+      if(canon(merged)!==canon(remote))
+        await this.api("/gists/"+this.cfg().gist,{method:"PATCH",body:JSON.stringify({files:{[this.file]:{content:JSON.stringify(merged)}}})});
+      this.ok=true;
+      const t=new Date().toLocaleTimeString("de-CH",{hour:"2-digit",minute:"2-digit"});
+      this.status("ok","✓ "+t,"Zuletzt abgeglichen um "+t+".");
+    }catch(e){
+      this.status("err","Fehler",e instanceof TypeError?"Keine Verbindung zu GitHub.":e.message);
+    }
+  }
+};
+Store.load();
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 
 // Stapel für eine Übung. getPool() liefert die Fragen der aktuellen Auswahl, idOf() eine feste ID pro Frage.
@@ -729,7 +840,7 @@ function makeDeck(qid,getPool,idOf){
       if(need[id]){need[id]--;if(need[id])insert(cur,5+Math.floor(Math.random()*3));else done++;}
       else done++;
     }else{s[id]=0;need[id]=2;insert(cur,3+Math.floor(Math.random()*3));}
-    Store.save(LS);render();
+    Store.set(qid,id,s[id]);render();
   }
   function reset(){build();}
   function render(){
@@ -751,10 +862,12 @@ function makeDeck(qid,getPool,idOf){
     const again=()=>el.querySelector("[data-skip]").click();
     box.querySelector("[data-weak]").onclick=()=>{onlyWeak=!onlyWeak;msg="";build();again();};
     box.querySelector("[data-reset]").onclick=()=>{if(!confirm("Lernstand dieser Übung wirklich zurücksetzen?"))return;
-      delete LS[qid];Store.save(LS);msg="";build();again();};
+      delete LS[qid];Store.reset(qid);msg="";build();again();};
     el.appendChild(box);el.resetDeck=()=>{msg="";build();};
   }
-  return {next,result,reset,mount,render};
+  const deck={next,result,reset,mount,render};
+  Sync.decks.push(deck);
+  return deck;
 }
 
 // Lernstand sichern und laden (JSON-Datei)
@@ -768,7 +881,7 @@ document.getElementById("lsImp").onclick=()=>lsFile.click();
 lsFile.onchange=()=>{const f=lsFile.files[0];if(!f)return;
   f.text().then(t=>{const d=JSON.parse(t);if(!d||typeof d.lernstand!=="object")throw 0;
     if(!confirm("Den aktuellen Lernstand durch die Datei ersetzen?"))return;
-    Store.save(d.lernstand);location.reload();}).catch(()=>alert("Die Datei ist kein gültiger Lernstand."))
+    Store.replace(d.lernstand);Sync.run().finally(()=>location.reload());}).catch(()=>alert("Die Datei ist kein gültiger Lernstand."))
   .finally(()=>lsFile.value="");};
 
 // Auswahl fürs Training (z.B. Verben, Zeitformen), im Browser gespeichert
@@ -1195,6 +1308,35 @@ const PQ=[
 
 // Direktlink (z.B. #fut) öffnet den passenden Bereich
 revealFor(decodeURIComponent(location.hash.slice(1)));
+
+// Sync-Einstellungen
+(()=>{
+  const dlg=document.getElementById("syncDlg"),tok=document.getElementById("syncToken"),gist=document.getElementById("syncGist");
+  const say=t=>document.getElementById("syncState").textContent=t;
+  document.getElementById("syncBtn").onclick=()=>{const c=Sync.cfg()||{};tok.value=c.token||"";gist.value=c.gist||"";say(Sync.msg);dlg.showModal();};
+  document.getElementById("syncOff").onclick=()=>{Sync.setCfg(null);Sync.run();};
+  document.getElementById("syncSave").onclick=async e=>{
+    e.preventDefault();
+    const token=tok.value.trim(),id=gist.value.trim().replace(/^.*\//,""); // ganze Gist-URL geht auch
+    if(!token){say("Bitte zuerst ein Token eintragen.");tok.focus();return;}
+    Sync.setCfg({token,gist:id});
+    if(!id){
+      say("Lege neuen Gist an …");
+      try{const nid=await Sync.create();Sync.setCfg({token,gist:nid});gist.value=nid;}
+      catch(err){Sync.setCfg(null);say(err instanceof TypeError?"Keine Verbindung zu GitHub.":err.message);return;}
+    }else gist.value=id;
+    await Sync.run();
+    if(Sync.ok)say(`Verbunden. ${Sync.msg} Auf weiteren Geräten das gleiche Token und diese Gist-ID eintragen: ${Sync.cfg().gist}`);
+  };
+})();
+// Abgleich beim Start, beim Zurückkehren zur App, wenn das Netz zurück ist und vor dem Verlassen
+Sync.run();
+document.addEventListener("visibilitychange",()=>Sync.run());
+addEventListener("online",()=>Sync.run());
+addEventListener("pagehide",()=>{if(Sync.timer)Sync.run();});
+
+// Offline-Nutzung: Service Worker speichert die App auf dem Gerät (nur über http/https, nicht als lokale Datei)
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 
 </body></html>
