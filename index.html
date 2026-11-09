@@ -35,6 +35,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .seg button,.btn{font:inherit;font-size:14px;border:0;background:transparent;color:var(--fg);padding:7px 12px;border-radius:7px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg);font-weight:700}
 #secs{border-color:var(--accent)}
+#barToggle{font-weight:700;display:inline-flex;align-items:center;gap:6px}
+#barToggle .chev{display:inline-block;transition:transform .15s}
+.bar.collapsed{padding-block:6px}
+.bar.collapsed>:not(#barToggle){display:none!important}
+.bar.collapsed #barToggle .chev{transform:rotate(-90deg)}
 #secs button{font-weight:700}
 .btn{border:1px solid var(--line);background:var(--surface)}
 .btn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:700}
@@ -206,7 +211,8 @@ body.cover .card td.shown::after{display:none}
     <p class="lead">Zuerst der Bauplan der regelmässigen Verben, dann die zehn wichtigsten Ausnahmen, dazu Satzbau, die wichtigsten kleinen Wörter, Pronomen und Präpositionen sowie die Zeitformen kurz erklärt. Zeilen sind die Personen, Spalten die Zeitformen.</p>
   </div>
 
-  <div class="bar" role="toolbar" aria-label="Ansicht">
+  <div class="bar" id="bar" role="toolbar" aria-label="Ansicht">
+    <button class="btn" id="barToggle" aria-expanded="true" aria-controls="bar" title="Menü ein- oder ausklappen"><span class="chev" aria-hidden="true">▾</span><span id="barLabel">Menü</span></button>
     <div class="seg" id="secs" aria-label="Bereich">
       <button data-s="reg" aria-pressed="true">Regelmässig (30)</button>
       <button data-s="irr" aria-pressed="false">Unregelmässig (10)</button>
@@ -666,6 +672,16 @@ function revealFor(id){
 }
 document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(a)revealFor(decodeURIComponent(a.getAttribute("href").slice(1)));});
 secs.querySelectorAll("button").forEach(b=>b.onclick=()=>showSec(b.dataset.s));
+
+// Menüleiste ein-/ausklappen (mehr Platz auf dem Handy). Eingeklappt bleibt nur dieser Knopf mit dem aktuellen Bereich.
+const bar=document.getElementById("bar"),barT=document.getElementById("barToggle"),barL=document.getElementById("barLabel");
+function setBar(open){
+  bar.classList.toggle("collapsed",!open);barT.setAttribute("aria-expanded",open);
+  barL.textContent=open?"Menü":secs.querySelector('[aria-pressed="true"]').textContent;
+  try{localStorage.setItem("barOpen",open?"1":"0");}catch(e){}
+}
+barT.onclick=()=>setBar(bar.classList.contains("collapsed"));
+{let o=null;try{o=localStorage.getItem("barOpen");}catch(e){}setBar(o!=="0");}
 
 // Zeitform-Filter
 const seg=document.getElementById("tenses");
