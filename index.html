@@ -802,18 +802,32 @@ const Sync={
   setCfg(c){try{c?localStorage.setItem("sync",JSON.stringify(c)):localStorage.removeItem("sync");}catch(e){}},
   status(s,text,msg){const b=document.getElementById("syncBtn");b.dataset.s=s;b.textContent="Sync: "+text;
     if(msg)this.msg=msg;b.title=this.msg;const st=document.getElementById("syncState");if(st)st.textContent=this.msg;},
+  // Bei Rate Limit pausiert der Sync bis zu diesem Zeitpunkt (ms). Überlebt ein Neuladen, damit GitHub nicht weiter angefragt wird.
+  pauseUntil(){try{return +localStorage.getItem("syncPause")||0;}catch(e){return 0;}},
+  setPause(t){try{t?localStorage.setItem("syncPause",String(t)):localStorage.removeItem("syncPause");}catch(e){}},
   async api(path,opt={}){
     const r=await fetch("https://api.github.com"+path,{...opt,cache:"no-store",
       headers:{Authorization:"Bearer "+this.cfg().token,Accept:"application/vnd.github+json","Content-Type":"application/json"}});
-    if(!r.ok)throw new Error(r.status===401?"Das Token ist ungültig oder abgelaufen.":r.status===404?"Gist nicht gefunden (Gist-ID oder Token-Berechtigung prüfen).":r.status===403?"Dem Token fehlt die Berechtigung „Gists: Read and write“.":"GitHub meldet Fehler "+r.status+".");
-    return r.json();
+    if(r.ok)return r.json();
+    let ghMsg="";try{ghMsg=(await r.json()).message||"";}catch(e){}
+    const retry=+r.headers.get("retry-after"),remaining=r.headers.get("x-ratelimit-remaining"),reset=+r.headers.get("x-ratelimit-reset");
+    if((r.status===403||r.status===429)&&(/rate limit/i.test(ghMsg)||retry||remaining==="0")){
+      // GitHub empfiehlt: retry-after beachten, sonst bis x-ratelimit-reset, sonst mindestens einige Minuten warten
+      const until=retry?Date.now()+retry*1000:remaining==="0"&&reset?reset*1000:Date.now()+15*60*1000;
+      const e=new Error("GitHub-Rate-Limit erreicht.");e.until=until;throw e;
+    }
+    throw new Error(r.status===401?"Das Token ist ungültig oder abgelaufen.":r.status===404?"Gist nicht gefunden (Gist-ID oder Token-Berechtigung prüfen).":
+      r.status===403?"GitHub verweigert den Zugriff"+(ghMsg?": „"+ghMsg+"“":"")+". Prüfe beim Token „Gists: Read and write“.":
+      "GitHub meldet Fehler "+r.status+(ghMsg?": „"+ghMsg+"“":"")+".");
   },
   async create(){
     const g=await this.api("/gists",{method:"POST",body:JSON.stringify({description:"Lernstand Spanische Verben",public:false,
       files:{[this.file]:{content:JSON.stringify(Store.data)}}})});
     return g.id;
   },
-  soon(){if(!this.cfg())return;clearTimeout(this.timer);this.timer=setTimeout(()=>this.run(),4000);},
+  // Erst 30 s nach der letzten Antwort abgleichen, damit beim Üben nicht jede Antwort einen Schreibzugriff auslöst.
+  // Beim Verlassen oder Wegwechseln der App wird ein ausstehender Abgleich sofort ausgeführt.
+  soon(){if(!this.cfg())return;clearTimeout(this.timer);this.timer=setTimeout(()=>this.run(),30000);},
   run(){ // nie zwei Abgleiche gleichzeitig; Änderungen währenddessen lösen einen weiteren aus
     const c=this.cfg();
     if(!c||!c.gist){this.status("off","aus","Sync ist ausgeschaltet.");return Promise.resolve();}
@@ -825,6 +839,9 @@ const Sync={
   async _run(){
     this.ok=false;
     if(!navigator.onLine){this.status("off","offline","Offline. Der Lernstand wird abgeglichen, sobald wieder Netz da ist.");return;}
+    const pause=this.pauseUntil();
+    if(pause>Date.now()){this.waitUntil(pause);return;}
+    this.setPause(0);
     this.status("busy","läuft …");
     try{
       const g=await this.api("/gists/"+this.cfg().gist),f=g.files?.[this.file];
@@ -839,8 +856,15 @@ const Sync={
       const t=new Date().toLocaleTimeString("de-CH",{hour:"2-digit",minute:"2-digit"});
       this.status("ok","✓ "+t,"Zuletzt abgeglichen um "+t+".");
     }catch(e){
+      if(e.until){this.setPause(e.until);this.waitUntil(e.until);return;}
       this.status("err","Fehler",e instanceof TypeError?"Keine Verbindung zu GitHub.":e.message);
     }
+  },
+  // Rate Limit: anzeigen, bis wann pausiert wird, und danach automatisch einmal neu abgleichen
+  waitUntil(t){
+    const hm=new Date(t).toLocaleTimeString("de-CH",{hour:"2-digit",minute:"2-digit"});
+    this.status("err","Pause bis "+hm,"GitHub hat zu viele Anfragen gemeldet (Rate Limit). Der Lernstand ist lokal gespeichert und wird ab "+hm+" automatisch abgeglichen.");
+    clearTimeout(this.timer);this.timer=setTimeout(()=>{this.timer=0;this.run();},Math.max(t-Date.now(),0)+2000);
   }
 };
 Store.load();
@@ -1435,7 +1459,8 @@ revealFor(decodeURIComponent(location.hash.slice(1)));
 })();
 // Abgleich beim Start, beim Zurückkehren zur App, wenn das Netz zurück ist und vor dem Verlassen
 Sync.run();
-document.addEventListener("visibilitychange",()=>Sync.run());
+// Beim Wegwechseln nur abgleichen, wenn noch etwas aussteht; beim Zurückkehren immer
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"||Sync.timer)Sync.run();});
 addEventListener("online",()=>Sync.run());
 addEventListener("pagehide",()=>{if(Sync.timer)Sync.run();});
 
