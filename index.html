@@ -1516,6 +1516,7 @@ const PQ=[
 //  gap        [Wort im Chunk, [3 falsche Optionen]] für den Lückensatz
 //  re         [Wer, was die Person sagt, Übersetzung, [3 unpassende Reaktionen]] für «Reagieren».
 //             Ohne «was die Person sagt» ist die Übersetzung eine Situation, auf die man reagiert.
+//  alt        weitere richtige Schreibweisen für «Schreiben» (z.B. weibliche Form)
 //  syn        gleiche Zahl = ähnliche Bedeutung, wird nie als falsche Auswahl gezeigt
 // Neue Themen (Tienda, Taxi, Novenas …) brauchen nur einen weiteren Eintrag hier.
 const CHUNKS=[{id:"dia",name:"Mi día",groups:[
@@ -1523,7 +1524,7 @@ const CHUNKS=[{id:"dia",name:"Mi día",groups:[
   {es:"Me fue bien, gracias.",de:"Es lief gut, danke.",ex:"—¿Cómo le fue hoy? —Me fue bien, gracias.",exde:"«Wie war Ihr Tag?» «Es lief gut, danke.»",
    g:["indef","<b>me fue</b> = es ging mir. Indefinido von <i>ir</i>, mit <i>me</i> wie bei gustar."],
    gap:["fue",["fui","fueron","es"]],re:["La mamá","¿Cómo le fue hoy?","Wie war Ihr Tag?",["¡Qué pena con usted!","¿Y eso?","A la orden."]]},
-  {es:"Estoy un poco cansado.",de:"Ich bin ein bisschen müde.",ex:"Estoy un poco cansado, hoy trabajé mucho.",exde:"Ich bin ein bisschen müde, heute habe ich viel gearbeitet.",
+  {es:"Estoy un poco cansado.",alt:["Estoy un poco cansada."],de:"Ich bin ein bisschen müde.",ex:"Estoy un poco cansado, hoy trabajé mucho.",exde:"Ich bin ein bisschen müde, heute habe ich viel gearbeitet.",
    co:"Als Frau: <i>cansada</i>. Liebevoll sagt man auch <i>cansadito</i>.",
    gap:["Estoy",["Soy","Está","Estás"]],re:["La abuela","Mijo, lo veo como cansadito.","Mein Lieber, Sie sehen etwas müde aus.",["¡Qué bueno!","Con mucho gusto.","¡Uy, qué rico!"]]},
   {es:"Hoy trabajé desde la casa.",de:"Heute habe ich von zu Hause aus gearbeitet.",ex:"Hoy trabajé desde la casa, no fui a la oficina.",exde:"Heute habe ich von zu Hause aus gearbeitet, ich war nicht im Büro.",
@@ -1650,7 +1651,7 @@ box.innerHTML=`<div class="dlghead"><span>${d.title}</span><button class="btn" t
 const tb=box.querySelector(".dlghead button");
 tb.onclick=()=>{const on=tb.getAttribute("aria-pressed")!=="true";tb.setAttribute("aria-pressed",on);box.classList.toggle("nde",!on);};}
 
-// Chunks üben: vier Übungsarten mit gemeinsamem Lernstand
+// Chunks üben: fünf Übungsarten mit gemeinsamem Lernstand
 (function(){
   const el=document.getElementById("chunkQuiz");
   el.innerHTML=`<h3>Chunks üben</h3>
@@ -1658,14 +1659,17 @@ tb.onclick=()=>{const on=tb.getAttribute("aria-pressed")!=="true";tb.setAttribut
   <div class="qline"></div>
   <div class="opts copts"></div>
   <div class="bau" hidden><div class="bau-ans" aria-label="Dein Satz"></div><div class="bau-pool" aria-label="Wörter"></div></div>
+  <form class="qform cw" autocomplete="off" hidden><input aria-label="Antwort" placeholder="Ganzen Chunk auf Spanisch schreiben" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="btn" type="submit">Prüfen</button><button class="btn" type="button" data-hint>Tipp</button></form>
+  <div class="acc cw-acc" aria-label="Sonderzeichen" hidden>${[..."áéíóúñ¿¡"].map(c=>`<button type="button">${c}</button>`).join("")}</div>
   <div class="res" aria-live="polite"></div>
   <div class="fb"></div>
   <div class="qbtns"><button class="btn" type="button" data-skip>Nächste</button></div>
   <div class="score">0 von 0 richtig</div>`;
   const q=c=>el.querySelector(c);
   const qline=q(".qline"),opts=q(".copts"),bau=q(".bau"),ans=q(".bau-ans"),pool=q(".bau-pool"),res=q(".res"),fb=q(".fb"),sc=q(".score");
+  const form=q(".cw"),inp=q(".cw input"),acc=q(".cw-acc");
   const sel=loadSel("chunkQuizSel",{g:CGROUPS.map(g=>g[0])});
-  const MODES=[["de","Deutsch → Spanisch"],["gap","Lückensatz"],["re","Reagieren"],["bau","Satz bauen"]];
+  const MODES=[["de","Deutsch → Spanisch"],["gap","Lückensatz"],["re","Reagieren"],["bau","Satz bauen"],["write","Schreiben"]];
   let mode="de";try{const m=localStorage.getItem("chunkMode");if(MODES.some(x=>x[0]===m))mode=m;}catch(e){}
   let c=null,src=null,answered=false,ok=0,tot=0,timer=0;
   const WAIT=4800;
@@ -1699,11 +1703,39 @@ tb.onclick=()=>{const on=tb.getAttribute("aria-pressed")!=="true";tb.setAttribut
     ans.querySelectorAll(".tile").forEach(b=>b.classList.add(right?"right":"wrong"));
     finish(right,src.s);
   }
+  // Schreiben: Gross-/Kleinschreibung und Satzzeichen zählen nicht. Fehlende Akzente und ein einzelner Tippfehler
+  // (bei längeren Chunks) gelten als richtig, werden aber angezeigt. Ein Chunk mit gleicher Bedeutung (syn) gilt auch.
+  const esc=s=>s.replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch]);
+  const words=s=>s.toLowerCase().normalize("NFC").replace(/[¿?¡!.,:;«»—…"']/g," ").split(/\s+/).filter(Boolean);
+  const lev=(a,b)=>{let p=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){const r=[i];
+    for(let j=1;j<=b.length;j++)r[j]=Math.min(p[j]+1,r[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=r;}return p[b.length];};
+  const markWords=(right,typed)=>{const have=new Set(words(typed));
+    return right.split(" ").map(w=>{const k=words(w)[0];return k&&!have.has(k)?`<b>${w}</b>`:w;}).join(" ");};
+  function checkWrite(){
+    const a=words(inp.value).join(" ");if(!a)return;
+    const goal=[c.es,...(c.alt||[])],keys=goal.map(g=>words(g).join(" "));
+    const syn=c.syn&&CALL.find(x=>x!==c&&x.syn===c.syn&&strip(words(x.es).join(" "))===strip(a));
+    const typo=keys.find(k=>k.length>=12&&lev(strip(k),strip(a))===1);
+    let right=true,warn="";
+    if(keys.includes(a)){}
+    else if(syn)warn=`Auch richtig. Gesucht war: ${c.es}`;
+    else if(keys.some(k=>strip(k)===strip(a))){const k=keys.find(k=>strip(k)===strip(a));warn="Richtig, aber Akzent fehlt: "+markAcc(k,a);}
+    else if(typo)warn=`Fast perfekt, kleiner Tippfehler. Richtig ist: ${c.es}`;
+    else right=false;
+    answered=true;tot++;if(right)ok++;deck.result(right);
+    if(right){res.innerHTML=warn||"Richtig: "+c.es;res.className="res "+(warn&&!syn?"warn":"ok");later(warn?WAIT+3000:WAIT);}
+    else{res.innerHTML=`Nicht ganz. Richtig ist: ${markWords(c.es,inp.value)} <small>(du: ${esc(inp.value.trim())})</small>`;res.className="res no";}
+    showFb();score();
+  }
+  form.addEventListener("submit",e=>{e.preventDefault();if(answered){next();return;}checkWrite();});
+  acc.querySelectorAll("button").forEach(b=>b.onclick=()=>{inp.value+=b.textContent;inp.focus();});
+  q("[data-hint]").onclick=()=>{if(!c||answered)return;const h=qline.querySelector(".hint");
+    if(h)h.textContent=c.es.replace(/\p{L}+/gu,w=>w[0]+"_".repeat(w.length-1));inp.focus();};
   function next(){
     clearTimeout(timer);timer=0;
     c=deck.next();answered=false;
     res.textContent="";res.className="res";fb.innerHTML="";
-    const isBau=mode==="bau";bau.hidden=!isBau;opts.hidden=isBau;
+    const isBau=mode==="bau",isW=mode==="write";bau.hidden=!isBau;opts.hidden=isBau||isW;form.hidden=acc.hidden=!isW;inp.value="";
     if(!c){qline.textContent="Keine Chunks in dieser Auswahl.";opts.innerHTML="";return;}
     if(mode==="de"){
       qline.innerHTML=chip(c)+`<span class="chip per">${c.de}</span>`;
@@ -1717,6 +1749,9 @@ tb.onclick=()=>{const on=tb.getAttribute("aria-pressed")!=="true";tb.setAttribut
       const [who,said,de,wrong]=c.re;
       qline.innerHTML=chip(c,said?"Was antwortest du?":"Situation")+(said?`<span class="big" style="flex-basis:100%"><b>${who}:</b> «${said}»</span><span class="trans">${de}</span>`:`<span class="big" style="flex-basis:100%;font-size:19px">${de}</span>`);
       choice(c.es,wrong);
+    }else if(isW){
+      qline.innerHTML=chip(c,"Schreiben")+`<span class="chip per">${c.de}</span><span class="trans hint"></span>`;
+      inp.focus({preventScroll:true});
     }else{
       src=bauSrc(c);
       qline.innerHTML=chip(c,"Satz bauen")+`<span class="big" style="flex-basis:100%;font-size:19px">${src.de}</span>`;
@@ -1730,7 +1765,7 @@ tb.onclick=()=>{const on=tb.getAttribute("aria-pressed")!=="true";tb.setAttribut
       ms.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));deck.reset();next();};ms.appendChild(b);});
   q("[data-skip]").onclick=next;
   // Enter nach beantworteter Frage: sofort weiter
-  document.addEventListener("keydown",e=>{if(e.key!=="Enter"||!answered||!el.offsetParent)return;
+  document.addEventListener("keydown",e=>{if(e.key!=="Enter"||!answered||!el.offsetParent||e.target===inp)return;
     const t=e.target;if(t!==document.body&&!el.contains(t))return;e.preventDefault();next();});
   addPicks(el,"chunkQuizSel",sel,[["Gruppen","g",CGROUPS]]);
   deck.mount(el);
