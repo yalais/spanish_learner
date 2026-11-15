@@ -195,6 +195,30 @@ body.cover .card td.shown::after{display:none}
 .mini td,.mini th{padding:4px 14px 4px 0;border:0;font-size:15px;color:var(--fg);text-align:left}
 .mini th{font-weight:700;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
 .top{font-size:14px;color:var(--accent)}
+/* Chunks */
+.card td.ces{font-weight:700;min-width:190px}
+.gn{display:block;font-weight:400;font-size:13px;line-height:1.35;color:var(--muted);margin-top:4px}
+.card .gn b{color:var(--c-ink)}
+.fb .gn{font-size:14px;margin-top:0}
+.copts button{text-align:left}
+.bau{display:flex;flex-direction:column;gap:10px}
+.bau-ans{min-height:50px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px;border:2px dashed var(--line);border-radius:10px}
+.bau-ans:empty::before{content:"Tippe die Wörter in der richtigen Reihenfolge an";color:var(--muted);font-size:14px}
+.bau-pool{display:flex;flex-wrap:wrap;gap:6px;min-height:20px}
+.tile{font:inherit;font-size:16px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.bau-ans .tile{background:var(--surface);border-color:var(--accent)}
+.tile.right{border-color:hsl(145 55% 38%);background:hsl(145 55% 38%);color:#fff;font-weight:700}
+.tile.wrong{border-color:hsl(0 65% 52%);background:hsl(0 65% 52%);color:#fff}
+.dlg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;max-width:820px}
+.dlghead{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;font-family:var(--display);font-size:18px}
+.dl{display:flex;flex-direction:column;gap:2px;max-width:85%;padding:8px 12px;border-radius:12px;background:var(--bg);align-self:flex-start}
+.dl.me{align-self:flex-end;background:var(--mark)}
+.dl .who{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.dl .es{font-size:16.5px}
+.dl .es mark{background:transparent;color:var(--accent);font-weight:700}
+.dl .de{font-size:13.5px;color:var(--muted);font-style:italic}
+.dlg.nde .dl .de{display:none}
+.gloss{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
 #syncDlg{max-width:min(520px,calc(100vw - 32px));border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg);padding:20px}
 #syncDlg::backdrop{background:rgb(0 0 0/.35)}
 #syncDlg h3{margin:0 0 8px;font-family:var(--display)}
@@ -210,7 +234,7 @@ body.cover .card td.shown::after{display:none}
 <div class="wrap" id="top">
   <div>
     <h1>Spanische Verben</h1>
-    <p class="lead">Zuerst der Bauplan der regelmässigen Verben, dann die zehn wichtigsten Ausnahmen, dazu Satzbau, die wichtigsten kleinen Wörter, Pronomen und Präpositionen sowie die Zeitformen kurz erklärt. Zeilen sind die Personen, Spalten die Zeitformen.</p>
+    <p class="lead">Zuerst der Bauplan der regelmässigen Verben, dann die zehn wichtigsten Ausnahmen, dazu Satzbau, die wichtigsten kleinen Wörter, Pronomen und Präpositionen sowie die Zeitformen kurz erklärt. Unter «Chunks» findest du ganze Wendungen für Gespräche in Bogotá. Zeilen sind die Personen, Spalten die Zeitformen.</p>
   </div>
 
   <div class="bar" id="bar" role="toolbar" aria-label="Ansicht">
@@ -221,6 +245,7 @@ body.cover .card td.shown::after{display:none}
       <button data-s="satz" aria-pressed="false">Satzbau &amp; Wörter</button>
       <button data-s="pron" aria-pressed="false">Pronomen &amp; Präpositionen</button>
       <button data-s="zeit" aria-pressed="false">Zeitformen</button>
+      <button data-s="chunk" aria-pressed="false">Chunks</button>
     </div>
     <div class="seg" id="tenses" aria-label="Zeitform"></div>
     <button class="btn" id="coverBtn" aria-pressed="false">Formen verdecken</button>
@@ -329,7 +354,7 @@ body.cover .card td.shown::after{display:none}
 
     <div class="tips" id="tips">
       <div><b>ser oder estar?</b>Beide heissen «sein». <i>ser</i> für Wesen, Herkunft, Beruf, Uhrzeit (soy suizo). <i>estar</i> für Zustand, Gefühl und Ort (estoy cansado, estoy en Zürich).</div>
-      <div><b>ser = ir im Indefinido</b>fui, fuiste, fue … gilt für beide Verben. Der Satz verrät die Bedeutung: <i>fui a Madrid</i> (ich ging), <i>fue difícil</i> (es war).</div>
+      <div><b>ser = ir im Indefinido</b>fui, fuiste, fue … gilt für beide Verben. Der Satz verrät die Bedeutung: <i>fui a Bogotá</i> (ich ging), <i>fue difícil</i> (es war).</div>
       <div><b>Nur 3 Verben im Imperfecto</b>Nur <i>ser</i> (era), <i>ir</i> (iba) und <i>ver</i> (veía) sind im Imperfecto unregelmässig. Alle anderen folgen dem Muster.</div>
       <div><b>Zukunft ohne Ausnahmen</b>Mit <i>ir a</i> + Infinitiv bleibt jedes Verb im Infinitiv: <i>voy a tener</i>, <i>vamos a hacer</i>, <i>van a venir</i>. Du musst nur die sechs Formen von ir kennen: voy, vas, va, vamos, vais, van.</div>
     </div>
@@ -365,7 +390,7 @@ body.cover .card td.shown::after{display:none}
       <div><b><span class="n">2</span>Das Pronomen fällt weg</b>Die Verbendung zeigt die Person schon an. Man sagt meist <i>Hablo español</i> statt <i>Yo hablo español</i>. yo, tú usw. braucht es nur zur Betonung. Genau das übst du unten bei «Person und Zeit erkennen».</div>
       <div><b><span class="n">3</span>Verneinung mit no</b><i>no</i> steht direkt vor dem Verb: <i>No hablo francés.</i> Eine doppelte Verneinung ist normal: <i>No como nunca carne</i> = <i>Nunca como carne.</i></div>
       <div><b><span class="n">4</span>Fragen</b>¿ am Anfang, ? am Ende. Bei Ja/Nein-Fragen bleibt die Wortstellung gleich, nur die Stimme geht hoch: <i>¿Hablas español?</i> Bei W-Fragen steht das Fragewort vorne und das Subjekt nach dem Verb: <i>¿Dónde vive tu hermano?</i></div>
-      <div><b><span class="n">5</span>Adjektive stehen hinten</b>Das Adjektiv steht nach dem Nomen und passt sich an: <i>una casa blanca, dos coches rojos</i>. Vor dem Nomen stehen nur einige: <i>buen, mal, gran, mucho, poco, otro</i>.</div>
+      <div><b><span class="n">5</span>Adjektive stehen hinten</b>Das Adjektiv steht nach dem Nomen und passt sich an: <i>una casa blanca, dos carros rojos</i>. Vor dem Nomen stehen nur einige: <i>buen, mal, gran, mucho, poco, otro</i>.</div>
       <div><b><span class="n">6</span>Objektpronomen vor dem Verb</b><i>me, te, lo, la, nos, os, los, las</i> stehen vor dem konjugierten Verb: <i>Te llamo mañana.</i> (Ich rufe dich morgen an.) <i>Lo compré ayer.</i> (Ich kaufte es gestern.) Alle Pronomen im Überblick: <a href="#secPron">Pronomen &amp; Präpositionen</a>.</div>
       <div><b><span class="n">7</span>Zeit und Ort sind flexibel</b>Zeit- und Ortsangaben stehen am Anfang oder am Ende: <i>Mañana voy a Berna</i> oder <i>Voy a Berna mañana</i>.</div>
       <div><b><span class="n">8</span>Sätze verbinden</b>Mit Bindewörtern werden aus zwei Sätzen einer: <i>Me quedo en casa porque llueve.</i> Die Wortstellung im Nebensatz bleibt normal, das Verb rutscht nicht ans Ende wie im Deutschen.</div>
@@ -403,18 +428,18 @@ body.cover .card td.shown::after{display:none}
         <tr><th>ellos / ellas / ustedes<small>sie, Sie (Pl.)</small></th><td class="e">ellos · ellas · ustedes</td><td class="e">los · las</td><td class="e">les <small>(vor lo/la: se)</small></td><td class="e">se</td><td class="e">ellos · ellas · ustedes</td><td class="e">con ellos · con ellas</td></tr>
       </tbody>
     </table></div>
-    <p class="subp">Nur bei <b>yo</b> und <b>tú</b> ändert sich die Form nach einer Präposition (mí, ti, conmigo, contigo). Alle anderen bleiben gleich wie das Subjekt. In der Schweiz und in Lateinamerika sagt man statt <i>vosotros</i> fast immer <i>ustedes</i>.</p>
+    <p class="subp">Nur bei <b>yo</b> und <b>tú</b> ändert sich die Form nach einer Präposition (mí, ti, conmigo, contigo). Alle anderen bleiben gleich wie das Subjekt. In Kolumbien und ganz Lateinamerika sagt man statt <i>vosotros</i> immer <i>ustedes</i>, auch unter Freunden. <i>vosotros</i> musst du nur erkennen (Spanien).</p>
 
     <h3 class="sub" id="p-wann">Wann welches Pronomen?</h3>
     <div class="tips">
       <div><b><span class="n">1</span>Subjekt: meist weglassen</b>Die Endung zeigt die Person. <i>yo, tú, él …</i> sagst du nur zur Betonung oder zum Gegensatz: <i>Yo hablo español, ella habla alemán.</i> Bei <i>él / ella / usted</i> hilft das Pronomen, wenn unklar ist, wer gemeint ist.<ul class="exs"><li><i>Trabajo en Zúrich.</i><span>Ich arbeite in Zürich. (ohne yo, die Endung -o reicht)</span></li><li><i>¿Vienes mañana?</i><span>Kommst du morgen?</span></li><li><i>Yo pago, tú invitas la próxima vez.</i><span>Ich zahle, du lädst nächstes Mal ein. (Gegensatz)</span></li><li><i>—¿Quién quiere café? —Yo.</i><span>«Wer will Kaffee?» «Ich.» (allein stehend)</span></li><li><i>Ella es médica y él es profesor.</i><span>Sie ist Ärztin und er ist Lehrer. (klar machen, wer)</span></li><li><i>¿Usted es el señor Müller?</i><span>Sind Sie Herr Müller? (höflich, Klarheit)</span></li></ul></div>
-      <div><b><span class="n">2</span>Direktes Objekt: lo / la</b>Frage <i>wen oder was?</i> Du ersetzt das Objekt und richtest dich nach dem Geschlecht: <i>Veo a Ana</i> → <i>La veo.</i> <i>Compro el libro</i> → <i>Lo compro.</i> <i>Compro las entradas</i> → <i>Las compro.</i><ul class="exs"><li><i>¿Tienes la llave? —Sí, la tengo.</i><span>Hast du den Schlüssel? Ja, ich habe ihn. (la llave ist weiblich)</span></li><li><i>¿Dónde está mi móvil? No lo encuentro.</i><span>Wo ist mein Handy? Ich finde es nicht.</span></li><li><i>Conozco a tus hermanos. Los veo a menudo.</i><span>Ich kenne deine Brüder. Ich sehe sie oft.</span></li><li><i>Estas manzanas, ¿las quieres?</i><span>Diese Äpfel, willst du sie?</span></li><li><i>Te quiero.</i><span>Ich liebe dich. (te ist hier direkt: wen?)</span></li><li><i>Nos invitan a la fiesta.</i><span>Sie laden uns zum Fest ein.</span></li><li><i>Ya lo sé.</i><span>Ich weiss es schon. (lo für einen ganzen Gedanken)</span></li></ul></div>
-      <div><b><span class="n">3</span>Indirektes Objekt: le / les</b>Frage <i>wem?</i> Es gibt kein Geschlecht: <i>Doy el libro a Ana</i> → <i>Le doy el libro.</i> <i>Escribo a mis padres</i> → <i>Les escribo.</i> Typisch bei dar, decir, escribir, regalar, preguntar.<ul class="exs"><li><i>Le pregunto la hora al camarero.</i><span>Ich frage den Kellner nach der Uhrzeit.</span></li><li><i>¿Qué le regalas a tu madre?</i><span>Was schenkst du deiner Mutter?</span></li><li><i>Les explico el camino a los turistas.</i><span>Ich erkläre den Touristen den Weg.</span></li><li><i>Me duele la cabeza.</i><span>Mir tut der Kopf weh. (wem tut es weh?)</span></li><li><i>Te mando un mensaje.</i><span>Ich schicke dir eine Nachricht.</span></li><li><i>¿Le puedo ayudar?</i><span>Kann ich Ihnen helfen? (usted → le)</span></li></ul></div>
-      <div><b><span class="n">4</span>Beide zusammen: se lo</b>Das indirekte steht immer vor dem direkten: <i>Me lo das.</i> (Du gibst es mir.) Vor <i>lo, la, los, las</i> wird <i>le / les</i> zu <b>se</b>: <i>Le doy el libro</i> → <i>Se lo doy.</i> (Ich gebe es ihr.)<ul class="exs"><li><i>¿Me pasas la sal? —Sí, te la paso.</i><span>Gibst du mir das Salz? Ja, ich gebe es dir.</span></li><li><i>Le compré flores a Ana. Se las compré ayer.</i><span>Ich kaufte Ana Blumen. Ich kaufte sie ihr gestern.</span></li><li><i>¿Les has dicho la verdad? —Sí, se la he dicho.</i><span>Hast du ihnen die Wahrheit gesagt? Ja, ich habe sie ihnen gesagt.</span></li><li><i>Nos lo explica el profesor.</i><span>Der Lehrer erklärt es uns.</span></li><li><i>¿El dinero? Te lo devuelvo mañana.</i><span>Das Geld? Ich gebe es dir morgen zurück.</span></li></ul></div>
+      <div><b><span class="n">2</span>Direktes Objekt: lo / la</b>Frage <i>wen oder was?</i> Du ersetzt das Objekt und richtest dich nach dem Geschlecht: <i>Veo a Ana</i> → <i>La veo.</i> <i>Compro el libro</i> → <i>Lo compro.</i> <i>Compro las entradas</i> → <i>Las compro.</i><ul class="exs"><li><i>¿Tienes la llave? —Sí, la tengo.</i><span>Hast du den Schlüssel? Ja, ich habe ihn. (la llave ist weiblich)</span></li><li><i>¿Dónde está mi celular? No lo encuentro.</i><span>Wo ist mein Handy? Ich finde es nicht.</span></li><li><i>Conozco a tus hermanos. Los veo a menudo.</i><span>Ich kenne deine Brüder. Ich sehe sie oft.</span></li><li><i>Estas manzanas, ¿las quieres?</i><span>Diese Äpfel, willst du sie?</span></li><li><i>Te quiero.</i><span>Ich liebe dich. (te ist hier direkt: wen?)</span></li><li><i>Nos invitan a la fiesta.</i><span>Sie laden uns zum Fest ein.</span></li><li><i>Ya lo sé.</i><span>Ich weiss es schon. (lo für einen ganzen Gedanken)</span></li></ul></div>
+      <div><b><span class="n">3</span>Indirektes Objekt: le / les</b>Frage <i>wem?</i> Es gibt kein Geschlecht: <i>Doy el libro a Ana</i> → <i>Le doy el libro.</i> <i>Escribo a mis padres</i> → <i>Les escribo.</i> Typisch bei dar, decir, escribir, regalar, preguntar.<ul class="exs"><li><i>Le pregunto la hora al mesero.</i><span>Ich frage den Kellner nach der Uhrzeit.</span></li><li><i>¿Qué le regalas a tu mamá?</i><span>Was schenkst du deiner Mutter?</span></li><li><i>Les explico el camino a los turistas.</i><span>Ich erkläre den Touristen den Weg.</span></li><li><i>Me duele la cabeza.</i><span>Mir tut der Kopf weh. (wem tut es weh?)</span></li><li><i>Te mando un mensaje.</i><span>Ich schicke dir eine Nachricht.</span></li><li><i>¿Le puedo ayudar?</i><span>Kann ich Ihnen helfen? (usted → le)</span></li></ul></div>
+      <div><b><span class="n">4</span>Beide zusammen: se lo</b>Das indirekte steht immer vor dem direkten: <i>Me lo das.</i> (Du gibst es mir.) Vor <i>lo, la, los, las</i> wird <i>le / les</i> zu <b>se</b>: <i>Le doy el libro</i> → <i>Se lo doy.</i> (Ich gebe es ihr.)<ul class="exs"><li><i>¿Me pasas la sal? —Sí, te la paso.</i><span>Gibst du mir das Salz? Ja, ich gebe es dir.</span></li><li><i>Le compré flores a Ana. Se las compré ayer.</i><span>Ich kaufte Ana Blumen. Ich kaufte sie ihr gestern.</span></li><li><i>¿Les dijiste la verdad? —Sí, se la dije.</i><span>Hast du ihnen die Wahrheit gesagt? Ja, ich habe sie ihnen gesagt.</span></li><li><i>Nos lo explica el profesor.</i><span>Der Lehrer erklärt es uns.</span></li><li><i>¿El dinero? Te lo devuelvo mañana.</i><span>Das Geld? Ich gebe es dir morgen zurück.</span></li></ul></div>
       <div><b><span class="n">5</span>Reflexiv: me, te, se …</b>Die Handlung geht auf die Person zurück: <i>me lavo</i> (ich wasche mich), <i>se llama</i> (er heisst), <i>nos levantamos</i> (wir stehen auf). Bei vielen Alltagsverben gehört das Pronomen fest dazu.<ul class="exs"><li><i>Me ducho por la mañana.</i><span>Ich dusche (mich) am Morgen.</span></li><li><i>¿A qué hora te acuestas?</i><span>Um wie viel Uhr gehst du ins Bett?</span></li><li><i>Nos vemos mañana.</i><span>Wir sehen uns morgen.</span></li><li><i>Se van de vacaciones.</i><span>Sie fahren in die Ferien. (irse = weggehen)</span></li><li><i>Me acuerdo de ti.</i><span>Ich erinnere mich an dich.</span></li><li><i>Me lavo las manos.</i><span>Ich wasche mir die Hände. (Körperteil mit Artikel, nicht mis)</span></li></ul></div>
       <div><b><span class="n">6</span>Nach Präposition: mí, ti …</b>Hinter <i>a, de, para, por, sin</i> kommen die Formen mí und ti: <i>Es para mí.</i> Mit <i>con</i> wird daraus <b>conmigo, contigo</b>. Ausnahme: <i>entre tú y yo</i> und <i>según tú</i>.<ul class="exs"><li><i>¿Esto es para mí?</i><span>Ist das für mich?</span></li><li><i>Pienso mucho en ti.</i><span>Ich denke oft an dich.</span></li><li><i>¿Vienes conmigo al cine?</i><span>Kommst du mit mir ins Kino?</span></li><li><i>No puedo vivir sin ti.</i><span>Ich kann nicht ohne dich leben.</span></li><li><i>Hablamos de ella.</i><span>Wir reden über sie. (ella bleibt gleich)</span></li><li><i>Entre tú y yo, no me gusta.</i><span>Unter uns gesagt, es gefällt mir nicht.</span></li></ul></div>
       <div><b><span class="n">7</span>Stellung</b>Vor dem konjugierten Verb: <i>Lo veo.</i> Beim Infinitiv oder Gerundio vorne oder hinten angehängt: <i>Lo quiero ver</i> = <i>Quiero verlo.</i> <i>Lo estoy leyendo</i> = <i>Estoy leyéndolo.</i> In der Verneinung steht no ganz vorne: <i>No lo veo.</i><ul class="exs"><li><i>Te lo explico.</i><span>Ich erkläre es dir. (vor dem konjugierten Verb)</span></li><li><i>Voy a llamarte. = Te voy a llamar.</i><span>Ich werde dich anrufen. (Infinitiv: beides geht)</span></li><li><i>Estoy escribiéndole. = Le estoy escribiendo.</i><span>Ich schreibe ihm gerade.</span></li><li><i>Dámelo.</i><span>Gib es mir! (bejahter Befehl: angehängt)</span></li><li><i>No me lo digas.</i><span>Sag es mir nicht! (verneinter Befehl: davor)</span></li><li><i>Siéntate, por favor.</i><span>Setz dich bitte.</span></li><li><i>Nunca lo he visto.</i><span>Ich habe ihn nie gesehen. (vor haber)</span></li></ul></div>
-      <div><b><span class="n">8</span>gustar: das Pronomen ist indirekt</b><i>Me gusta el café</i> heisst wörtlich «Der Kaffee gefällt mir». Das Verb richtet sich nach der Sache: <i>Me gustan los perros.</i> Zur Betonung: <i>A mí me gusta, a ti no.</i><ul class="exs"><li><i>¿Te gusta bailar?</i><span>Tanzt du gern? (Infinitiv → gusta)</span></li><li><i>Nos gustan las montañas.</i><span>Uns gefallen die Berge.</span></li><li><i>A mi padre le gusta el fútbol.</i><span>Mein Vater mag Fussball. (a + Person und trotzdem le)</span></li><li><i>¿Os gusta Madrid?</i><span>Gefällt euch Madrid?</span></li><li><i>Me encanta esta canción.</i><span>Ich liebe dieses Lied. (encantar funktioniert gleich)</span></li><li><i>Le interesan los idiomas.</i><span>Sprachen interessieren ihn/sie.</span></li><li><i>A mí también. / A mí tampoco.</i><span>Mir auch. / Mir auch nicht.</span></li></ul></div>
+      <div><b><span class="n">8</span>gustar: das Pronomen ist indirekt</b><i>Me gusta el café</i> heisst wörtlich «Der Kaffee gefällt mir». Das Verb richtet sich nach der Sache: <i>Me gustan los perros.</i> Zur Betonung: <i>A mí me gusta, a ti no.</i><ul class="exs"><li><i>¿Te gusta bailar?</i><span>Tanzt du gern? (Infinitiv → gusta)</span></li><li><i>Nos gustan las montañas.</i><span>Uns gefallen die Berge.</span></li><li><i>A mi papá le gusta el fútbol.</i><span>Mein Vater mag Fussball. (a + Person und trotzdem le)</span></li><li><i>¿Les gusta Bogotá?</i><span>Gefällt euch Bogotá? (ustedes → les)</span></li><li><i>Me encanta esta canción.</i><span>Ich liebe dieses Lied. (encantar funktioniert gleich)</span></li><li><i>Le interesan los idiomas.</i><span>Sprachen interessieren ihn/sie.</span></li><li><i>A mí también. / A mí tampoco.</i><span>Mir auch. / Mir auch nicht.</span></li></ul></div>
     </div>
 
     <h3 class="sub" id="p-prep">Die wichtigsten Präpositionen</h3>
@@ -422,14 +447,14 @@ body.cover .card td.shown::after{display:none}
       <thead><tr><th>Wort</th><th>Grundidee</th><th>Wann?</th><th>Beispiel</th></tr></thead>
       <tbody>
         <tr><th>a</th><td>Richtung, Ziel</td><td>Bewegung nach … (ir a, llegar a, volver a). Uhrzeit. Persönliches <i>a</i> vor bestimmten Personen. Indirektes Objekt. Nach <i>empezar</i>, <i>aprender</i>, <i>ir</i> + Infinitiv.</td><td><b>Voy a</b> Berna. <i>Ich gehe nach Bern.</i><br>Llego <b>a</b> las ocho. <i>Ich komme um acht an.</i><br>Veo <b>a</b> Ana. <i>Ich sehe Ana.</i></td></tr>
-        <tr><th>de</th><td>Herkunft, Besitz, Inhalt</td><td>Woher? Wem gehört es? Woraus? Worüber? Dazu <i>salir de</i>, <i>acabar de</i> + Infinitiv.</td><td>Soy <b>de</b> Suiza. <i>Ich komme aus der Schweiz.</i><br>El coche <b>de</b> mi padre. <i>Das Auto meines Vaters.</i><br>Un vaso <b>de</b> agua. <i>Ein Glas Wasser.</i></td></tr>
+        <tr><th>de</th><td>Herkunft, Besitz, Inhalt</td><td>Woher? Wem gehört es? Woraus? Worüber? Dazu <i>salir de</i>, <i>acabar de</i> + Infinitiv.</td><td>Soy <b>de</b> Suiza. <i>Ich komme aus der Schweiz.</i><br>El carro <b>de</b> mi papá. <i>Das Auto meines Vaters.</i><br>Un vaso <b>de</b> agua. <i>Ein Glas Wasser.</i></td></tr>
         <tr><th>en</th><td>Ort ohne Bewegung</td><td>Wo? Dazu Verkehrsmittel, Monate und Jahre, Sprachen.</td><td>Vivo <b>en</b> Zúrich. <i>Ich wohne in Zürich.</i><br>Voy <b>en</b> tren. <i>Ich fahre mit dem Zug.</i><br><b>En</b> mayo. <i>Im Mai.</i></td></tr>
         <tr><th>con</th><td>mit</td><td>Begleitung oder Mittel. Mit mir und dir: conmigo, contigo.</td><td>Café <b>con</b> leche. <i>Kaffee mit Milch.</i><br>Voy <b>con</b> mi hermana. <i>Ich gehe mit meiner Schwester.</i></td></tr>
         <tr><th>por</th><td>Grund, Weg, Dauer</td><td>Warum? Wodurch? Wie lange? Tageszeit, Kanal, Tausch.</td><td>Gracias <b>por</b> tu ayuda. <i>Danke für deine Hilfe.</i><br>Camino <b>por</b> el parque. <i>Ich gehe durch den Park.</i><br><b>Por</b> la mañana. <i>Am Morgen.</i></td></tr>
         <tr><th>para</th><td>Ziel, Zweck, Empfänger</td><td>Wozu? Für wen? Bis wann?</td><td>Estudio <b>para</b> viajar. <i>Ich lerne, um zu reisen.</i><br>Es <b>para</b> ti. <i>Es ist für dich.</i><br><b>Para</b> mañana. <i>Bis morgen.</i></td></tr>
         <tr><th>desde / hasta</th><td>von … an / bis</td><td>Anfang und Ende in Zeit und Raum.</td><td>Trabajo <b>desde</b> las ocho <b>hasta</b> las cinco. <i>Ich arbeite von acht bis fünf.</i></td></tr>
         <tr><th>sin</th><td>ohne</td><td>Mit Nomen oder Infinitiv.</td><td>Café <b>sin</b> azúcar. <i>Kaffee ohne Zucker.</i></td></tr>
-        <tr><th>sobre</th><td>über, auf</td><td>Thema oder Lage oben auf.</td><td>Un libro <b>sobre</b> España. <i>Ein Buch über Spanien.</i></td></tr>
+        <tr><th>sobre</th><td>über, auf</td><td>Thema oder Lage oben auf.</td><td>Un libro <b>sobre</b> Colombia. <i>Ein Buch über Kolumbien.</i></td></tr>
       </tbody>
     </table></div>
 
@@ -467,7 +492,7 @@ body.cover .card td.shown::after{display:none}
       <p>Eine Handlung, die zu einem bestimmten Zeitpunkt passiert ist und fertig ist. Sie hat Anfang und Ende. Die Geschichte bewegt sich damit vorwärts: dann passierte das, dann das.</p>
       <p class="sig"><b>Signalwörter:</b> ayer, anoche, la semana pasada, en 2020, una vez, de repente, de pronto</p>
       <p class="bsp"><span class="lbl">Regelmässig</span>Ayer <b>llegué</b> tarde y <b>comí</b> solo. <i>Gestern kam ich spät an und ass allein.</i></p>
-      <p class="bsp"><span class="lbl">Unregelmässig</span>Ayer <b>fui</b> al cine. <i>Gestern ging ich ins Kino.</i><br><b>Hice</b> los deberes y luego <b>salí</b>. <i>Ich machte die Aufgaben und ging dann raus.</i></p>
+      <p class="bsp"><span class="lbl">Unregelmässig</span>Ayer <b>fui</b> al cine. <i>Gestern ging ich ins Kino.</i><br><b>Hice</b> las tareas y luego <b>salí</b>. <i>Ich machte die Aufgaben und ging dann raus.</i></p>
       <a class="top" href="#top">Nach oben</a>
     </div>
 
@@ -497,7 +522,7 @@ body.cover .card td.shown::after{display:none}
         <tr><td>ellos / ellas / ustedes</td><td><b>van</b></td><td>a hablar</td></tr>
       </tbody></table></div>
       <p class="sig"><b>Signalwörter:</b> mañana, esta noche, el fin de semana, el año que viene, pronto</p>
-      <p class="bsp"><span class="lbl">Regelmässig</span>El año que viene <b>voy a viajar</b> a México. <i>Nächstes Jahr werde ich nach Mexiko reisen.</i></p>
+      <p class="bsp"><span class="lbl">Regelmässig</span>El año que viene <b>voy a viajar</b> a Colombia. <i>Nächstes Jahr werde ich nach Kolumbien reisen.</i></p>
       <p class="bsp"><span class="lbl">Unregelmässig</span>Mañana <b>vamos a hacer</b> una fiesta. <i>Morgen machen wir ein Fest.</i><br>Esta noche <b>voy a ir</b> al cine. <i>Heute Abend gehe ich ins Kino.</i></p>
       <p><b>Gut zu wissen:</b> Es gibt auch eine einfache Zukunftsform (<i>hablaré</i>, <i>viajaré</i>). Sie kommt vor allem in Texten und Nachrichten vor. Zum Sprechen reicht ir a + Infinitiv völlig.</p>
       <a class="top" href="#top">Nach oben</a>
@@ -519,6 +544,36 @@ body.cover .card td.shown::after{display:none}
       </tbody></table></div>
       <p class="sig"><b>Signalwörter:</b> ahora, ahora mismo, en este momento</p>
       <a class="top" href="#top">Nach oben</a>
+    </div>
+  </section>
+
+  <!-- ===================== CHUNKS ===================== -->
+  <section class="sec" id="secChunk" aria-labelledby="ch" hidden>
+    <div>
+      <h2 class="sech" id="ch">Chunks: Mi día</h2>
+      <p class="lead">Ganze Wendungen, wie man sie in Bogotá wirklich sagt: von deinem Tag erzählen, zurückfragen und reagieren. Alles in der <i>usted</i>-Form, die in Kolumbien auch in der Familie üblich ist. Sortiert nach Häufigkeit, die nützlichsten zuerst.</p>
+    </div>
+
+    <section class="quiz" id="chunkQuiz" aria-label="Chunks üben"></section>
+
+    <nav class="subnav" aria-label="Inhalt">
+      <a href="#chunkQuiz">Üben</a><a href="#c-dia-contar">Contar</a><a href="#c-dia-preguntar">Preguntar</a><a href="#c-dialogo">Musterdialog</a><a href="#c-tipps">Gut zu wissen</a>
+    </nav>
+
+    <div class="vgrid" id="cgrid"></div>
+
+    <h3 class="sub" id="c-dialogo">Musterdialog</h3>
+    <p class="subp">Farbig markiert sind die Chunks aus den Listen oben.</p>
+    <div class="dlg" id="cdialog"></div>
+
+    <h3 class="sub" id="c-tipps">Gut zu wissen</h3>
+    <div class="tips">
+      <div><b><span class="n">1</span>usted ist Standard</b>In Bogotá sagt man <i>usted</i> auch zu den Eltern, unter Geschwistern und oft sogar unter Paaren. Darum heisst es <i>¿Cómo le fue?</i> und nicht <i>¿Cómo te fue?</i> Das Verb steht wie bei él / ella.</div>
+      <div><b><span class="n">2</span>sumercé</b>Noch respektvoller und herzlicher als usted, typisch für Bogotá, Cundinamarca und Boyacá. Vor allem gegenüber den Grosseltern: <i>¿Sumercé qué quiere tomar?</i> Das Verb steht wie bei usted.</div>
+      <div><b><span class="n">3</span>me fue, le fue</b><i>¿Cómo le fue?</i> heisst wörtlich «Wie ist es Ihnen gegangen?». Das ist das Indefinido von <i>ir</i> mit dem indirekten Pronomen, wie bei gustar: <i>me fue, le fue, nos fue</i>. Siehe <a class="tl" href="#indef">Indefinido</a>.</div>
+      <div><b><span class="n">4</span>Reagieren gehört dazu</b>Zuhören zeigt man laut: <i>¡Qué bueno!</i>, <i>¿Y eso?</i>, <i>¿En serio?</i>, <i>¡Uy, qué pesar!</i> Lieber eine Reaktion zu viel als Schweigen. Dann fragst du zurück: <i>¿Y a usted cómo le fue?</i></div>
+      <div><b><span class="n">5</span>qué pena oder qué pesar?</b><i>Qué pena</i> = Entschuldigung, das ist mir unangenehm (<i>Qué pena con usted</i>). <i>Qué pesar</i> = wie schade, das tut mir leid. Wenn jemand krank ist, sagst du <i>¡Qué pesar!</i></div>
+      <div><b><span class="n">6</span>Zeitverschiebung</b>Kolumbien hat keine Sommerzeit. Im Schweizer Winter ist es in der Schweiz <b>6 Stunden</b> später, im Sommer <b>7 Stunden</b>: <i>Allá son seis horas más que acá.</i></div>
     </div>
   </section>
 </div>
@@ -561,15 +616,15 @@ const RV=[
  ["escuchar","zuhören, hören","Escuchaba música cada noche.","Ich hörte jeden Abend Musik."],
  ["mirar","anschauen","Miramos una película.","Wir schauen einen Film."],
  ["ayudar","helfen","¿Me ayudas?","Hilfst du mir?"],
- ["viajar","reisen","Voy a viajar a México.","Ich werde nach Mexiko reisen."],
+ ["viajar","reisen","Voy a viajar a Colombia.","Ich werde nach Kolumbien reisen."],
  ["preguntar","fragen","Pregunté el camino.","Ich fragte nach dem Weg."],
  ["llevar","tragen, mitnehmen","Llevo una chaqueta.","Ich trage eine Jacke."],
  ["llegar","ankommen","Llegué tarde.","Ich kam zu spät an."],
  ["buscar","suchen","Busqué las llaves.","Ich suchte die Schlüssel."],
  ["pagar","bezahlen","Pagué la cuenta.","Ich bezahlte die Rechnung."],
  ["organizar","organisieren","Organicé la fiesta.","Ich organisierte das Fest."],
- ["entrar","hineingehen, eintreten","Entramos en el museo.","Wir gehen ins Museum hinein."],
- ["usar","benutzen","¿Usas mucho el móvil?","Benutzt du das Handy oft?"],
+ ["entrar","hineingehen, eintreten","Entramos al museo.","Wir gehen ins Museum hinein."],
+ ["usar","benutzen","¿Usas mucho el celular?","Benutzt du das Handy oft?"],
  ["dejar","lassen, verlassen","Dejé el paraguas en el tren.","Ich liess den Regenschirm im Zug liegen."],
  ["pasar","verbringen, vorbeigehen, passieren","¿Qué pasó?","Was ist passiert?"],
  ["terminar","beenden, aufhören","Termino a las cinco.","Ich höre um fünf auf."],
@@ -595,7 +650,7 @@ const RV=[
  ["recibir","erhalten","Recibí tu mensaje.","Ich erhielt deine Nachricht."],
  ["decidir","entscheiden","Decidimos quedarnos.","Wir entschieden zu bleiben."],
  ["subir","hinaufgehen, steigen","Subimos a la montaña.","Wir stiegen auf den Berg."],
- ["compartir","teilen","Compartimos un piso.","Wir teilen eine Wohnung."],
+ ["compartir","teilen","Compartimos un apartamento.","Wir teilen eine Wohnung."],
  ["permitir","erlauben","No permiten fumar aquí.","Hier darf man nicht rauchen."],
  ["asistir","teilnehmen, besuchen","Asistimos a la reunión.","Wir nahmen an der Sitzung teil."],
  ["discutir","diskutieren, streiten","Discutimos el plan.","Wir besprachen den Plan."],
@@ -692,7 +747,7 @@ showReg("llegar");
 
 // Bereich wechseln
 const secs=document.getElementById("secs"),secReg=document.getElementById("secReg"),secIrr=document.getElementById("secIrr");
-const SECS={reg:"secReg",irr:"secIrr",satz:"secSatz",pron:"secPron",zeit:"secZeit"};
+const SECS={reg:"secReg",irr:"secIrr",satz:"secSatz",pron:"secPron",zeit:"secZeit",chunk:"secChunk"};
 function showSec(s){
   secs.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===s));
   Object.entries(SECS).forEach(([k,id])=>document.getElementById(id).hidden=k!==s);
@@ -1124,39 +1179,41 @@ const WCAT=[
   ["a veces","manchmal","A veces cocino yo.","Manchmal koche ich."],
   ["a menudo","oft","Viajo a menudo.","Ich reise oft."],
   ["todavía","noch","Todavía estoy en la oficina.","Ich bin noch im Büro."],
-  ["ya","schon, bereits","Ya he comido.","Ich habe schon gegessen."],
+  ["ya","schon, bereits","Ya comí.","Ich habe schon gegessen."],
   ["pronto","bald","Te llamo pronto.","Ich rufe dich bald an."],
   ["temprano","früh","Me levanto temprano.","Ich stehe früh auf."],
   ["tarde","spät","Llegué tarde.","Ich kam spät an."],
-  ["la semana pasada","letzte Woche","La semana pasada estuve en Madrid.","Letzte Woche war ich in Madrid."],
+  ["la semana pasada","letzte Woche","La semana pasada estuve en Medellín.","Letzte Woche war ich in Medellín."],
   ["el año que viene","nächstes Jahr","El año que viene voy a viajar a México.","Nächstes Jahr werde ich nach Mexiko reisen."]]},
  {id:"or",name:"Ortswörter",short:"Ort",h:175,
-  note:"<b>aquí</b> = hier (bei mir), <b>ahí</b> = da (bei dir oder in Reichweite), <b>allí</b> = dort (weit weg). <b>en casa</b> = zu Hause (wo?), <b>a casa</b> = nach Hause (wohin?). Bei Bewegung steht <b>a</b>: Voy a Berna.",w:[
-  ["aquí","hier","Vivo aquí.","Ich wohne hier."],
+  note:"<b>aquí</b> = hier (bei mir), <b>ahí</b> = da (bei dir oder in Reichweite), <b>allí</b> = dort (weit weg). <b>en casa</b> = zu Hause (wo?), <b>a casa</b> = nach Hause (wohin?). Bei Bewegung steht <b>a</b>: Voy a Berna. In Kolumbien hört man <b>acá</b> und <b>allá</b> öfter als aquí und allí, und <b>adentro</b>, <b>afuera</b> statt dentro, fuera.",w:[
+  ["aquí","hier","Vivo aquí.","Ich wohne hier.","aq"],
+  ["acá","hier (in Kolumbien häufig)","Venga para acá.","Kommen Sie hierher.","aq"],
   ["ahí","da (bei dir)","Ahí está tu llave.","Da ist dein Schlüssel."],
-  ["allí","dort","Allí está la estación.","Dort ist der Bahnhof."],
+  ["allí","dort","Allí está la estación.","Dort ist der Bahnhof.","al"],
+  ["allá","dort (in Kolumbien häufig)","Allá en Suiza hace frío.","Dort in der Schweiz ist es kalt.","al"],
   ["cerca de","in der Nähe von","Vivo cerca de la estación.","Ich wohne in der Nähe des Bahnhofs."],
-  ["lejos de","weit weg von","Zúrich está lejos de Madrid.","Zürich ist weit weg von Madrid."],
+  ["lejos de","weit weg von","Zúrich está lejos de Bogotá.","Zürich ist weit weg von Bogotá."],
   ["arriba","oben","Mi habitación está arriba.","Mein Zimmer ist oben."],
   ["abajo","unten","La cocina está abajo.","Die Küche ist unten."],
-  ["dentro","drinnen","Los niños juegan dentro.","Die Kinder spielen drinnen."],
-  ["fuera","draussen","Hoy comemos fuera.","Heute essen wir draussen."],
+  ["adentro","drinnen","Los niños juegan adentro.","Die Kinder spielen drinnen."],
+  ["afuera","draussen","Hoy comemos afuera.","Heute essen wir draussen."],
   ["en casa","zu Hause","Estoy en casa.","Ich bin zu Hause."],
   ["a casa","nach Hause","Vuelvo a casa.","Ich gehe nach Hause zurück."]]},
  {id:"la",name:"Lage und Richtung",short:"Lage",h:110,
-  note:"<b>de + el = del</b> und <b>a + el = al</b>: al lado <b>del</b> hotel, voy <b>al</b> centro.",w:[
+  note:"<b>de + el = del</b> und <b>a + el = al</b>: al lado <b>del</b> hotel, voy <b>al</b> centro. Achtung: <b>derecho</b> = geradeaus, <b>a la derecha</b> = rechts.",w:[
   ["en","in, auf, an","El libro está en la mesa.","Das Buch ist auf dem Tisch.","po"],
   ["encima de","auf, oben auf","El gato está encima de la nevera.","Die Katze ist auf dem Kühlschrank.","po"],
   ["sobre","auf, über","Las llaves están sobre la mesa.","Die Schlüssel liegen auf dem Tisch.","po"],
   ["debajo de","unter, unterhalb","El perro duerme debajo de la mesa.","Der Hund schläft unter dem Tisch."],
-  ["delante de","vor","El coche está delante de la casa.","Das Auto steht vor dem Haus."],
+  ["delante de","vor","El carro está delante de la casa.","Das Auto steht vor dem Haus."],
   ["detrás de","hinter","El jardín está detrás de la casa.","Der Garten ist hinter dem Haus."],
-  ["al lado de","neben","El banco está al lado de la farmacia.","Die Bank ist neben der Apotheke."],
-  ["entre","zwischen","La tienda está entre el banco y el bar.","Der Laden ist zwischen der Bank und der Bar."],
+  ["al lado de","neben","El banco está al lado de la droguería.","Die Bank ist neben der Apotheke (droguería)."],
+  ["entre","zwischen","La tienda está entre el banco y la panadería.","Der Laden ist zwischen der Bank und der Bäckerei."],
   ["enfrente de","gegenüber","El museo está enfrente de la iglesia.","Das Museum ist gegenüber der Kirche."],
   ["a la izquierda","links","La estación está a la izquierda.","Der Bahnhof ist links."],
   ["a la derecha","rechts","El baño está a la derecha.","Das Bad ist rechts."],
-  ["todo recto","geradeaus","Siga todo recto.","Gehen Sie geradeaus."],
+  ["derecho","geradeaus","Siga derecho dos cuadras.","Gehen Sie zwei Blocks geradeaus."],
   ["dentro de","in, innerhalb von","Las llaves están dentro de la caja.","Die Schlüssel sind in der Schachtel.","po"],
   ["fuera de","ausserhalb von","Vivo fuera de la ciudad.","Ich wohne ausserhalb der Stadt."],
   ["alrededor de","um … herum","Hay árboles alrededor de la casa.","Um das Haus herum hat es Bäume."],
@@ -1169,25 +1226,25 @@ const WCAT=[
   ["bajo","niedrig, klein (Person)","El precio es bajo.","Der Preis ist niedrig.","kl"],
   ["bueno","gut","Este vino es bueno.","Dieser Wein ist gut."],
   ["malo","schlecht","Este café es malo.","Dieser Kaffee ist schlecht."],
-  ["nuevo","neu","Tengo un móvil nuevo.","Ich habe ein neues Handy."],
-  ["viejo","alt","Mi coche es viejo.","Mein Auto ist alt.","al"],
+  ["nuevo","neu","Tengo un celular nuevo.","Ich habe ein neues Handy."],
+  ["viejo","alt","Mi carro es viejo.","Mein Auto ist alt.","al"],
   ["joven","jung","Mi hermano es joven.","Mein Bruder ist jung."],
   ["mayor","älter, alt (Person)","Mi abuelo es mayor.","Mein Grossvater ist alt.","al"],
   ["largo","lang","El viaje es largo.","Die Reise ist lang."],
   ["corto","kurz","El curso es corto.","Der Kurs ist kurz."],
   ["caro","teuer","El hotel es caro.","Das Hotel ist teuer."],
-  ["barato","billig","El menú es barato.","Das Menü ist billig."],
+  ["barato","billig","El almuerzo es barato.","Das Mittagessen ist billig."],
   ["fácil","einfach, leicht","El examen es fácil.","Die Prüfung ist einfach."],
   ["difícil","schwierig","El español no es difícil.","Spanisch ist nicht schwierig."],
-  ["rápido","schnell","El tren es rápido.","Der Zug ist schnell."],
-  ["lento","langsam","El autobús es lento.","Der Bus ist langsam."],
+  ["rápido","schnell","El TransMilenio es rápido.","Der TransMilenio (Stadtbus in Bogotá) ist schnell."],
+  ["lento","langsam","El bus es lento.","Der Bus ist langsam."],
   ["bonito","schön, hübsch","Es un pueblo bonito.","Es ist ein schönes Dorf."],
   ["feo","hässlich","El edificio es feo.","Das Gebäude ist hässlich."],
   ["caliente","heiss","El café está caliente.","Der Kaffee ist heiss."],
   ["frío","kalt","El café está frío.","Der Kaffee ist kalt."],
   ["abierto","offen, geöffnet","El museo está abierto.","Das Museum ist geöffnet."],
   ["cerrado","geschlossen","El banco está cerrado.","Die Bank ist geschlossen."],
-  ["lleno","voll","El tren está lleno.","Der Zug ist voll."],
+  ["lleno","voll","El bus está lleno.","Der Bus ist voll."],
   ["vacío","leer","El vaso está vacío.","Das Glas ist leer."],
   ["contento","zufrieden, froh","Estoy contento.","Ich bin zufrieden."],
   ["triste","traurig","Hoy estoy triste.","Heute bin ich traurig."],
@@ -1285,14 +1342,14 @@ WCAT.forEach(c=>{
 
 // Person und Zeit erkennen. Eintrag: [Satz, Verbform, Infinitiv, Person(en), Zeitform, Übersetzung, Hinweis]
 const SENT=[
- ["Ayer comimos paella en Valencia.","comimos","comer","3","indef","Gestern assen wir Paella in Valencia.","Signalwort: ayer."],
+ ["Ayer comimos ajiaco en La Candelaria.","comimos","comer","3","indef","Gestern assen wir Ajiaco in La Candelaria.","Signalwort: ayer."],
  ["Mañana voy a trabajar en casa.","voy a trabajar","trabajar","0","ira","Morgen werde ich zu Hause arbeiten.","voy = yo. Signalwort: mañana."],
  ["¿Dónde vives ahora?","vives","vivir","1","pres","Wo wohnst du jetzt?","Signalwort: ahora."],
  ["De niño, mi padre vivía en el campo.","vivía","vivir","2","imperf","Als Kind lebte mein Vater auf dem Land.","Beschreibung der Vergangenheit (de niño). Das Subjekt mi padre zeigt die Person."],
  ["Mis amigos llegaron tarde.","llegaron","llegar","5","indef","Meine Freunde kamen spät an.","Die Endung -aron gibt es nur im Indefinido."],
- ["¿Hablasteis con el profesor?","hablasteis","hablar","4","indef","Habt ihr mit dem Lehrer gesprochen?","Endung -asteis = vosotros im Indefinido."],
+ ["¿Hablaron ustedes con el profesor?","hablaron","hablar","5","indef","Habt ihr mit dem Lehrer gesprochen?","Endung -aron = ellos / ustedes im Indefinido. In Kolumbien ist ustedes auch das «ihr»."],
  ["Normalmente estudiamos por la tarde.","estudiamos","estudiar","3","pres","Normalerweise lernen wir am Nachmittag.","Die Form ist im Indefinido gleich. Das Signalwort normalmente zeigt das Presente."],
- ["El año que viene vais a viajar a México.","vais a viajar","viajar","4","ira","Nächstes Jahr werdet ihr nach Mexiko reisen.","Signalwort: el año que viene."],
+ ["El año que viene van a viajar a Cartagena.","van a viajar","viajar","5","ira","Nächstes Jahr werden sie (werdet ihr) nach Cartagena reisen.","van = ellos / ustedes. Signalwort: el año que viene."],
  ["Siempre bebía café por la mañana.","bebía","beber","02","imperf","Ich trank (oder er/sie trank) immer am Morgen Kaffee.","Im Imperfecto sind yo und él/ella gleich. Ohne Subjekt ist beides richtig."],
  ["Usted habla muy bien español.","habla","hablar","2","pres","Sie sprechen sehr gut Spanisch.","usted wird wie él/ella konjugiert."],
  ["¿Compraste el pan?","compraste","comprar","1","indef","Hast du das Brot gekauft?","Endung -aste = tú im Indefinido."],
@@ -1300,25 +1357,25 @@ const SENT=[
  ["Ella va a recibir un regalo.","va a recibir","recibir","2","ira","Sie wird ein Geschenk erhalten.","va = él/ella. Die Zukunft steckt in ir a + Infinitiv."],
  ["Busqué mis llaves por todas partes.","busqué","buscar","0","indef","Ich suchte meine Schlüssel überall.","Schreibweise c → qu in der yo-Form."],
  ["Ustedes venden fruta muy buena.","venden","vender","5","pres","Sie verkaufen sehr gute Früchte.","ustedes wird wie ellos konjugiert."],
- ["Antes corríais cada mañana.","corríais","correr","4","imperf","Früher seid ihr jeden Morgen gelaufen.","Signalwort: antes (Gewohnheit)."],
+ ["Antes corrían cada mañana en el parque.","corrían","correr","5","imperf","Früher liefen sie jeden Morgen im Park.","Endung -ían = ellos / ustedes im Imperfecto. Signalwort: antes (Gewohnheit)."],
  ["Hoy tengo mucho trabajo.","tengo","tener","0","pres","Heute habe ich viel Arbeit.","Signalwort: hoy."],
  ["Ayer fuimos al cine.","fuimos","ir","3","indef","Gestern gingen wir ins Kino.","fuimos ist die Form von ir und von ser."],
  ["Mi hermana estaba cansada.","estaba","estar","2","imperf","Meine Schwester war müde.","Zustand in der Vergangenheit. Das Subjekt mi hermana zeigt die Person."],
  ["Mañana vamos a hacer una fiesta.","vamos a hacer","hacer","3","ira","Morgen werden wir ein Fest machen.","vamos = nosotros. hacer bleibt im Infinitiv."],
  ["¿Pudiste dormir bien?","pudiste","poder","1","indef","Konntest du gut schlafen?","Unregelmässiger Indefinido-Stamm: pud-."],
  ["Ellos dijeron la verdad.","dijeron","decir","5","indef","Sie sagten die Wahrheit.","dijeron schreibt man ohne i."],
- ["¿Queréis un café?","queréis","querer","4","pres","Wollt ihr einen Kaffee?","Endung -éis = vosotros im Presente."],
+ ["¿Quieren un tintico?","quieren","querer","5","pres","Wollt ihr einen Kaffee?","Endung -en = ustedes im Presente. tintico = kleiner schwarzer Kaffee."],
  ["Van a venir a las ocho.","van a venir","venir","5","ira","Sie werden um acht Uhr kommen.","van = ellos. venir bleibt im Infinitiv."],
  ["Tú siempre tenías razón.","tenías","tener","1","imperf","Du hattest immer recht.","siempre in der Vergangenheit: Imperfecto."],
- ["Llegamos ayer a Madrid.","llegamos","llegar","3","indef","Wir kamen gestern in Madrid an.","Die Form ist im Presente gleich. Das Signalwort ayer zeigt das Indefinido."],
+ ["Llegamos ayer a Bogotá.","llegamos","llegar","3","indef","Wir kamen gestern in Bogotá an.","Die Form ist im Presente gleich. Das Signalwort ayer zeigt das Indefinido."],
  ["¿Qué haces esta noche?","haces","hacer","1","pres","Was machst du heute Abend?","Endung -es = tú im Presente."],
  ["Te voy a llamar mañana.","voy a llamar","llamar","0","ira","Ich werde dich morgen anrufen.","Signalwort: mañana."],
  ["Hace diez años vivíamos en Berna.","vivíamos","vivir","3","imperf","Vor zehn Jahren wohnten wir in Bern.","Endung -íamos = nosotros im Imperfecto."],
  ["¿Organizaste tú la fiesta?","organizaste","organizar","1","indef","Hast du das Fest organisiert?","Endung -aste = tú im Indefinido."],
- ["El tren sale a las nueve.","sale","salir","2","pres","Der Zug fährt um neun Uhr ab.","Fester Fahrplan: Presente."],
+ ["El bus sale a las nueve.","sale","salir","2","pres","Der Bus fährt um neun Uhr ab.","Fester Fahrplan: Presente."],
  ["Nunca comprendí este ejercicio.","comprendí","comprender","0","indef","Ich habe diese Übung nie verstanden.","Endung -í mit Akzent = yo im Indefinido."],
  ["Mis padres van a estar en casa.","van a estar","estar","5","ira","Meine Eltern werden zu Hause sein.","van = ellos. Das Subjekt mis padres zeigt die Person."],
- ["¿Dónde estuvisteis ayer?","estuvisteis","estar","4","indef","Wo wart ihr gestern?","Signalwort: ayer."],
+ ["¿Dónde estuvieron ustedes ayer?","estuvieron","estar","5","indef","Wo wart ihr gestern?","ustedes wird wie ellos konjugiert. Signalwort: ayer."],
  ["Mientras cocinabas, yo ponía la mesa.","cocinabas","cocinar","1","imperf","Während du kochtest, deckte ich den Tisch.","Signalwort: mientras (Handlung im Verlauf)."],
  ["Anoche decidimos quedarnos en casa.","decidimos","decidir","3","indef","Gestern Abend entschieden wir, zu Hause zu bleiben.","Die Form ist im Presente gleich. Das Signalwort anoche zeigt das Indefinido."],
  ["Ellas escuchan música todo el día.","escuchan","escuchar","5","pres","Sie hören den ganzen Tag Musik.","Endung -an = ellos/ellas im Presente."],
@@ -1326,7 +1383,7 @@ const SENT=[
  ["Cada domingo subíamos a la montaña.","subíamos","subir","3","imperf","Jeden Sonntag stiegen wir auf den Berg.","Signalwort: cada domingo (Gewohnheit)."],
  ["Hoy ayudo a mi madre.","ayudo","ayudar","0","pres","Heute helfe ich meiner Mutter.","Endung -o = yo im Presente."],
  ["El verano pasado aprendí a nadar.","aprendí","aprender","0","indef","Letzten Sommer lernte ich schwimmen.","Signalwort: el verano pasado."],
- ["¿Cuándo vais a venir a visitarnos?","vais a venir","venir","4","ira","Wann werdet ihr uns besuchen kommen?","vais = vosotros. venir bleibt im Infinitiv."]
+ ["¿Cuándo van a venir a visitarnos?","van a venir","venir","5","ira","Wann werdet ihr uns besuchen kommen?","van = ustedes. venir bleibt im Infinitiv."]
 ].map(([s,v,inf,p,t,de,h])=>({s,v,inf,p:[...p].map(Number),t,de,h}));
 
 function buildSentQuiz(el){
@@ -1376,16 +1433,16 @@ buildSentQuiz(document.getElementById("sentQuizZ"));
 const PQ=[
  ["pron","¿Ves a María? ___ veo todos los días.","La",["Lo","Le","Se"],"Siehst du María? Ich sehe sie jeden Tag.","Wen? Direktes Objekt, weiblich: la."],
  ["pron","Este libro es muy bueno. ___ compro.","Lo",["La","Le","Los"],"Dieses Buch ist sehr gut. Ich kaufe es.","Was? Direktes Objekt, männlich: lo."],
- ["pron","Tengo dos entradas. ___ compré ayer.","Las",["Los","La","Les"],"Ich habe zwei Eintrittskarten. Ich kaufte sie gestern.","entradas ist weiblich und Plural: las."],
+ ["pron","Tengo dos boletas. ___ compré ayer.","Las",["Los","La","Les"],"Ich habe zwei Eintrittskarten. Ich kaufte sie gestern.","boletas ist weiblich und Plural: las."],
  ["pron","A Pedro ___ doy el regalo mañana.","le",["lo","se","les"],"Pedro gebe ich das Geschenk morgen.","Wem? Indirektes Objekt, Singular: le."],
  ["pron","A mis padres ___ escribo cada semana.","les",["los","le","las"],"Meinen Eltern schreibe ich jede Woche.","Wem? Indirektes Objekt, Plural: les."],
- ["pron","Mañana ___ llamo, ¿vale?","te",["tú","ti","me"],"Morgen rufe ich dich an, okay?","Wen? Direktes Objekt, du: te."],
+ ["pron","Mañana ___ llamo, ¿listo?","te",["tú","ti","me"],"Morgen rufe ich dich an, okay?","Wen? Direktes Objekt, du: te."],
  ["pron","A mí ___ gusta el chocolate.","me",["yo","mí","lo"],"Ich mag Schokolade.","gustar: das Pronomen ist indirekt (mir gefällt)."],
  ["pron","A nosotros ___ gustan los perros.","nos",["nosotros","os","les"],"Wir mögen Hunde.","gustar: nos. Das Verb richtet sich nach der Sache (gustan)."],
  ["pron","Le doy el libro a Ana. = ___ lo doy.","Se",["Le","La","Les"],"Ich gebe es ihr.","le oder les wird vor lo, la, los, las zu se."],
  ["pron","Ellos ___ levantan temprano.","se",["les","los","lo"],"Sie stehen früh auf.","Reflexiv, 3. Person: se."],
  ["pron","Yo ___ llamo Pedro.","me",["lo","te","se"],"Ich heisse Pedro.","Reflexiv, 1. Person: me."],
- ["pron","Vosotros ___ laváis las manos.","os",["nos","se","los"],"Ihr wascht euch die Hände.","Reflexiv, 2. Person Plural: os."],
+ ["pron","Ustedes ___ lavan las manos.","se",["les","los","nos"],"Ihr wascht euch die Hände.","Reflexiv, ustedes (ihr, Sie Pl.): se."],
  ["pron","Quiero ___ ver mañana. (dich)","te",["tú","ti","le"],"Ich möchte dich morgen sehen.","Vor dem Verb oder angehängt: te quiero ver = quiero verte."],
  ["pron","Ella ___ dijo la verdad. (mir)","me",["lo","le","se"],"Sie sagte mir die Wahrheit.","Wem? Indirektes Objekt, ich: me."],
  ["pron","Este regalo es para ___.","mí",["me","yo","conmigo"],"Dieses Geschenk ist für mich.","Nach einer Präposition: mí."],
@@ -1400,11 +1457,11 @@ const PQ=[
  ["prep","Soy ___ Suiza.","de",["en","a","por"],"Ich komme aus der Schweiz.","Herkunft: de."],
  ["prep","Veo ___ Ana en la calle.","a",["de","en","con"],"Ich sehe Ana auf der Strasse.","Persönliches a vor bestimmten Personen."],
  ["prep","Llego ___ las ocho.","a",["en","de","por"],"Ich komme um acht an.","Uhrzeit: a las ocho."],
- ["prep","Es el coche ___ mi padre. (Besitz)","de",["para","a","en"],"Das ist das Auto meines Vaters.","Besitz: de."],
+ ["prep","Es el carro ___ mi papá. (Besitz)","de",["para","a","en"],"Das ist das Auto meines Vaters.","Besitz: de."],
  ["prep","Este regalo es ___ ti.","para",["por","a","de"],"Das Geschenk ist für dich.","Empfänger: para."],
  ["prep","Gracias ___ tu ayuda.","por",["para","de","a"],"Danke für deine Hilfe.","Grund: por."],
- ["prep","Estudio español ___ viajar a México.","para",["por","a","en"],"Ich lerne Spanisch, um nach Mexiko zu reisen.","Zweck («um zu»): para."],
- ["prep","Voy a Madrid ___ tren.","en",["por","con","a"],"Ich fahre mit dem Zug nach Madrid.","Verkehrsmittel: en."],
+ ["prep","Estudio español ___ viajar a Colombia.","para",["por","a","en"],"Ich lerne Spanisch, um nach Kolumbien zu reisen.","Zweck («um zu»): para."],
+ ["prep","Voy a Tunja ___ bus.","en",["por","con","a"],"Ich fahre mit dem Bus nach Tunja.","Verkehrsmittel: en."],
  ["prep","Quiero un café ___ leche.","con",["de","en","para"],"Ich möchte einen Kaffee mit Milch.","mit: con."],
  ["prep","Salgo ___ casa a las siete.","de",["en","a","por"],"Ich gehe um sieben aus dem Haus.","salir de: aus etwas heraus."],
  ["prep","Hablo ___ mi amigo por teléfono.","con",["en","para","sobre"],"Ich spreche mit meinem Freund am Telefon.","mit jemandem sprechen: hablar con."],
@@ -1447,6 +1504,236 @@ const PQ=[
   el.querySelector("[data-skip]").onclick=next;
   addPicks(el,"pronQuizSel",sel,[["Gruppen","c",[["pron","Pronomen"],["prep","Präpositionen"]]]]);
   pDeck.mount(el);
+  next();
+})();
+
+/* ===================== CHUNKS ===================== */
+// Thema → Gruppen → Chunks (kolumbianisches Spanisch, Bogotá). Felder pro Chunk:
+//  es, de     Chunk und Übersetzung
+//  ex, exde   Beispielsatz aus dem Alltag in Bogotá
+//  g          [Zeitform, Erklärung] für neue Formen (indef, imperf, ira)
+//  co         Hinweis zum kolumbianischen Gebrauch
+//  gap        [Wort im Chunk, [3 falsche Optionen]] für den Lückensatz
+//  re         [Wer, was die Person sagt, Übersetzung, [3 unpassende Reaktionen]] für «Reagieren».
+//             Ohne «was die Person sagt» ist die Übersetzung eine Situation, auf die man reagiert.
+//  syn        gleiche Zahl = ähnliche Bedeutung, wird nie als falsche Auswahl gezeigt
+// Neue Themen (Tienda, Taxi, Novenas …) brauchen nur einen weiteren Eintrag hier.
+const CHUNKS=[{id:"dia",name:"Mi día",groups:[
+ {id:"contar",name:"Contar",de:"Von meinem Tag erzählen",h:205,items:[
+  {es:"Me fue bien, gracias.",de:"Es lief gut, danke.",ex:"—¿Cómo le fue hoy? —Me fue bien, gracias.",exde:"«Wie war Ihr Tag?» «Es lief gut, danke.»",
+   g:["indef","<b>me fue</b> = es ging mir. Indefinido von <i>ir</i>, mit <i>me</i> wie bei gustar."],
+   gap:["fue",["fui","fueron","es"]],re:["La mamá","¿Cómo le fue hoy?","Wie war Ihr Tag?",["¡Qué pena con usted!","¿Y eso?","A la orden."]]},
+  {es:"Estoy un poco cansado.",de:"Ich bin ein bisschen müde.",ex:"Estoy un poco cansado, hoy trabajé mucho.",exde:"Ich bin ein bisschen müde, heute habe ich viel gearbeitet.",
+   co:"Als Frau: <i>cansada</i>. Liebevoll sagt man auch <i>cansadito</i>.",
+   gap:["Estoy",["Soy","Está","Estás"]],re:["La abuela","Mijo, lo veo como cansadito.","Mein Lieber, Sie sehen etwas müde aus.",["¡Qué bueno!","Con mucho gusto.","¡Uy, qué rico!"]]},
+  {es:"Hoy trabajé desde la casa.",de:"Heute habe ich von zu Hause aus gearbeitet.",ex:"Hoy trabajé desde la casa, no fui a la oficina.",exde:"Heute habe ich von zu Hause aus gearbeitet, ich war nicht im Büro.",
+   g:["indef","<b>trabajé</b> = ich arbeitete. Indefinido, yo-Form auf <b>-é</b>."],co:"In Kolumbien mit Artikel: <i>desde la casa, en la casa</i>.",
+   gap:["trabajé",["trabajo","trabajó","trabajamos"]],re:["El papá","¿Hoy fue a la oficina?","Waren Sie heute im Büro?",["Sí, con mucho gusto.","¡Qué chévere!","¿Y a usted cómo le fue hoy?"]]},
+  {es:"Hoy fue un día muy pesado.",de:"Heute war ein sehr anstrengender Tag.",ex:"Uf, hoy fue un día muy pesado en el trabajo.",exde:"Uff, heute war ein sehr anstrengender Tag bei der Arbeit.",
+   g:["indef","<b>fue</b> = war. Indefinido von <i>ser</i> (gleich wie von <i>ir</i>)."],co:"<i>pesado</i> = schwer, mühsam. Sehr häufig, auch für Menschen: <i>¡Qué pesado!</i>",
+   gap:["fue",["fui","fueron","son"]],re:["La mamá","Ay, ¿y esa carita?","Na, was ist denn das für ein Gesicht?",["¡Qué chévere!","Con mucho gusto.","Bien, ¿y usted?"]]},
+  {es:"Tuve muchas reuniones.",de:"Ich hatte viele Meetings.",ex:"Hoy tuve muchas reuniones con Suiza.",exde:"Heute hatte ich viele Meetings mit der Schweiz.",
+   g:["indef","<b>tuve</b> = ich hatte. Indefinido von <i>tener</i>, unregelmässig: tuve, tuvo."],
+   gap:["Tuve",["Tengo","Tuvo","Tuviste"]],re:["El papá","¿Y qué tal el trabajo hoy?","Und wie war die Arbeit heute?",["A la orden, sumercé.","¿En serio?","Hasta mañana."]]},
+  {es:"Qué pena, estaba en una reunión.",de:"Entschuldigung, ich war in einem Meeting.",ex:"Qué pena, no le contesté, estaba en una reunión.",exde:"Entschuldigung, ich habe nicht geantwortet, ich war in einem Meeting.",
+   g:["imperf","<b>estaba</b> = ich war (gerade). Imperfecto von <i>estar</i>: der Hintergrund, warum etwas nicht ging."],co:"<i>Qué pena</i> = Entschuldigung, das ist mir unangenehm. Die typisch kolumbianische Art, sich zu entschuldigen.",
+   gap:["estaba",["estoy","está","estábamos"]],re:["Su novia","¿Por qué no me contestó?","Warum haben Sie nicht geantwortet?",["¡Qué bueno!","A la orden.","Me fue bien, gracias."]]},
+  {es:"Ya almorcé, gracias.",de:"Ich habe schon zu Mittag gegessen, danke.",ex:"—¿Le sirvo algo? —Tranquila, ya almorcé, gracias.",exde:"«Soll ich Ihnen etwas servieren?» «Keine Sorge, ich habe schon gegessen, danke.»",
+   g:["indef","<b>almorcé</b> = ich ass zu Mittag. Von <i>almorzar</i>, z → c in der yo-Form wie organicé."],co:"Das <i>almuerzo</i> am Mittag ist in Kolumbien die Hauptmahlzeit.",
+   gap:["almorcé",["almuerzo","almorzó","almorzamos"]],re:["La abuela","Mijo, ¿le sirvo almuerzo?","Mein Lieber, soll ich Ihnen das Mittagessen servieren?",["Sí, me fue bien.","¿Y eso?","¡Uy, qué pesar!"]]},
+  {es:"Fui al gimnasio.",de:"Ich war im Fitnessstudio.",ex:"Después del trabajo fui al gimnasio.",exde:"Nach der Arbeit ging ich ins Fitnessstudio.",
+   g:["indef","<b>fui</b> = ich ging, ich war. Indefinido von <i>ir</i>. a + el = <b>al</b>."],co:"Viele sagen auch einfach <i>el gym</i>.",
+   gap:["Fui",["Voy","Fue","Vamos"]],re:["Su novia","¿Qué hizo esta tarde?","Was haben Sie heute Nachmittag gemacht?",["¡Qué pena!","Sí, claro, con gusto.","¿Y eso?"]]},
+  {es:"Salí a trotar por la mañana.",de:"Ich war am Morgen joggen.",ex:"Hoy salí a trotar por la mañana en el parque.",exde:"Heute war ich am Morgen im Park joggen.",
+   g:["indef","<b>salí</b> = ich ging hinaus. Indefinido von <i>salir</i>, regelmässig."],co:"<i>trotar</i> = joggen. So sagt man in Kolumbien.",
+   gap:["Salí",["Salgo","Salió","Salimos"]],re:["El tío","¿Qué hizo esta mañana?","Was haben Sie heute Morgen gemacht?",["No, gracias, muy amable.","¡Qué pena con usted!","A la orden."]]},
+  {es:"Cociné algo sencillo.",de:"Ich habe etwas Einfaches gekocht.",ex:"Al mediodía cociné algo sencillo: arroz con huevo.",exde:"Am Mittag habe ich etwas Einfaches gekocht: Reis mit Ei.",
+   g:["indef","<b>cociné</b> = ich kochte. Indefinido, -ar → <b>-é</b>."],
+   gap:["Cociné",["Cocino","Cocinó","Cocinamos"]],re:["La mamá","¿Y qué almorzó hoy?","Und was haben Sie heute zu Mittag gegessen?",["¡Qué rico, gracias!","Hasta luego.","¿En serio?"]]},
+  {es:"Me levanté muy temprano.",de:"Ich bin sehr früh aufgestanden.",ex:"Me levanté muy temprano por una reunión con Suiza.",exde:"Ich bin sehr früh aufgestanden wegen eines Meetings mit der Schweiz.",
+   g:["indef","<b>me levanté</b> = ich stand auf. Reflexiv: <i>me</i> + Indefinido."],co:"Früh aufstehen heisst in Kolumbien <i>madrugar</i>: <i>Hoy madrugué.</i>",
+   gap:["levanté",["levanto","levantó","levantamos"]],re:["La abuela","¿Madrugó hoy, mijo?","Sind Sie heute früh aufgestanden, mein Lieber?",["¡Qué chévere!","Con mucho gusto.","A la orden."]]},
+  {es:"Hoy no hice mucho.",de:"Heute habe ich nicht viel gemacht.",ex:"Hoy no hice mucho, descansé en la casa.",exde:"Heute habe ich nicht viel gemacht, ich habe mich zu Hause ausgeruht.",
+   g:["indef","<b>hice</b> = ich machte. Indefinido von <i>hacer</i>, unregelmässig: hice, hizo."],
+   gap:["hice",["hago","hizo","hacemos"]],re:["El primo","¿Qué más? ¿Qué hizo hoy?","Na? Was haben Sie heute gemacht?",["Con mucho gusto.","¡Uy, qué pena!","Hasta mañana."]]},
+  {es:"Allá son seis horas más que acá.",de:"Dort ist es sechs Stunden später als hier.",ex:"En Suiza son seis horas más que acá en Bogotá.",exde:"In der Schweiz ist es sechs Stunden später als hier in Bogotá.",
+   co:"Kolumbien kennt keine Sommerzeit. Im Schweizer Sommer sind es <i>siete horas</i>. <i>allá</i> = dort, <i>acá</i> = hier.",
+   gap:["son",["es","está","hay"]],re:["El papá","¿Y qué hora es allá en Suiza?","Und wie spät ist es dort in der Schweiz?",["A la orden.","Me fue bien.","¡Qué pena!"]]},
+  {es:"Mañana voy a trabajar en la oficina.",de:"Morgen arbeite ich im Büro.",ex:"Mañana voy a trabajar en la oficina, tengo reunión temprano.",exde:"Morgen arbeite ich im Büro, ich habe früh ein Meeting.",
+   g:["ira","<b>voy a</b> + Infinitiv = ich werde. So spricht man über Pläne."],
+   gap:["voy",["va","fui","iba"]],re:["La mamá","¿Y mañana qué va a hacer?","Und was machen Sie morgen?",["Me fue bien, gracias.","Hoy fue un día muy pesado.","¡Qué chévere!"]]},
+  {es:"Ahorita voy a descansar un rato.",de:"Gleich ruhe ich mich ein bisschen aus.",ex:"Ahorita voy a descansar un rato y después comemos.",exde:"Gleich ruhe ich mich ein bisschen aus und danach essen wir.",
+   g:["ira","<b>voy a descansar</b> = ich werde mich ausruhen. Nach <i>voy a</i> bleibt der Infinitiv."],co:"<i>ahorita</i> = gleich, jetzt dann. Kann aber auch «irgendwann später» heissen.",
+   gap:["descansar",["descanso","descansé","descansa"]],re:["La mamá","Ay, mijo, ¡qué día tan largo!","Ach, mein Lieber, was für ein langer Tag!",["¡Qué bueno!","A la orden.","Con mucho gusto."]]}
+ ]},
+ {id:"preguntar",name:"Preguntar",de:"Fragen und reagieren",h:330,items:[
+  {es:"¿Y a usted cómo le fue hoy?",de:"Und wie war Ihr Tag?",ex:"Me fue bien, gracias. ¿Y a usted cómo le fue hoy?",exde:"Es lief gut, danke. Und wie war Ihr Tag?",
+   g:["indef","<b>le fue</b> = es ging Ihnen. Indefinido von <i>ir</i>, mit <i>le</i> für usted."],co:"Die Standardfrage am Abend. Immer zurückfragen, das gehört zur Höflichkeit.",
+   gap:["fue",["fui","fuiste","es"]],re:["","","Du hast der Mutter von deinem Tag erzählt. Jetzt fragst du zurück.",["¿Cómo se llama usted?","¿Me regala un tinto?","¿Qué hora es allá?"]]},
+  {es:"¿Qué hizo hoy?",de:"Was haben Sie heute gemacht?",ex:"Don Carlos, ¿qué hizo hoy? ¿Fue al centro?",exde:"Don Carlos, was haben Sie heute gemacht? Waren Sie im Zentrum?",
+   g:["indef","<b>hizo</b> = Sie machten, er machte. Indefinido von <i>hacer</i>, usted-Form."],
+   gap:["hizo",["hice","hago","hacer"]],re:["","","Der Onkel kommt am Abend nach Hause. Du willst wissen, was er gemacht hat.",["¿Dónde queda el baño?","¿Cuánto vale?","¿Me regala una bolsa?"]]},
+  {es:"¡Qué bueno!",de:"Wie schön! Super!",ex:"—Hoy me fue muy bien. —¡Qué bueno!",exde:"«Heute lief es sehr gut.» «Wie schön!»",syn:1,
+   co:"Die häufigste positive Reaktion. Geht auch: <i>¡Qué bien!</i>",
+   gap:["bueno",["buena","malo","pena"]],re:["La prima","¡Me dieron el trabajo!","Ich habe die Stelle bekommen!",["¡Uy, qué pesar!","A la orden.","¿Me regala un tinto?"]]},
+  {es:"¿Y eso?",de:"Wieso das? Was ist passiert?",ex:"—Hoy no fui a trabajar. —¿Y eso?",exde:"«Heute bin ich nicht arbeiten gegangen.» «Wieso das?»",
+   co:"Sehr kolumbianisch. Zeigt Interesse und lädt zum Weitererzählen ein.",
+   re:["El tío","Hoy no fui a trabajar.","Heute bin ich nicht arbeiten gegangen.",["¡Qué rico!","Con mucho gusto.","A la orden."]]},
+  {es:"¿En serio?",de:"Im Ernst? Wirklich?",ex:"—Mi vecina se ganó la lotería. —¿En serio?",exde:"«Meine Nachbarin hat im Lotto gewonnen.» «Im Ernst?»",
+   re:["La abuela","Mi vecina se ganó la lotería.","Meine Nachbarin hat im Lotto gewonnen.",["Con mucho gusto.","Me fue bien, gracias.","Qué pena con usted."]]},
+  {es:"¡Qué chévere!",de:"Wie toll! Cool!",ex:"—El sábado vamos a una finca. —¡Qué chévere!",exde:"«Am Samstag fahren wir auf eine Finca.» «Wie toll!»",syn:1,
+   co:"<i>chévere</i> = toll, cool. Jung und Alt sagen es. Unter Jüngeren auch <i>¡Qué bacano!</i>",
+   gap:["chévere",["pena","pesar","mal"]],re:["Su novia","El sábado vamos a una finca.","Am Samstag fahren wir auf eine Finca (Landhaus).",["¡Uy, qué pesar!","Qué pena con usted.","Me fue bien."]]},
+  {es:"¡Uy, qué pesar!",de:"Oh, wie schade! Das tut mir leid.",ex:"—Hoy me sentí muy enferma. —¡Uy, qué pesar!",exde:"«Heute fühlte ich mich sehr krank.» «Oh, das tut mir leid!»",
+   co:"<i>qué pesar</i> = wie schade, das tut mir leid. Nicht verwechseln mit <i>qué pena</i> (Entschuldigung, peinlich).",
+   gap:["pesar",["bueno","chévere","rico"]],re:["La mamá","Hoy me sentí muy enferma.","Heute fühlte ich mich sehr krank.",["¡Qué chévere!","¡Qué rico!","Listo, gracias."]]},
+  {es:"Qué pena, ¿me repite, por favor?",de:"Entschuldigung, können Sie das wiederholen?",ex:"Qué pena, ¿me repite, por favor? Todavía no hablo bien.",exde:"Entschuldigung, können Sie das wiederholen? Ich spreche noch nicht gut.",
+   co:"Dein wichtigster Rettungsring im Gespräch. Langsamer bitte: <i>¿Me habla más despacio?</i>",
+   gap:["repite",["repito","repitió","repetir"]],re:["","","Die Grossmutter erzählt sehr schnell und du verstehst fast nichts.",["¡Qué chévere!","Me fue bien, gracias.","¡Qué bueno!"]]},
+  {es:"¿Y qué tal el trabajo?",de:"Und wie läuft die Arbeit?",ex:"Hola, amor. ¿Y qué tal el trabajo hoy?",exde:"Hallo, Schatz. Und wie war die Arbeit heute?",
+   gap:["tal",["tan","bien","cómo"]],re:["","","Deine Freundin kommt von der Arbeit nach Hause.",["¿Me regala una bolsa?","Mucho gusto.","A la orden."]]},
+  {es:"¿Qué le pasó?",de:"Was ist (Ihnen) passiert?",ex:"Ay, don Carlos, ¿qué le pasó en la mano?",exde:"Oh, Don Carlos, was ist mit Ihrer Hand passiert?",
+   g:["indef","<b>pasó</b> = passierte. Indefinido, 3. Person. <i>le</i> = Ihnen."],
+   gap:["pasó",["paso","pasé","pasamos"]],re:["","","Der Onkel kommt hinkend nach Hause.",["¡Qué chévere!","¡Qué bueno!","Me fue bien, gracias."]]},
+  {es:"¿Ah, sí? ¿Y luego qué pasó?",de:"Ach ja? Und was ist dann passiert?",ex:"—Y entonces llegó mi jefe… —¿Ah, sí? ¿Y luego qué pasó?",exde:"«Und dann kam mein Chef …» «Ach ja? Und was ist dann passiert?»",
+   co:"So hältst du das Gespräch am Laufen, auch wenn du nicht alles verstehst.",
+   gap:["luego",["antes","ayer","nunca"]],re:["La tía","Y entonces llegó mi jefe…","Und dann kam mein Chef …",["Con mucho gusto.","A la orden.","Me fue bien."]]},
+  {es:"¿Y cómo está la familia?",de:"Und wie geht es der Familie?",ex:"Hola, doña Rosa. ¿Y cómo está la familia?",exde:"Hallo, Frau Rosa. Und wie geht es der Familie?",
+   co:"Fast immer Teil der Begrüssung. Typische Antwort: <i>Bien, gracias a Dios.</i>",
+   gap:["está",["es","son","estás"]],re:["","","Du triffst eine Tante deiner Freundin auf der Strasse und begrüsst sie.",["¿Y eso?","¿Cuánto vale?","¿Qué hora es?"]]},
+  {es:"¿Qué más? ¿Todo bien?",de:"Na, wie geht's? Alles gut?",ex:"¡Hola, primo! ¿Qué más? ¿Todo bien?",exde:"Hallo, Cousin! Na, wie geht's? Alles gut?",
+   co:"<i>¿Qué más?</i> = lockere kolumbianische Begrüssung, eher unter Gleichaltrigen. Antwort: <i>Bien, ¿y usted?</i>",
+   gap:["Todo",["Toda","Todos","Nada"]],re:["","","Du triffst den Cousin am Sonntag und begrüsst ihn locker.",["Qué pena con usted.","¡Uy, qué pesar!","¿Me regala un tinto?"]]},
+  {es:"¿Sumercé cómo amaneció?",de:"Wie geht es Ihnen heute Morgen?",ex:"Buenos días, abuelita. ¿Sumercé cómo amaneció?",exde:"Guten Morgen, Grossmutter. Wie geht es Ihnen heute Morgen?",
+   g:["indef","<b>amaneció</b> = Sie sind aufgewacht. Indefinido von <i>amanecer</i>. Wörtlich: Wie sind Sie aufgewacht?"],
+   co:"<i>sumercé</i> = herzliches, respektvolles «Sie». Typisch für Bogotá und Boyacá, vor allem gegenüber Älteren.",
+   gap:["amaneció",["amanezco","amanecí","amanece"]],re:["","","Am Morgen triffst du die Grossmutter in der Küche.",["Hasta mañana.","¡Uy, qué pesar!","Me fue bien, gracias."]]},
+  {es:"¿Va a hacer algo esta noche?",de:"Machen Sie heute Abend etwas?",ex:"Es viernes. ¿Va a hacer algo esta noche?",exde:"Es ist Freitag. Machen Sie heute Abend etwas?",
+   g:["ira","<b>va a</b> + Infinitiv = Sie werden. usted-Form von <i>ir a</i>."],
+   gap:["hacer",["hace","hizo","hago"]],re:["","","Freitagabend. Du fragst den Cousin nach seinen Plänen.",["¿Me regala un tinto?","¡Uy, qué pesar!","Qué pena con usted."]]}
+ ]}],
+ dialog:{title:"Am Abend bei der Familie in Bogotá",me:"Tú",lines:[
+  ["Doña Marta","¡Hola, mijo! ¿Cómo le fue hoy?","Hallo, mein Lieber! Wie war Ihr Tag?"],
+  ["Tú","Me fue bien, gracias. Hoy trabajé desde la casa.","Es lief gut, danke. Heute habe ich von zu Hause aus gearbeitet."],
+  ["Doña Marta","¡Qué bueno! ¿Y tuvo mucho trabajo?","Wie schön! Und hatten Sie viel Arbeit?"],
+  ["Tú","Sí, tuve muchas reuniones. Estoy un poco cansado. ¿Y a usted cómo le fue hoy?","Ja, ich hatte viele Meetings. Ich bin ein bisschen müde. Und wie war Ihr Tag?"],
+  ["Doña Marta","Uy, pesado. Fui al centro y había un trancón terrible.","Oh, anstrengend. Ich war im Zentrum und es gab einen schrecklichen Stau."],
+  ["Tú","¡Uy, qué pesar! ¿Y qué hizo allá?","Oh, wie mühsam! Und was haben Sie dort gemacht?"],
+  ["Doña Marta","Fui al médico, pero todo bien. ¿Ya almorzó?","Ich war beim Arzt, aber alles gut. Haben Sie schon zu Mittag gegessen?"],
+  ["Tú","Sí, ya almorcé, gracias. Ahorita voy a descansar un rato.","Ja, ich habe schon gegessen, danke. Gleich ruhe ich mich ein bisschen aus."]],
+  gloss:"<b>mijo</b> = mein Sohn, liebevoll auch für den Freund der Tochter · <b>trancón</b> = Stau · <b>había</b> = es gab (<a class=\"tl\" href=\"#imperf\">Imperfecto</a> von hay)"}
+}];
+const CALL=[],CGROUPS=[];
+CHUNKS.forEach(t=>t.groups.forEach(g=>{const key=t.id+"-"+g.id;
+  CGROUPS.push([key,CHUNKS.length>1?`${t.name}: ${g.name}`:g.name]);
+  g.items.forEach(x=>CALL.push({...x,key,gname:g.name,h:g.h}));}));
+const TLAB={pres:"Presente",indef:"Indefinido",imperf:"Imperfecto",ira:"ir a + Infinitiv"};
+const cNotes=x=>(x.g?`<span class="gn"><a class="tl" href="#${x.g[0]}">${TLAB[x.g[0]]}</a>: ${x.g[1]}</span>`:"")+(x.co?`<span class="gn"><b>Kolumbien:</b> ${x.co}</span>`:"");
+
+// Listen
+{const cgrid=document.getElementById("cgrid");
+CHUNKS.forEach(t=>t.groups.forEach(g=>{
+  const el=document.createElement("article");el.className="card";el.id=`c-${t.id}-${g.id}`;el.style.setProperty("--h",g.h);
+  let h=`<header><h2>${g.name}</h2><span class="de">${g.de}</span><span class="forms">${g.items.length} Chunks</span></header><div class="tbl"><table><thead><tr><th style="padding-left:16px">Chunk</th><th>Deutsch</th><th>Beispiel</th></tr></thead><tbody>`;
+  g.items.forEach(x=>h+=`<tr><td class="ces" style="padding-left:16px"><span class="f">${x.es}${cNotes(x)}</span></td><td class="wde">${x.de}</td><td class="exs"><span class="f">${x.ex}<small>${x.exde}</small></span></td></tr>`);
+  el.innerHTML=h+`</tbody></table></div>`;cgrid.appendChild(el);
+}));}
+
+// Musterdialog: Chunks aus den Listen werden markiert
+{const box=document.getElementById("cdialog"),d=CHUNKS[0].dialog;
+const core=s=>s.replace(/^[¿¡]+/,"").replace(/[?!.]+$/,"");
+const cores=[...new Set(CHUNKS[0].groups.flatMap(g=>g.items.map(x=>core(x.es))))].sort((a,b)=>b.length-a.length);
+const re=new RegExp("(^|[^\\p{L}])("+cores.map(escRe).join("|")+")(?![\\p{L}])","giu");
+box.innerHTML=`<div class="dlghead"><span>${d.title}</span><button class="btn" type="button" aria-pressed="true">Deutsch anzeigen</button></div>`+
+  d.lines.map(([who,es,de])=>`<div class="dl${who===d.me?" me":""}"><span class="who">${who}</span><span class="es">${es.replace(re,"$1<mark>$2</mark>")}</span><span class="de">${de}</span></div>`).join("")+
+  `<p class="gloss">${d.gloss}</p>`;
+const tb=box.querySelector(".dlghead button");
+tb.onclick=()=>{const on=tb.getAttribute("aria-pressed")!=="true";tb.setAttribute("aria-pressed",on);box.classList.toggle("nde",!on);};}
+
+// Chunks üben: vier Übungsarten mit gemeinsamem Lernstand
+(function(){
+  const el=document.getElementById("chunkQuiz");
+  el.innerHTML=`<h3>Chunks üben</h3>
+  <div class="seg" data-mode aria-label="Übungsart"></div>
+  <div class="qline"></div>
+  <div class="opts copts"></div>
+  <div class="bau" hidden><div class="bau-ans" aria-label="Dein Satz"></div><div class="bau-pool" aria-label="Wörter"></div></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="fb"></div>
+  <div class="qbtns"><button class="btn" type="button" data-skip>Nächste</button></div>
+  <div class="score">0 von 0 richtig</div>`;
+  const q=c=>el.querySelector(c);
+  const qline=q(".qline"),opts=q(".copts"),bau=q(".bau"),ans=q(".bau-ans"),pool=q(".bau-pool"),res=q(".res"),fb=q(".fb"),sc=q(".score");
+  const sel=loadSel("chunkQuizSel",{g:CGROUPS.map(g=>g[0])});
+  const MODES=[["de","Deutsch → Spanisch"],["gap","Lückensatz"],["re","Reagieren"],["bau","Satz bauen"]];
+  let mode="de";try{const m=localStorage.getItem("chunkMode");if(MODES.some(x=>x[0]===m))mode=m;}catch(e){}
+  let c=null,src=null,answered=false,ok=0,tot=0,timer=0;
+  const WAIT=4800;
+  const later=ms=>{clearTimeout(timer);timer=setTimeout(next,ms);};
+  // Satz bauen: Wörter ohne Satzzeichen, klein geschrieben (ausser Namen). Kurze Chunks werden mit dem Beispielsatz geübt.
+  const NAMES=new Set(["Suiza","Bogotá","Carlos","Rosa"]);
+  const tok=s=>s.split(/\s+/).map(w=>w.replace(/[¿?¡!.,:;«»—…"]/g,"")).filter(Boolean).map(w=>NAMES.has(w)?w:w.toLowerCase());
+  const bauSrc=x=>{const t=tok(x.es);return t.length>=3?{s:x.es,de:x.de,t}:{s:x.ex,de:x.exde,t:tok(x.ex)};};
+  const deck=makeDeck("chunk",()=>{const p=CALL.filter(x=>sel.g.includes(x.key));
+    return mode==="gap"?p.filter(x=>x.gap):mode==="re"?p.filter(x=>x.re):p;},x=>`${mode}|${x.es}`);
+  const chip=(x,t)=>`<span class="chip v" style="background:hsl(${x.h} var(--head-s) var(--head-l))">${x.gname}</span>`+(t?`<span class="chip">${t}</span>`:"");
+  const score=()=>sc.textContent=`${ok} von ${tot} richtig`;
+  const showFb=()=>fb.innerHTML=`<span><b>${c.es}</b> · ${c.de}</span>${cNotes(c)}<span><i>${c.ex}</i> ${c.exde}</span>`;
+  function finish(right,msg){
+    answered=true;tot++;if(right)ok++;deck.result(right);
+    res.textContent=right?"Richtig!":"Nicht ganz. Richtig ist: "+msg;res.className="res "+(right?"ok":"no");
+    showFb();score();if(right)later(WAIT);
+  }
+  function choice(right,wrong){
+    opts.innerHTML="";
+    shuffle([right,...wrong]).forEach(o=>{const b=document.createElement("button");b.type="button";b.textContent=o;b.dataset.ok=o===right?"1":"";
+      b.onclick=()=>{if(answered)return;
+        opts.querySelectorAll("button").forEach(x=>{if(x.dataset.ok)x.classList.add("right");});if(o!==right)b.classList.add("wrong");
+        finish(o===right,right);};
+      opts.appendChild(b);});
+  }
+  function tile(w){const b=document.createElement("button");b.type="button";b.className="tile";b.textContent=w;
+    b.onclick=()=>{if(answered)return;(b.parentNode===pool?ans:pool).appendChild(b);if(!pool.children.length)checkBau();};return b;}
+  function checkBau(){
+    const built=[...ans.children].map(b=>b.textContent).join(" "),right=built===src.t.join(" ");
+    ans.querySelectorAll(".tile").forEach(b=>b.classList.add(right?"right":"wrong"));
+    finish(right,src.s);
+  }
+  function next(){
+    clearTimeout(timer);timer=0;
+    c=deck.next();answered=false;
+    res.textContent="";res.className="res";fb.innerHTML="";
+    const isBau=mode==="bau";bau.hidden=!isBau;opts.hidden=isBau;
+    if(!c){qline.textContent="Keine Chunks in dieser Auswahl.";opts.innerHTML="";return;}
+    if(mode==="de"){
+      qline.innerHTML=chip(c)+`<span class="chip per">${c.de}</span>`;
+      const same=CALL.filter(x=>x!==c&&x.key===c.key&&!(c.syn&&x.syn===c.syn));
+      const other=CALL.filter(x=>x!==c&&x.key!==c.key);
+      choice(c.es,[...shuffle(same),...shuffle(other)].slice(0,3).map(x=>x.es));
+    }else if(mode==="gap"){
+      qline.innerHTML=chip(c,"Lückensatz")+`<span class="big" style="flex-basis:100%">${c.es.replace(wordRe(c.gap[0]),`$1<span class="gapb">___</span>`)}</span><span class="trans">${c.de}</span>`;
+      choice(c.gap[0],c.gap[1]);
+    }else if(mode==="re"){
+      const [who,said,de,wrong]=c.re;
+      qline.innerHTML=chip(c,said?"Was antwortest du?":"Situation")+(said?`<span class="big" style="flex-basis:100%"><b>${who}:</b> «${said}»</span><span class="trans">${de}</span>`:`<span class="big" style="flex-basis:100%;font-size:19px">${de}</span>`);
+      choice(c.es,wrong);
+    }else{
+      src=bauSrc(c);
+      qline.innerHTML=chip(c,"Satz bauen")+`<span class="big" style="flex-basis:100%;font-size:19px">${src.de}</span>`;
+      let mix=shuffle(src.t);for(let i=0;i<5&&mix.join(" ")===src.t.join(" ");i++)mix=shuffle(src.t);
+      ans.innerHTML="";pool.innerHTML="";mix.forEach(w=>pool.appendChild(tile(w)));
+    }
+  }
+  const ms=q("[data-mode]");
+  MODES.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",k===mode);
+    b.onclick=()=>{mode=k;try{localStorage.setItem("chunkMode",k);}catch(e){}
+      ms.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));deck.reset();next();};ms.appendChild(b);});
+  q("[data-skip]").onclick=next;
+  // Enter nach beantworteter Frage: sofort weiter
+  document.addEventListener("keydown",e=>{if(e.key!=="Enter"||!answered||!el.offsetParent)return;
+    const t=e.target;if(t!==document.body&&!el.contains(t))return;e.preventDefault();next();});
+  addPicks(el,"chunkQuizSel",sel,[["Gruppen","g",CGROUPS]]);
+  deck.mount(el);
   next();
 })();
 
