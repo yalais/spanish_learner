@@ -1,10 +1,10 @@
 // Service Worker: speichert die App auf dem Gerät, damit sie auch ohne Netz startet.
-// Seite: zuerst Netz (damit Updates sofort ankommen), ohne Netz die gespeicherte Version.
+// Seite und eigene Dateien (z.B. vocab.js): zuerst Netz (damit Updates sofort ankommen), ohne Netz die gespeicherte Version.
 // Schriften und Icons: zuerst Speicher, sonst Netz.
 // Die GitHub API (Lernstand-Sync) läuft immer direkt übers Netz und wird nie gespeichert.
 // CACHE-Namen erhöhen, wenn sich Dateien in APP ändern, damit alte Kopien gelöscht werden.
-const CACHE = "verbos-v2";
-const APP = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
+const CACHE = "verbos-v3";
+const APP = ["./", "index.html", "vocab.js", "manifest.json", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(APP)).then(() => self.skipWaiting()));
@@ -25,6 +25,14 @@ self.addEventListener("fetch", e => {
     e.respondWith(fetch(req)
       .then(res => { const copy = res.clone(); caches.open(CACHE).then(c => c.put("index.html", copy)); return res; })
       .catch(() => caches.match("index.html")));
+    return;
+  }
+
+  // Eigene Skripte: Netz zuerst, offline aus dem Speicher
+  if (url.origin === location.origin && url.pathname.endsWith(".js")) {
+    e.respondWith(fetch(req)
+      .then(res => { if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return res; })
+      .catch(() => caches.match(req)));
     return;
   }
 
