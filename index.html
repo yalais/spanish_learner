@@ -977,10 +977,13 @@ Store.load();
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 
 // Stapel für eine Übung. getPool() liefert die Fragen der aktuellen Auswahl, idOf() eine feste ID pro Frage.
-// Ablauf einer Runde: alle Fragen einmal (falsche und neue zuerst), Fehler kommen nach 3 bis 5 Fragen wieder
-// und müssen zweimal hintereinander richtig sein. Fragen, die sitzen (Fach 3 und 4), kommen nur noch ab und zu.
+// Ablauf einer Runde: alle Fragen einmal (falsche und neue zuerst). Danach eine Leiter mit Abständen in Fragen (X = 5):
+// falsch → Fach 0, nach X wieder · richtig aus Fach 0 → Fach 1, nach 2X wieder · nochmals richtig → Fach 2, nach 5X wieder
+// · nochmals richtig → Fach 3, sitzt. Neu und gleich richtig → direkt Fach 2 (nur noch eine Kontrolle nach 5X).
+// Ein Fehler setzt die Leiter zurück. Fragen, die sitzen, kommen nur noch selten (Fach 3: 20 %, Fach 4: 10 % pro Runde).
+const LADDER_X=5;
 function makeDeck(qid,getPool,idOf){
-  let queue=[],cur=null,reported=false,need={},done=0,total=0,onlyWeak=false,msg="",box=null;
+  let queue=[],cur=null,reported=false,open=new Set(),done=0,total=0,onlyWeak=false,msg="",box=null;
   const S=()=>LS[qid]||(LS[qid]={});
   const fach=it=>S()[idOf(it)];
   const insert=(it,pos)=>queue.splice(Math.min(pos,queue.length),0,it);
@@ -989,11 +992,11 @@ function makeDeck(qid,getPool,idOf){
     let pick=pool;
     if(onlyWeak){pick=pool.filter(it=>fach(it)!==undefined&&fach(it)<=1);
       if(!pick.length){onlyWeak=false;msg="Keine offenen Fehler. Es geht mit allen Fragen weiter.";pick=pool;}}
-    if(!onlyWeak){const keep=pick.filter(it=>{const b=fach(it);return b===undefined||b<3||Math.random()<(b===3?.5:.25);});if(keep.length)pick=keep;}
+    if(!onlyWeak){const keep=pick.filter(it=>{const b=fach(it);return b===undefined||b<3||Math.random()<(b===3?.2:.1);});if(keep.length)pick=keep;}
     // Reihenfolge: falsch (0), neu, unsicher (1), dann 2, 3, 4. Innerhalb einer Gruppe gemischt.
     const prio=it=>{const b=fach(it);return b===undefined?1:b===0?0:b+1;};
     queue=shuffle(pick).sort((a,b)=>prio(a)-prio(b));
-    need={};done=0;total=queue.length;cur=null;
+    open=new Set();done=0;total=queue.length;cur=null;
   }
   function next(){
     if(cur&&!reported)queue.push(cur); // übersprungen: kommt am Ende der Runde nochmals
@@ -1004,11 +1007,13 @@ function makeDeck(qid,getPool,idOf){
   function result(ok){
     if(reported||!cur)return;reported=true;msg="";
     const id=idOf(cur),s=S(),b=s[id];
-    if(ok){
-      s[id]=b===undefined?2:Math.min(4,b+1);
-      if(need[id]){need[id]--;if(need[id])insert(cur,5+Math.floor(Math.random()*3));else done++;}
-      else done++;
-    }else{s[id]=0;need[id]=2;insert(cur,3+Math.floor(Math.random()*3));}
+    const X=LADDER_X;let gap=0;
+    if(!ok){s[id]=0;gap=X;}
+    else if(b===undefined){s[id]=2;gap=5*X;} // neu und gleich richtig: schon bekannt, nur noch eine Kontrolle
+    else if(b===0){s[id]=1;gap=2*X;}
+    else if(b===1){s[id]=2;gap=5*X;}
+    else s[id]=Math.min(4,b+1); // 2 → 3 (sitzt), 3 → 4
+    if(gap){insert(cur,gap);open.add(id);}else{open.delete(id);done++;}
     Store.set(qid,id,s[id]);render();
   }
   function reset(){build();}
@@ -1016,7 +1021,7 @@ function makeDeck(qid,getPool,idOf){
     if(!box)return;
     const pool=getPool(),n=pool.length;let sitzt=0,schwach=0,neu=0;
     pool.forEach(it=>{const b=fach(it);if(b===undefined)neu++;else if(b>=3)sitzt++;else if(b<=1)schwach++;});
-    const wdh=Object.values(need).filter(x=>x>0).length;
+    const wdh=open.size;
     box.querySelector(".pbar span").style.width=(n?sitzt/n*100:0)+"%";
     box.querySelector(".r1").textContent=`Runde: ${done} von ${total} geschafft`+(wdh?` · ${wdh} zum Wiederholen`:"");
     box.querySelector(".r2").textContent=`Sitzt ${sitzt} · Unsicher ${schwach} · Neu ${neu} · Total ${n}`;
@@ -1551,11 +1556,14 @@ const VTN={v:"Verb",n:"Nomen",a:"Adjektiv",d:"Adverb",f:"kleines Wort",x:"Ausdru
 const VBANDS=Array.from({length:10},(_,i)=>[String(i+1),`${i*100+1}–${i*100+100}`]);
 const VART=/^(el|la|los|las)\s+/;
 const VOC=(typeof VOCAB_RAW==="string"?VOCAB_RAW:"").trim().split("\n").filter(Boolean).map((l,i)=>{
-  const [es,de,t,co]=l.split("|");
+  const [es,de,t,co,ex,exde]=l.split("|");
   const forms=es.replace(/\s*\([^)]*\)/g,"").split(" / ").map(norm);
   // Bedeutungen für Synonyme: Kommas in Klammern zählen nicht als Trennung
   const means=de.replace(/\([^)]*\)/g,m=>m.replace(/[,;]/g,"/")).split(/[,;]\s*/).map(x=>x.trim().toLowerCase());
-  return {n:i+1,b:String(Math.floor(i/100)+1),es,de,t,co:co||"",means,alts:[...new Set(forms.flatMap(f=>[f,f.replace(VART,"")]))]};
+  const alts=[...new Set(forms.flatMap(f=>[f,f.replace(VART,"")]))];
+  // Beispielsatz: das Wort fett, wenn es in genau dieser Form vorkommt
+  let exH=ex||"";for(const a of [...alts].sort((x,y)=>y.length-x.length)){const re=wordRe(a);if(re.test(exH)){exH=exH.replace(re,"$1<b>$2</b>");break;}}
+  return {n:i+1,b:String(Math.floor(i/100)+1),es,de,t,co:co||"",ex:ex||"",exH,exde:exde||"",means,alts};
 });
 const vSame=(a,b)=>a.t===b.t&&a.means.some(m=>b.means.includes(m));
 const vSitzt=v=>Math.max(LS.vocab?.["de|"+v.es]??-1,LS.vocab?.["es|"+v.es]??-1)>=3;
@@ -1582,10 +1590,10 @@ let renderVList=()=>{};
     const sub=term?"":`Wörter ${VBANDS[+band-1][1]}`;
     let h=`<article class="card" style="--h:${term?280:(+band-1)*36}"><header><h2>${title}</h2><span class="de">${sub}</span><span class="forms">${rows.length} Wörter · ${sitzt} sitzen</span></header>`;
     if(!rows.length)h+=`<div class="note">Keine Wörter gefunden.</div>`;
-    else{h+=`<div class="tbl"><table><thead><tr><th style="padding-left:16px">Nr.</th><th>Spanisch</th><th>Deutsch</th><th>Wortart</th></tr></thead><tbody>`;
-      rows.slice(0,300).forEach(v=>h+=`<tr><td class="vnum">${v.n}${vSitzt(v)?` <span class="vok" title="sitzt">✓</span>`:""}</td><td class="wes"><span class="f">${v.es}</span></td><td class="wde">${v.de}${v.co?`<span class="gn"><b>Kolumbien:</b> ${v.co}</span>`:""}</td><td class="vty">${VTN[v.t]}</td></tr>`);
+    else{h+=`<div class="tbl"><table><thead><tr><th style="padding-left:16px">Nr.</th><th>Spanisch</th><th>Deutsch</th><th>Beispiel</th><th>Wortart</th></tr></thead><tbody>`;
+      rows.slice(0,300).forEach(v=>h+=`<tr><td class="vnum">${v.n}${vSitzt(v)?` <span class="vok" title="sitzt">✓</span>`:""}</td><td class="wes"><span class="f">${v.es}</span></td><td class="wde">${v.de}${v.co?`<span class="gn"><b>Kolumbien:</b> ${v.co}</span>`:""}</td><td class="exs">${v.ex?`<span class="f">${v.exH}<small>${v.exde}</small></span>`:""}</td><td class="vty">${VTN[v.t]}</td></tr>`);
       h+=`</tbody></table></div>`;}
-    h+=`<div class="note">✓ = sitzt im Training (Fach 3 oder 4). Mit «Formen verdecken» werden die spanischen Wörter verdeckt.</div></article>`;
+    h+=`<div class="note">✓ = sitzt im Training (Fach 3 oder 4). Mit «Formen verdecken» werden die spanischen Wörter und Beispielsätze verdeckt.</div></article>`;
     list.innerHTML=h;
   };
   search.addEventListener("input",renderVList);
@@ -1615,7 +1623,7 @@ let renderVList=()=>{};
   const later=ms=>{clearTimeout(timer);timer=setTimeout(next,ms);};
   const deck=makeDeck("vocab",()=>VOC.filter(x=>sel.b.includes(x.b)&&sel.t.includes(x.t)),x=>`${mode}|${x.es}`);
   const score=()=>sc.textContent=`${ok} von ${tot} richtig`;
-  const showFb=()=>{fb.innerHTML=`<span><b>${v.es}</b> · ${v.de}</span>`+(v.co?`<span class="gn"><b>Kolumbien:</b> ${v.co}</span>`:"");renderVList();};
+  const showFb=()=>{fb.innerHTML=`<span><b>${v.es}</b> · ${v.de}</span>`+(v.ex?`<span>${v.exH} <i>${v.exde}</i></span>`:"")+(v.co?`<span class="gn"><b>Kolumbien:</b> ${v.co}</span>`:"");renderVList();};
   function next(){
     clearTimeout(timer);timer=0;
     v=deck.next();answered=false;
