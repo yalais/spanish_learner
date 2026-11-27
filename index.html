@@ -155,6 +155,19 @@ body.cover .card td.shown::after{display:none}
 .card td.vnum{width:1%;white-space:nowrap;font-size:13px;color:var(--muted);padding-left:16px}
 .card td.vnum .vok{color:hsl(145 55% 38%);font-weight:700}
 .card td.vty{width:1%;white-space:nowrap;font-size:12.5px;color:var(--muted)}
+.vpark{font:inherit;font-size:12px;line-height:1.2;padding:1px 6px;margin-left:4px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.vpark[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:700}
+.card tr.parked td:not(.vnum){opacity:.5}
+/* Kurzrepetition */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:8px}
+.rcard{font:inherit;min-height:66px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;text-align:center;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.rcard .f{font-weight:700;font-size:16px}
+.rcard .b{font-size:14px;color:var(--accent)}
+.rcard.open{border-color:var(--accent)}
+.rcard.miss{border-color:hsl(0 65% 52%);background:hsl(0 65% 52%);color:#fff}
+.rcard.miss .b{color:#fff}
+.rcard:disabled{cursor:default}
+.rcard.ok:disabled{border-color:hsl(145 55% 38%)}
 #vsearch{max-width:560px}
 .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:18px;align-items:start}
 .card td.wes{white-space:nowrap;font-weight:700}
@@ -429,6 +442,7 @@ body.cover .card td.shown::after{display:none}
     </div>
 
     <section class="quiz" id="vocabQuiz" aria-label="1000 Wörter üben"></section>
+    <section class="quiz" id="repQuiz" aria-label="Kurzrepetition"></section>
 
     <div class="tips">
       <div><b><span class="n">1</span>Stufe für Stufe</b>Beginne mit Stufe 1 (Wörter 1–100). Erst wenn die meisten sitzen, nimmst du die nächste Stufe dazu. Die ersten 300 Wörter machen schon etwa zwei Drittel jedes Gesprächs aus.</div>
@@ -982,7 +996,7 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
 // · nochmals richtig → Fach 3, sitzt. Neu und gleich richtig → direkt Fach 2 (nur noch eine Kontrolle nach 5X).
 // Ein Fehler setzt die Leiter zurück. Fragen, die sitzen, kommen nur noch selten (Fach 3: 20 %, Fach 4: 10 % pro Runde).
 const LADDER_X=5;
-function makeDeck(qid,getPool,idOf){
+function makeDeck(qid,getPool,idOf,info){
   let queue=[],cur=null,reported=false,open=new Set(),done=0,total=0,onlyWeak=false,msg="",box=null;
   const S=()=>LS[qid]||(LS[qid]={});
   const fach=it=>S()[idOf(it)];
@@ -1017,6 +1031,14 @@ function makeDeck(qid,getPool,idOf){
     Store.set(qid,id,s[id]);render();
   }
   function reset(){build();}
+  // Fragen entfernen, die nicht mehr in der Auswahl sind (z.B. parkiert). true, wenn die aktuelle Frage wegfällt.
+  function prune(){
+    const ids=new Set(getPool().map(idOf)),keep=queue.filter(it=>ids.has(idOf(it)));
+    total-=queue.length-keep.length;queue=keep;
+    for(const id of [...open])if(!ids.has(id))open.delete(id);
+    let gone=false;if(cur&&!ids.has(idOf(cur))){if(!reported)total--;cur=null;gone=true;}
+    total=Math.max(total,done);render();return gone;
+  }
   function render(){
     if(!box)return;
     const pool=getPool(),n=pool.length;let sitzt=0,schwach=0,neu=0;
@@ -1024,7 +1046,7 @@ function makeDeck(qid,getPool,idOf){
     const wdh=open.size;
     box.querySelector(".pbar span").style.width=(n?sitzt/n*100:0)+"%";
     box.querySelector(".r1").textContent=`Runde: ${done} von ${total} geschafft`+(wdh?` · ${wdh} zum Wiederholen`:"");
-    box.querySelector(".r2").textContent=`Sitzt ${sitzt} · Unsicher ${schwach} · Neu ${neu} · Total ${n}`;
+    box.querySelector(".r2").textContent=`Sitzt ${sitzt} · Unsicher ${schwach} · Neu ${neu} · Total ${n}`+(info?info():"");
     box.querySelector(".msg").textContent=msg;
     box.querySelector("[data-weak]").setAttribute("aria-pressed",onlyWeak);
   }
@@ -1039,7 +1061,7 @@ function makeDeck(qid,getPool,idOf){
       delete LS[qid];Store.reset(qid);msg="";build();again();};
     el.appendChild(box);el.resetDeck=()=>{msg="";build();};
   }
-  const deck={next,result,reset,mount,render};
+  const deck={next,result,reset,prune,mount,render};
   Sync.decks.push(deck);
   return deck;
 }
@@ -1567,6 +1589,11 @@ const VOC=(typeof VOCAB_RAW==="string"?VOCAB_RAW:"").trim().split("\n").filter(B
 });
 const vSame=(a,b)=>a.t===b.t&&a.means.some(m=>b.means.includes(m));
 const vSitzt=v=>Math.max(LS.vocab?.["de|"+v.es]??-1,LS.vocab?.["es|"+v.es]??-1)>=3;
+// Parkplatz: Wörter, die du vorerst nicht üben willst. Im Lernstand unter «park»: 1 = parkiert, 0 = zurückgeholt
+// (nicht löschen, damit beim Sync die neuere Entscheidung gewinnt). Gilt für beide Richtungen.
+const vParked=v=>LS.park?.[v.es]===1;
+const onPark=[];
+function setPark(v,on){(LS.park||(LS.park={}))[v.es]=on?1:0;Store.set("park",v.es,on?1:0);renderVList();onPark.forEach(f=>f());}
 const vChip=v=>`<span class="chip v" style="background:hsl(${(+v.b-1)*36} var(--head-s) var(--head-l))">Stufe ${v.b} · Nr. ${v.n}</span><span class="chip">${VTN[v.t]}</span>`;
 
 // Liste
@@ -1579,24 +1606,26 @@ let renderVList=()=>{};
   const seg=(id,items,get,set)=>{const box=document.querySelector(`#${id} .seg`);
     items.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",k===get());
       b.onclick=()=>{set(k);box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));save();renderVList();};box.appendChild(b);});};
-  seg("vband",VBANDS,()=>band,k=>band=k);
+  seg("vband",[...VBANDS,["park","🅿 Parkplatz"]],()=>band,k=>band=k);
   seg("vtype",[["all","Alle"],...VTYPES],()=>typ,k=>typ=k);
   renderVList=()=>{
     const term=strip(norm(search.value));
-    let rows=term?VOC.filter(v=>strip(norm(v.es)).includes(term)||strip(v.de.toLowerCase()).includes(term)):VOC.filter(v=>v.b===band);
+    const park=band==="park";
+    let rows=term?VOC.filter(v=>strip(norm(v.es)).includes(term)||strip(v.de.toLowerCase()).includes(term)):park?VOC.filter(vParked):VOC.filter(v=>v.b===band);
     if(typ!=="all")rows=rows.filter(v=>v.t===typ);
     const sitzt=rows.filter(vSitzt).length;
-    const title=term?`Suche: «${search.value.trim().replace(/[<>&"]/g,"")}»`:`Stufe ${band}`;
-    const sub=term?"":`Wörter ${VBANDS[+band-1][1]}`;
-    let h=`<article class="card" style="--h:${term?280:(+band-1)*36}"><header><h2>${title}</h2><span class="de">${sub}</span><span class="forms">${rows.length} Wörter · ${sitzt} sitzen</span></header>`;
-    if(!rows.length)h+=`<div class="note">Keine Wörter gefunden.</div>`;
+    const title=term?`Suche: «${search.value.trim().replace(/[<>&"]/g,"")}»`:park?"Parkplatz":`Stufe ${band}`;
+    const sub=term?"":park?"Wörter, die du vorerst nicht übst":`Wörter ${VBANDS[+band-1][1]}`;
+    let h=`<article class="card" style="--h:${term?280:park?220:(+band-1)*36}"><header><h2>${title}</h2><span class="de">${sub}</span><span class="forms">${rows.length} Wörter · ${sitzt} sitzen</span></header>`;
+    if(!rows.length)h+=`<div class="note">${park&&!term?"Noch keine Wörter auf dem Parkplatz. Parkieren kannst du im Training oder hier in der Liste mit 🅿.":"Keine Wörter gefunden."}</div>`;
     else{h+=`<div class="tbl"><table><thead><tr><th style="padding-left:16px">Nr.</th><th>Spanisch</th><th>Deutsch</th><th>Beispiel</th><th>Wortart</th></tr></thead><tbody>`;
-      rows.slice(0,300).forEach(v=>h+=`<tr><td class="vnum">${v.n}${vSitzt(v)?` <span class="vok" title="sitzt">✓</span>`:""}</td><td class="wes"><span class="f">${v.es}</span></td><td class="wde">${v.de}${v.co?`<span class="gn"><b>Kolumbien:</b> ${v.co}</span>`:""}</td><td class="exs">${v.ex?`<span class="f">${v.exH}<small>${v.exde}</small></span>`:""}</td><td class="vty">${VTN[v.t]}</td></tr>`);
+      rows.slice(0,300).forEach(v=>{const pk=vParked(v);h+=`<tr${pk?' class="parked"':""}><td class="vnum">${v.n}${vSitzt(v)?` <span class="vok" title="sitzt">✓</span>`:""}<button type="button" class="vpark" data-park="${v.n}" aria-pressed="${pk}" title="${pk?"Vom Parkplatz zurück ins Training holen":"Auf den Parkplatz schieben (kommt nicht mehr im Training)"}">🅿</button></td><td class="wes"><span class="f">${v.es}</span></td><td class="wde">${v.de}${v.co?`<span class="gn"><b>Kolumbien:</b> ${v.co}</span>`:""}</td><td class="exs">${v.ex?`<span class="f">${v.exH}<small>${v.exde}</small></span>`:""}</td><td class="vty">${VTN[v.t]}</td></tr>`;});
       h+=`</tbody></table></div>`;}
-    h+=`<div class="note">✓ = sitzt im Training (Fach 3 oder 4). Mit «Formen verdecken» werden die spanischen Wörter und Beispielsätze verdeckt.</div></article>`;
+    h+=`<div class="note">✓ = sitzt im Training (Fach 3 oder 4). 🅿 = Wort auf den Parkplatz schieben oder zurückholen. Parkierte Wörter kommen im Training und in der Kurzrepetition nicht mehr. Mit «Formen verdecken» werden die spanischen Wörter und Beispielsätze verdeckt.</div></article>`;
     list.innerHTML=h;
   };
   search.addEventListener("input",renderVList);
+  list.addEventListener("click",e=>{const b=e.target.closest("[data-park]");if(!b)return;const v=VOC[+b.dataset.park-1];setPark(v,!vParked(v));});
   renderVList();
 })();
 
@@ -1611,7 +1640,7 @@ let renderVList=()=>{};
   <div class="opts"></div>
   <div class="res" aria-live="polite"></div>
   <div class="fb"></div>
-  <div class="qbtns"><button class="btn" type="button" data-skip>Nächste</button></div>
+  <div class="qbtns"><button class="btn" type="button" data-skip>Nächste</button><button class="btn" type="button" data-park title="Wort auf den Parkplatz schieben: Es kommt nicht mehr im Training. Zurückholen kannst du es in der Liste unter «Parkplatz».">🅿 Parkieren</button></div>
   <div class="score">0 von 0 richtig</div>`;
   const q=c=>el.querySelector(c);
   const form=q(".qform"),inp=q(".qform input"),acc=q(".acc"),opts=q(".opts"),res=q(".res"),fb=q(".fb"),qline=q(".qline"),sc=q(".score");
@@ -1621,7 +1650,9 @@ let renderVList=()=>{};
   let v=null,answered=false,ok=0,tot=0,timer=0;
   const WAIT=4000,WAIT_ACC=7000;
   const later=ms=>{clearTimeout(timer);timer=setTimeout(next,ms);};
-  const deck=makeDeck("vocab",()=>VOC.filter(x=>sel.b.includes(x.b)&&sel.t.includes(x.t)),x=>`${mode}|${x.es}`);
+  const inSel=x=>sel.b.includes(x.b)&&sel.t.includes(x.t);
+  const deck=makeDeck("vocab",()=>VOC.filter(x=>inSel(x)&&!vParked(x)),x=>`${mode}|${x.es}`,
+    ()=>{const p=VOC.filter(x=>inSel(x)&&vParked(x)).length;return p?` · Parkiert ${p}`:"";});
   const score=()=>sc.textContent=`${ok} von ${tot} richtig`;
   const showFb=()=>{fb.innerHTML=`<span><b>${v.es}</b> · ${v.de}</span>`+(v.ex?`<span>${v.exH} <i>${v.exde}</i></span>`:"")+(v.co?`<span class="gn"><b>Kolumbien:</b> ${v.co}</span>`:"");renderVList();};
   function next(){
@@ -1656,6 +1687,10 @@ let renderVList=()=>{};
   q("[data-hint]").onclick=()=>{if(!v||answered)return;const h=qline.querySelector(".hint");
     if(h)h.textContent=v.alts[0].replace(/\p{L}+/gu,w=>w[0]+"_".repeat(w.length-1));inp.focus();};
   q("[data-skip]").onclick=next;
+  q("[data-park]").onclick=()=>{if(!v)return;const w=v.es;setPark(v,true);
+    res.textContent=`«${w}» ist auf dem Parkplatz.`;res.className="res";};
+  // Parkplatz geändert (hier oder in der Liste): Stapel anpassen, bei parkiertem aktuellem Wort weiter
+  onPark.push(()=>{if(deck.prune()){next();}});
   const ms=q("[data-mode]");
   MODES.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",k===mode);
     b.onclick=()=>{mode=k;try{localStorage.setItem("vocabMode",k);}catch(e){}
@@ -1665,6 +1700,68 @@ let renderVList=()=>{};
   addPicks(el,"vocabQuizSel",sel,[["Stufen","b",VBANDS],["Wortart","t",VTYPES]]);
   deck.mount(el);
   next();
+})();
+
+// Kurzrepetition: Wörter, die sitzen, als Karten, damit sie nicht vergessen gehen.
+// Zuerst die Wörter, die am längsten nicht mehr dran waren (Zeit aus dem Lernstand: Training oder Repetition).
+// Antippen = Übersetzung zeigen, nochmals antippen = nicht gewusst (rot). «Fertig»: rote Karten fallen im Training
+// auf «unsicher» zurück, alle anderen gelten als frisch wiederholt (Lernstand «rep»: 1 = gewusst, 0 = nicht gewusst).
+(function(){
+  const el=document.getElementById("repQuiz"),N=20,WEEK=7*864e5;
+  el.innerHTML=`<h3>Kurzrepetition</h3>
+  <p class="subp">Die Wörter, die schon sitzen, kurz durchgehen. Tippe eine Karte an, um die Übersetzung zu sehen. Wusstest du sie nicht, tippe nochmals: Die Karte wird rot und das Wort kommt zurück ins Training. Mit «Fertig» zählen alle anderen Karten als gewusst.</p>
+  <div class="seg" data-mode aria-label="Angezeigte Sprache"></div>
+  <div class="rgrid"></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="qbtns"><button class="btn" type="button" data-done>Fertig</button></div>
+  <div class="score"></div>`;
+  const q=c=>el.querySelector(c),grid=q(".rgrid"),res=q(".res"),btn=q("[data-done]"),sc=q(".score");
+  const MODES=[["de","Deutsch zeigen"],["es","Spanisch zeigen"]];
+  let mode="de";try{const m=localStorage.getItem("repMode");if(MODES.some(x=>x[0]===m))mode=m;}catch(e){}
+  let cards=[],finished=false;
+  const ts=(qid,id)=>Store.data.d[qid]?.[id]?.[1]||0;
+  const seen=v=>Math.max(ts("vocab","de|"+v.es),ts("vocab","es|"+v.es),ts("rep",v.es));
+  const pool=()=>VOC.filter(v=>vSitzt(v)&&!vParked(v));
+  const setVocab=(id,f)=>{(LS.vocab||(LS.vocab={}))[id]=f;Store.set("vocab",id,f);};
+  function stats(){const p=pool(),now=Date.now(),old=p.filter(v=>now-seen(v)>WEEK).length;
+    sc.textContent=p.length?`${p.length} Wörter sitzen · ${old} davon seit über einer Woche nicht wiederholt`:"";}
+  function draw(){
+    grid.innerHTML=cards.length?"":`<div class="note">Noch keine Wörter, die sitzen. Sobald du Wörter im Training oben mehrmals richtig hast, erscheinen sie hier.</div>`;
+    cards.forEach(c=>{const b=document.createElement("button");b.type="button";
+      b.className="rcard"+(c.s?" open":"")+(c.s===2?" miss":finished?" ok":"");
+      const front=mode==="de"?c.v.de:c.v.es,back=mode==="de"?c.v.es:c.v.de;
+      b.innerHTML=`<span class="f">${front}</span>`+(c.s?`<span class="b">${back}</span>`:"");
+      b.disabled=finished;b.onclick=()=>{c.s=c.s===1?2:1;draw();};
+      grid.appendChild(b);});
+    btn.hidden=!cards.length;btn.textContent=finished?`Nächste ${Math.min(N,pool().length)}`:"Fertig";
+    stats();
+  }
+  function deal(){
+    cards=shuffle(pool().sort((a,b)=>seen(a)-seen(b)).slice(0,N)).map(v=>({v,s:0}));
+    finished=false;res.textContent="";res.className="res";draw();
+  }
+  function finish(){
+    const other=mode==="de"?"es":"de";let miss=0;
+    cards.forEach(c=>{const w=c.v.es;
+      if(c.s===2){miss++;setVocab(`${mode}|${w}`,1); // diese Richtung: unsicher, kommt bald wieder im Training
+        if((LS.vocab?.[`${other}|${w}`]??-1)>=3)setVocab(`${other}|${w}`,2); // andere Richtung: noch eine Kontrolle
+        Store.set("rep",w,0);}
+      else{Store.set("rep",w,1);c.s=1;}});
+    finished=true;const n=cards.length;
+    res.textContent=miss?`${n-miss} von ${n} gewusst. ${miss} ${miss===1?"Wort kommt":"Wörter kommen"} zurück ins Training.`:`Alle ${n} gewusst. Stark!`;
+    res.className="res "+(miss?"warn":"ok");
+    draw();Sync.decks.forEach(d=>d.render());
+  }
+  btn.onclick=()=>finished?deal():finish();
+  const ms=q("[data-mode]");
+  MODES.forEach(([k,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n;b.dataset.k=k;b.setAttribute("aria-pressed",k===mode);
+    b.onclick=()=>{mode=k;try{localStorage.setItem("repMode",k);}catch(e){}
+      ms.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));deal();};ms.appendChild(b);});
+  // Nach Sync, Training oder Parkplatz: neu austeilen, solange noch keine Karte angetippt ist
+  const refresh=()=>{if(!finished&&cards.every(c=>!c.s))deal();else{cards=cards.filter(c=>!vParked(c.v));draw();}};
+  onPark.push(refresh);
+  Sync.decks.push({render(){renderVList();if(!finished&&cards.every(c=>!c.s)&&!cards.length)deal();else stats();}});
+  deal();
 })();
 
 // Person und Zeit erkennen. Eintrag: [Satz, Verbform, Infinitiv, Person(en), Zeitform, Übersetzung, Hinweis]

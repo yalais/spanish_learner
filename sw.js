@@ -3,7 +3,7 @@
 // Schriften und Icons: zuerst Speicher, sonst Netz.
 // Die GitHub API (Lernstand-Sync) läuft immer direkt übers Netz und wird nie gespeichert.
 // CACHE-Namen erhöhen, wenn sich Dateien in APP ändern, damit alte Kopien gelöscht werden.
-const CACHE = "verbos-v4";
+const CACHE = "verbos-v5";
 const APP = ["./", "index.html", "vocab.js", "manifest.json", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
